@@ -137,3 +137,18 @@ From 24 failure memories:
 Run the command. Read the output. THEN claim the result.
 
 This is non-negotiable.
+
+
+---
+
+## Auto-amelioration
+
+**Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
+
+Apres chaque execution, avant de conclure :
+1. **Friction detectee ?** (etape confuse, ordre sous-optimal, info manquante) → corriger ce skill immediatement
+2. **Bug resolu ou pattern decouvert ?** → l'ajouter dans la section pieges/patterns de ce skill
+3. **Approche validee ?** → l'ancrer comme pattern reference dans ce skill
+4. **Gain applicable a d'autres skills ?** → propager (ou PROPOSITION DE REGLE si transversal)
+
+**Regle : ne jamais reporter une amelioration a "plus tard". L'appliquer maintenant ou la perdre.**

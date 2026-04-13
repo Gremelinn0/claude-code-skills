@@ -22,75 +22,57 @@ Every code change MUST be reflected in the project's reference documents. Docume
 - Adding/removing dependencies
 - Deploiement / auth / SaaS changes
 
-## Document Registry — SpeakApp Project
+## Document Registry
 
-Les docs sont dans `.claude/projects/<project-key>/memory/` :
+**Chaque projet a sa propre structure docs.** Consulter le CLAUDE.md du projet pour la liste exacte.
 
-```
-MEMORY.md          — INDEX principal (< 200 lignes). Lu automatiquement au demarrage.
-                     Contient : nom produit, modele business, features, etat actuel,
-                     raccourcis, commandes Vosk, priorites, preferences, notes techniques.
+**Structure type SpeakApp (speak-app-dev) :**
 
-todo.md            — To-do list actions concretes, triees par priorite.
-                     Mettre a jour : cocher les items DONE, ajouter les nouveaux.
+| Couche | Fichiers | Role | Skill |
+|--------|----------|------|-------|
+| C1 — Hub HTML | `dashboards/*.html` | Fonctionnel (utilisateur) | `/define-feature` |
+| C2 — Feature doc MD | `memory/features/*.md` | Technique (Claude) | `/doc-keeper` (ce skill) |
+| C3 — Skill test-X | `.claude/skills/test-*/SKILL.md` | Dev+test (Claude) | `/create-feature-skill` |
+| C4 — Program.md | `docs/autoresearch/*/program.md` | Autoresearch (optionnel) | `/autoresearch` |
 
-deployment.md      — Deploiement SaaS : credentials Supabase, repos GitHub, etat Loveable,
-                     TODO prompts Loveable, auth flow, faisabilite Mac.
+**Autres docs projet :** `CLAUDE.md` (regles), `FEATURES.md` (source de verite features), `MEMORY.md` (index sous-fichiers), `memory/platforms/*.md` (par plateforme).
 
-loveable.md        — Loveable Cloud : role, process (2 modes), credentials, etat web.
-
-architecture.md    — Structure fichiers, classes, moteurs STT, auth flow, tech stack.
-
-roadmap.md         — SUPPRIME. Remplace par v1-roadmap.html (dashboard HTML unifie).
-                     Utiliser le skill update-roadmap pour marquer les taches DONE.
-
-changelog.md       — Historique complet des changements (Mars 2026).
-
-testing.md         — Plan de tests, checklist PASS/FAIL, bugs trouves.
-
-pricing.md         — Calculs couts STT et recommandations prix abo.
-
-status.md          — Etat actuel rapide (resume en 15 lignes).
-```
-
-Autres docs (dans le projet) :
-```
-USER_STORIES.html  — speak-app-dev/ (12 user stories, criteres d'acceptation)
-CLAUDE.md          — Racine projet (regles, stack, skills)
-```
+**Regle 4 couches :** zero duplication entre couches. Hub = arbitre en cas de divergence hub <-> doc.
 
 ## Map Changes → Documents
 
 | Change Type | Documents to Update |
 |-------------|-------------------|
-| New feature implemented | MEMORY.md (features list), changelog.md, v1-roadmap.html (skill update-roadmap), todo.md (cocher) |
-| Modified feature | MEMORY.md (update description), changelog.md |
-| Bug fix | changelog.md, todo.md (si dans la liste) |
-| New config key | MEMORY.md (si critique) ou architecture.md |
-| New hotkey | MEMORY.md (raccourcis section) |
-| New voice command | MEMORY.md (commandes Vosk section) |
-| UI change | MEMORY.md (couleurs voyants si concerne) |
-| New file created | architecture.md |
-| Auth / SaaS change | deployment.md, loveable.md |
-| Roadmap task done | v1-roadmap.html (skill update-roadmap), todo.md (cocher) |
-| Dependency | architecture.md (tech stack) |
-| New test added | testing.md (mettre a jour le compte) |
+| New feature implemented | Feature doc (`memory/features/`) + FEATURES.md + roadmap |
+| Modified feature | Feature doc (section concernee) |
+| Bug fix | Feature doc (tableau "Bugs resolus" — 1 ligne : cause + fix + date + commit) |
+| Bug fix on a feature with skill | **Skill test-X** (classifier + acquis) + feature doc (bugs resolus) |
+| New config key / constante | Feature doc (section "Constantes" avec rationale) |
+| New hotkey | Feature doc + FEATURES.md (raccourcis) |
+| New voice command | Feature doc + `memory/core/voice-commands.md` |
+| UI change | Feature doc + hub HTML si visible utilisateur |
+| New file created | Feature doc (section "Architecture — fichiers cles") |
+| Roadmap task done | `v1-roadmap.html` (skill update-roadmap) |
+| Architecture change | Feature doc + CLAUDE.md si transversal |
 
-## QA Sync — Boucle d'amelioration
+## Qualite du contenu — regles anti-accumulation
 
-**Apres chaque mise a jour des docs, verifier si le skill QA doit etre mis a jour :**
+**Le doc-keeper ecrit BIEN des le depart pour eviter les audits de nettoyage.**
 
-1. **Nouvelle feature** → ajouter un check dans le qa-agent scheduled task (speakapp-qa-daily)
-2. **Nouveau bug fixe** → ajouter un pattern a verifier dans la Phase 3 du qa-agent
-3. **Nouvelle commande Vosk** → mettre a jour le count dans test_speakapp.py
-4. **Nouveau raccourci** → ajouter dans la checklist manuelle du qa-agent
-5. **Changement UI** → ajouter dans la verification Widget UI (Agent 1)
+| Regle | Exemple BON | Exemple MAUVAIS |
+|-------|-------------|-----------------|
+| **Faits, pas narratifs** | `Fix: guard _emit_gate (commit abc123)` | `On a essaye X puis Y puis Z a finalement marche` |
+| **Rationale pour chaque constante** | `45px gap = marge sur 49px mesure, evite faux positifs headings (32px max)` | `_GAP_THRESHOLD = 45` (sans explication) |
+| **Comprimer les checklists terminees** | Tableau resume `33/33` par categorie + commits | 33 lignes `[x]` individuelles |
+| **Jalons, pas journal** | `04-06 \| Boundary guards + DONE-gated E2E \| 5b5aa0b` | 50 lignes de recit de la session du 06 |
+| **Referencer, pas dupliquer** | `Voir mode-auto.md section Auto-permissions` | Copier 24 lignes d'un autre doc |
 
-**Comment mettre a jour le QA scheduled task :**
-```
-Utiliser mcp__scheduled-tasks__update_scheduled_task avec taskId="speakapp-qa-daily"
-et un prompt mis a jour incluant les nouveaux checks.
-```
+**Quand mettre a jour un feature doc :**
+- **Bug fixe** → 1 ligne dans le tableau bugs (cause + fix + commit + date). Des faits, pas de prose.
+- **Decision prise** → section "Decisions de design" : choix + alternative rejetee + pourquoi.
+- **Constante ajoutee** → valeur + fichier + rationale (comment le nombre a ete derive).
+- **Checklist 100% cochee** → comprimer en tableau resume avec scores par categorie + commits de reference.
+- **Session terminee** → 1 ligne jalon (date + resultat cle + commit). Pas de recit.
 
 ## Update Protocol
 
@@ -101,17 +83,10 @@ Toujours lire le fichier concerne AVANT de le modifier. Ne jamais editer a l'ave
 Changer uniquement ce qui est necessaire. Preserver la structure existante.
 
 ### Step 3: Cross-check consistency
-- Noms de features coherents entre MEMORY.md et v1-roadmap.html
-- Config keys coherents entre docs et config.json reel
-- Status (DONE/TODO) coherents entre v1-roadmap.html, changelog.md, et todo.md
-- Nombre de tests dans testing.md = nombre reel dans test_speakapp.py
-- Nombre de commandes Vosk dans MEMORY.md = nombre reel dans app.py
-
-### Step 4: Keep MEMORY.md under 200 lines
-Si MEMORY.md depasse 200 lignes apres une mise a jour :
-1. Identifier ce qui peut etre deplace dans un sous-fichier
-2. Deplacer le detail, garder un resume + lien dans MEMORY.md
-3. Verifier que l'index des sous-fichiers est a jour
+- Feature doc coherent avec le hub HTML (`speakapp-hub.html` = arbitre)
+- Constantes dans le doc = valeurs dans le code (fichier:ligne)
+- Commandes vocales dans le doc = commandes dans `voice-commands.md` + code
+- Si divergence hub <-> doc → corriger le doc, JAMAIS le hub
 
 ## Anti-Patterns
 
@@ -126,4 +101,19 @@ Si MEMORY.md depasse 200 lignes apres une mise a jour :
 
 ## The Bottom Line
 
-**Every code change = immediate doc update + QA update. Same message. No "I'll do it later."**
+**Every code change = immediate doc update. Faits + rationale. Zero narratif. Hub = arbitre.**
+
+
+---
+
+## Auto-amelioration
+
+**Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
+
+Apres chaque execution, avant de conclure :
+1. **Friction detectee ?** (etape confuse, ordre sous-optimal, info manquante) → corriger ce skill immediatement
+2. **Bug resolu ou pattern decouvert ?** → l'ajouter dans la section pieges/patterns de ce skill
+3. **Approche validee ?** → l'ancrer comme pattern reference dans ce skill
+4. **Gain applicable a d'autres skills ?** → propager (ou PROPOSITION DE REGLE si transversal)
+
+**Regle : ne jamais reporter une amelioration a "plus tard". L'appliquer maintenant ou la perdre.**

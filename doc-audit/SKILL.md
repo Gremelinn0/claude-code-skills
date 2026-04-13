@@ -150,11 +150,11 @@ Apres l'audit, produire un rapport structure :
 
 ---
 
-## Valeurs de reference (a jour mars 2026)
+## Valeurs de reference (a jour 2026-04-11)
 
 | Constante | Valeur validee | Fichier source de verite |
 |-----------|---------------|--------------------------|
-| idle_threshold | 60 secondes | watchdog_engine.py |
+| idle_threshold | 3s (IDE) ou 10s (autres) — config par défaut | watchdog_engine.py ligne ~2065 (`_default_ilt`) |
 | Panel refresh | 2 secondes | watchdog_panel.py |
 | Pixel diff threshold | 5% | watchdog_engine.py |
 | Pixel diff consecutive polls | 3 | watchdog_engine.py |
@@ -162,5 +162,30 @@ Apres l'audit, produire un rapport structure :
 | Max watchdog duration | 1800s (30 min) | app.py config |
 | Toast width (Style B) | 340px | app.py CARD_W |
 | Pricing plan(s) | A VERIFIER via audit | pricing.md + deployment.md + settings_window.py + speakapp.work |
-| Vosk commands | 32 clavier + 26 speciales | MEMORY.md + app.py |
-| Tests count | 287 | testing.md + test_speakapp.py |
+| Vosk always-on commands | 41 clavier | app.py VOSK_ALWAYS_ON_COMMANDS |
+| Vosk special commands | 54 speciales (dont 7 auto-pilot 2026-04-11) | app.py VOSK_SPECIAL_COMMANDS |
+| DONE debounce | 3.0s (`_DONE_DEBOUNCE_S`) | app.py:7774 |
+| CLAUDE_SIDEBAR_RATIO | 0.25 | watchdog_engine.py:295 |
+| CLAUDE_SIDEBAR_MAX_PX | 400px | watchdog_engine.py:298 |
+| AG_SIDEBAR_SKIP | set de tokens UI a ignorer | watchdog_engine.py:385 (ex-`_CD_UI_TOKENS`) |
+| _USER_X_MIN | 840 | uia_reader.py:1079 |
+| _CHAT_SHORT_THRESHOLD | 12 phrases | app.py:3875 |
+| Confidence seuil always-on default | avg 0.85 / min 0.80 | stt_engine.py:854-855 |
+| Confidence seuil "stop" | avg 0.88 / min 0.84 | app.py:818 (abaisse — etait 0.95/0.92) |
+| DEFAULT_SESSION_TIMEOUT_SEC (autopilot) | 300s | app.py config |
+| DEFAULT_STUCK_THRESHOLD (autopilot) | 3 | app.py config |
+
+
+---
+
+## Auto-amelioration
+
+**Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
+
+Apres chaque execution, avant de conclure :
+1. **Friction detectee ?** (etape confuse, ordre sous-optimal, info manquante) → corriger ce skill immediatement
+2. **Bug resolu ou pattern decouvert ?** → l'ajouter dans la section pieges/patterns de ce skill
+3. **Approche validee ?** → l'ancrer comme pattern reference dans ce skill
+4. **Gain applicable a d'autres skills ?** → propager (ou PROPOSITION DE REGLE si transversal)
+
+**Regle : ne jamais reporter une amelioration a "plus tard". L'appliquer maintenant ou la perdre.**

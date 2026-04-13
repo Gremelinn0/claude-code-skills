@@ -132,9 +132,23 @@ Link to file for heavy reference or reusable tools
 ## Common Mistakes
 What goes wrong + fixes
 
+## Auto-amelioration
+
+**Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
+
+Apres chaque execution, avant de conclure :
+1. **Friction detectee ?** → corriger ce skill immediatement
+2. **Bug resolu ou pattern decouvert ?** → l'ajouter ici
+3. **Approche validee ?** → l'ancrer comme pattern reference
+4. **Gain applicable a d'autres skills ?** → propager
+
+**Ne jamais reporter une amelioration a "plus tard".**
+
 ## Real-World Impact (optional)
 Concrete results
 ```
+
+**IMPORTANT:** La section `## Auto-amelioration` est **obligatoire** dans tout nouveau skill de type dev/workflow. Elle active la regle d'auto-amelioration continue du systeme.
 
 
 ## Claude Search Optimization (CSO)
@@ -627,6 +641,10 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Common mistakes section
 - [ ] No narrative storytelling
 - [ ] Supporting files only for tools or heavy reference
+
+**Auto-amelioration (obligatoire pour skills dev/workflow) :**
+- [ ] Section `## Auto-amelioration` presente dans le skill
+- [ ] Rappelle les 4 reflexes (friction, bug, validation, propagation)
 
 **Deployment:**
 - [ ] Commit skill to git and push to your fork (if configured)
