@@ -130,11 +130,49 @@ From 24 failure memories:
 - Implications of success
 - ANY communication suggesting completion/correctness
 
+## Documentation Gate (SpeakApp / tout projet avec memory/)
+
+**Avant de déclarer une session terminée, poser ces 4 questions. Ce n'est pas optionnel.**
+
+```
+DOC GATE — à passer avant "c'est bon" / push final / fin de session :
+
+1. Ce changement touche un reader / méthode de lecture chat ?
+   → OUI → reader-solutions-matrix.md mis à jour ?  (sinon STOP)
+
+2. Ce changement touche un mécanisme d'interaction (CDP/UIA/DevTools/Win32/OCR/WS Bridge/hooks) ?
+   → OUI → interaction-mechanisms-matrix.md mis à jour ? (sinon STOP)
+
+3. roadmap.md reflète l'état réel du code (bug fixé, bloqueur levé, commit ancré) ?
+   → TOUJOURS vérifier — même si le changement semble mineur (sinon STOP)
+
+4. Le skill test-X ou run-tests concerné est à jour ?
+   → Nouveau pattern découvert ? Bug résolu ? Méthode de test prouvée ?
+   → OUI → skill mis à jour ? (sinon STOP)
+```
+
+**Critères de jugement pour les points 1-4 :**
+
+| La modif a de la valeur doc si... | Exemple |
+|----------------------------------|---------|
+| Un futur Claude passerait du temps à redécouvrir ça | Bug workspace suffix strip |
+| Un test qui semblait "semi-auto" est prouvé "autonome" | PR-AG-03 |
+| Un comportement inattendu de la plateforme est documenté | Plan BrowserView = CDP tab séparé |
+| Un pattern de fix qui s'applique à d'autres endroits | strip suffixe titre CDP |
+| Un status "en attente" est maintenant validé | E2E PASS avec commit et log |
+
+**Ce qui ne mérite PAS une entrée doc :**
+- Typo fixée
+- Refactor purement interne sans changement de comportement
+- Changement déjà documenté ailleurs (pas de doublon)
+
+**Conséquence du skip :** la prochaine session relit du code périmé, re-diagnostique ce qui est déjà résolu, perd 20-30 min. Ce n'est pas de l'efficacité, c'est de la dette invisible.
+
 ## The Bottom Line
 
-**No shortcuts for verification.**
+**No shortcuts for verification — code OR docs.**
 
-Run the command. Read the output. THEN claim the result.
+Run the command. Read the output. Check the docs. THEN claim done.
 
 This is non-negotiable.
 
