@@ -132,7 +132,12 @@ From 24 failure memories:
 
 ## Documentation Gate (SpeakApp / tout projet avec memory/)
 
-**Avant de déclarer une session terminée, poser ces 4 questions. Ce n'est pas optionnel.**
+**Déclenché automatiquement par hook après chaque `git push` (`.claude/settings.json`).**
+**Source unique — remplace le pipeline post-dev de CLAUDE.md §5.**
+
+**Clause skip** : si les 4 questions sont clairement NA (push docs-only, gate déjà passé dans cette session, commit trivial sans changement de comportement), dire en une phrase pourquoi et passer. Pas de cérémonie inutile sur un push qui ne touche rien.
+
+**Sinon, poser ces 4 questions. Ce n'est pas optionnel.**
 
 ```
 DOC GATE — à passer avant "c'est bon" / push final / fin de session :

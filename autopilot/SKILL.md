@@ -36,7 +36,9 @@ git branch --show-current
 - Si `main` ou `master` → avertir l'utilisateur : "Tu es sur la branche principale. Je recommande un worktree ou une branche dédiée."
 - Ne pas bloquer — continuer si l'utilisateur confirme
 
-### 2. Gérer state.md existant
+### 2. Gérer state.md existant + claim du handoff
+
+**Claim obligatoire** : si le projet a un `memory/session-handoff.md` ou `.autopilot/handoff.md` lie a l'objectif → poser un claim `🔒 IN_PROGRESS` en tete du fichier AVANT la 1ere action + commit immediat. Si un claim existant < 4h → STOP et demander a l'utilisateur. Ref : CLAUDE.md global section "Claim du handoff au pickup".
 
 **Si `.autopilot/state.md` n'existe pas** → créer `.autopilot/` et passer au step 3.
 
@@ -159,26 +161,53 @@ Lis `.autopilot/state.md`. Tu es un agent autonome — ton seul objectif est d'a
 
 **FORMAT RAPPORT FINAL (à produire quand Statut = DONE) :**
 
+**Principe** : le rapport est lu par Florent qui n'est pas développeur. Il doit comprendre **ce qui a changé**, **pourquoi j'ai fait les choix que j'ai faits**, et **ce qui arrive après** — sans jargon technique et sans relire le log.
+
+**Règles de forme (obligatoires)** :
+1. **Vraies phrases, pas de tableau de logs** en sortie principale
+2. **Langage simple** — remplacer le jargon par des équivalents lisibles (ex: "CronDelete" → "tâche programmée supprimée", "git diff --name-only" → "la liste des fichiers modifiés", "itération" → "cycle de travail")
+3. **Expliquer les choix** — chaque décision non-triviale = ce que j'ai choisi + **pourquoi** (ce que ça évite ou ce que ça gagne). Florent doit pouvoir dire "ok" ou "reviens en arrière".
+4. **Structure narrative** — intro (ce qu'on voulait faire) → développement (ce qui a été fait, item par item, avec les choix expliqués) → conclusion (ce qui reste)
+5. **Pas de plafond de longueur** — clair > compact. Un rapport clair de 500 mots > rapport obscur de 80 mots.
+6. **Pas de code, de hash, ni de chemin fichier** dans le corps. Si vraiment nécessaire, dans une annexe technique ignorable à la fin.
+
+**Structure recommandée** :
+
+```markdown
+# Ce qui s'est passé (en clair)
+
+**Tu m'avais demandé :** [reformuler l'objectif en langage humain]
+
+## Ce que j'ai fait concrètement
+
+### 1. [Titre humain du premier bloc de travail]
+[1-2 paragraphes qui expliquent ce qui a changé et pourquoi.]
+
+**Les choix que j'ai dû trancher seul :**
+- **[Question]** → J'ai choisi **[réponse]**. [Phrase qui explique la raison : ce que ça évite / ce que ça gagne.]
+
+### 2. [Titre humain du second bloc]
+...
+
+## Ce qui a été essayé sans succès
+[Si "Essayé — ne pas refaire" contient des entrées : les reformuler en phrases lisibles. Sinon : "rien".]
+
+## Ce qu'il reste à faire
+- [action suivante en 1 phrase simple]
+- [...]
+
+---
+**Annexe technique** (si utile) : liste des fichiers modifiés, durée totale, nombre de cycles. Ignorable.
 ```
-# Rapport Autopilot
 
-**Objectif atteint :** [OBJECTIF]
+**Anti-patterns interdits** :
+- Liste à puces sèche "Fait: X, Y, Z" sans contexte ni raison
+- Plus de jargon que de mots courants
+- Décisions listées sans expliquer pourquoi
+- Plafond artificiel de longueur qui force la compression illisible
 
-## Ce qui a été fait
-[liste des étapes [x] du plan]
-
-## Durée
-[N itérations × intervalle]
-
-## Fichiers modifiés
-[résultat de : git diff --name-only]
-
-## Essayé sans succès
-[contenu de "Essayé — ne pas refaire", ou "rien"]
-
-## Suggestions suivantes
-[ce qui reste hors scope, ou "rien"]
-```
+**Test de relecture** (Claude fait ce check avant d'envoyer) :
+> "Si Florent relit ce rapport dans 2 semaines sans contexte, comprend-il (a) ce qui a changé, (b) pourquoi j'ai choisi X plutôt que Y, (c) ce qu'il doit faire ensuite ?" Si non → réécrire.
 
 **FIN DU PROMPT DE DÉCISION**
 

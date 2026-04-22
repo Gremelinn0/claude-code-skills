@@ -54,6 +54,11 @@ Every code change MUST be reflected in the project's reference documents. Docume
 | New file created | Feature doc (section "Architecture — fichiers cles") |
 | Roadmap task done | `v1-roadmap.html` (skill update-roadmap) |
 | Architecture change | Feature doc + CLAUDE.md si transversal |
+| Nouvelle validation N4 identifiee (action physique/micro/subjective, Florent requis) | `memory/validation-pending-n4.md` — ajouter ligne dans tableau Suivi + section detaillee |
+| Validation N4 completee par Florent | `memory/validation-pending-n4.md` — cocher dans tableau Suivi (date + "Par: Florent") + feature doc critere correspondant |
+| Mecanisme d'interaction change (UIA/CDP/DevTools/Win32/OCR/WS Bridge/hooks) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** MAJ atomique : matrice §2bis (Axe B feature×plateforme) + `memory/platforms/<p>.md` (Axe A selecteurs) + journal §9 (≤60 mots). Matrice gagne sur tout autre doc en cas de conflit. |
+| Reader / methode lecture chat change (statut, limitation, nouveau reader, plateforme) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** Meme procedure (reader-solutions fusionne dans la matrice unique depuis 2026-04-15). MAJ §2bis feature "Lecture chat" ou "Artifact/Doc attache" + journal §9. |
+| Nouveau selecteur / widget / etat decouvert (scan DOM, snapshot, debug) | **Axe A** : `memory/platforms/<plateforme>.md` (catalogue selecteurs). **Axe B** : matrice §2bis si ca change le statut d'une feature. Skill `/update-interaction-matrix` pour la procedure. |
 
 ## Qualite du contenu — regles anti-accumulation
 
@@ -87,6 +92,30 @@ Changer uniquement ce qui est necessaire. Preserver la structure existante.
 - Constantes dans le doc = valeurs dans le code (fichier:ligne)
 - Commandes vocales dans le doc = commandes dans `voice-commands.md` + code
 - Si divergence hub <-> doc → corriger le doc, JAMAIS le hub
+
+### Step 4: Capture des enseignements transversaux (nouveau 2026-04-14)
+
+**Apres chaque session de debug/fix, se poser 3 questions avant de conclure :**
+
+1. **Pattern reutilisable decouvert ?** (ex: "UIA Invoke flaky sur Electron", "toujours set cooldown apres succes fast-path")
+   → Ancrer dans le skill transversal concerne (`working-on-claude-desktop`, `cd-auto-permissions`, etc.)
+   → Section "Pieges" ou "Patterns" du skill, PAS dans la feature doc du jour
+
+2. **Insight sur un outil/API externe ?** (ex: "CDP ne marche pas sur CD MSIX", "InvokePattern != clic reel")
+   → Memory `feedback_*.md` si valable cross-projet
+   → Skill `working-on-X` si specifique a une plateforme
+
+3. **Regle ou convention emergente ?** (ex: "toute boucle DOIT avoir backoff", "après succes → cooldown obligatoire")
+   → Proposition de regle dans CLAUDE.md (attendre validation utilisateur)
+   → OU feedback memory si locale a un pattern
+
+**Trigger manuel** : si l'utilisateur dit "je sens qu'on a fait quelque chose d'important" / "garde cet insight" / "enregistre ca quelque part" → activer ce Step 4 en priorite, meme sans code change.
+
+**Difference cle avec les feature docs (Step 1-3) :**
+- Step 1-3 = changement de code → doc feature/hub/skill-test-X
+- Step 4 = changement d'**understanding** (pattern, piege, insight) → skill transversal / memory / regle
+
+**Regle anti-roman** : 1 ligne dans la bonne section. Cause racine + fix + date. Pas de recit de session.
 
 ## Anti-Patterns
 
