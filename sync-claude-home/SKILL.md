@@ -7,6 +7,25 @@ scope: global
 
 # sync-claude-home — Sync du dossier `~/.claude/` entre PC
 
+## Comportement par défaut quand Florent invoque `/sync-claude-home`
+
+Sauf si un sous-argument est donné (`pull`, `status`, `setup`), le skill exécute un **push complet "fin de session"** dans cet ordre :
+
+1. **Wrap-up projet courant** si on est dans un projet qui a le skill `wrapup` → invoquer `wrapup` pour clôturer proprement (handoff, MAJ docs, commit projet, push projet). Sinon sauter.
+2. **Commit + push `~/.claude`** (repo claude-home) :
+   - `cd "C:/Users/Administrateur/.claude"`
+   - `git status --short` → montrer à Florent ce qui va partir
+   - Si non vide → `git add -A && git commit -m "sync: <desc auto basée sur fichiers modifiés>" && git push origin main`
+3. **Commit + push `~/.claude/skills`** (repo claude-code-skills) :
+   - `cd "C:/Users/Administrateur/.claude/skills"`
+   - Idem : status → diff → add → commit → push si modifs.
+4. **Résumé final** : 1 ligne par repo (X fichiers commit, hash, pushé ou rien à faire).
+
+Arguments alternatifs :
+- `/sync-claude-home pull` → `git pull origin main` dans les 2 repos (à l'arrivée sur un PC).
+- `/sync-claude-home status` → `git status --short` dans les 2 repos (juste regarder, pas d'action).
+- `/sync-claude-home setup` → rappeler le prompt de setup nouveau PC (voir section plus bas).
+
 ## But
 
 **DEUX repos git privés** qui, ensemble, reconstituent `~/.claude/` sur un nouveau PC :
