@@ -95,6 +95,38 @@ Si le nouveau PC a un username Windows différent (ex: `Florent` au lieu de `Adm
 - **PC portable** = usage ponctuel. `git pull` en arrivant, `git push` en partant.
 - **Pas besoin de sync quotidien.** Uniquement quand on a modifié quelque chose qui mérite de voyager (nouveau skill, nouvelle routine, changement de settings).
 
+## Gérer les routines locales entre 2 PC (éviter les doublons)
+
+Les fichiers des routines (`scheduled-tasks/<id>/SKILL.md`) voyagent via git, MAIS l'exécution se fait sur **chaque PC où Claude Code est ouvert** en parallèle. Si les 2 PCs ont Claude Code ouvert avec le même `scheduled-tasks/` → la routine tourne **2 fois** (double email, double scan, double tout).
+
+**Règle simple :**
+1. Choisir UN seul PC "maison des routines" (typiquement le principal, celui qui tourne en permanence).
+2. Sur l'AUTRE PC, après le premier pull, désactiver les routines qu'on ne veut pas voir tourner là-bas :
+   - Option A (propre) : `mcp__scheduled-tasks__list_scheduled_tasks` → identifier les IDs → supprimer via l'interface Claude Code (sidebar "Scheduled" → delete).
+   - Option B (brut) : supprimer le dossier `~/.claude/scheduled-tasks/<id>/` sur ce PC uniquement. Attention : **ne pas commiter cette suppression**, sinon au prochain push le PC principal va les perdre aussi. Faire un `git update-index --assume-unchanged` sur les dossiers concernés, ou juste ne jamais pusher depuis ce PC.
+
+**Règle d'or :** un `scheduled-tasks/<id>/` présent sur 2 PCs actifs = 2 exécutions parallèles. Aucun mécanisme ne dédupliqué entre PCs — le `.lock` local protège juste contre un double-lancement sur le même PC.
+
+## Exception Computer Use — la routine suit l'écran cible
+
+Les routines qui font du **Computer Use** (screenshot, clic, pilotage d'une app native) doivent tourner sur le PC qui a physiquement accès à l'écran à piloter. Pas le choix.
+
+Exemple : une routine qui check SpeakApp via Computer Use → doit tourner sur le PC où SpeakApp est lancée, même si ce n'est pas le PC "principal". Dans ce cas :
+- On garde la routine active sur ce PC (on ne la désactive pas même si c'est le "secondaire")
+- On la désactive sur tous les autres PCs (qui verraient un écran vide ou l'écran du mauvais poste)
+
+Pareil pour toute routine Chrome MCP sur une app locale : suit la machine qui héberge Chrome avec l'extension connectée.
+
+## Routines cloud (Remote Triggers Anthropic) — migration manuelle
+
+Les routines cloud (créées via `/schedule`, visibles sur https://claude.ai/code/scheduled) sont liées à **UN compte Claude**, pas à un PC. Elles ne font pas partie du repo `claude-home` — elles vivent côté Anthropic.
+
+Pour consolider sur un seul compte quand on en a 2 :
+1. Lister les routines cloud du compte à abandonner (https://claude.ai/code/scheduled)
+2. Recréer celles à garder sur le compte principal via le skill `/schedule`
+3. Supprimer les anciennes sur le compte abandonné
+4. Rien à sync côté git, elles vivent dans le cloud Anthropic
+
 ## Quand ce skill n'est PAS adapté
 
 - Tu veux juste migrer un projet précis → ce skill est pour le dossier `~/.claude/` user-level, pas pour un repo projet (les repos projet voyagent déjà via leur propre git).
