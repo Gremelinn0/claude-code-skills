@@ -42,6 +42,20 @@ Les 2 sont séparés car `skills/` a été mis en place en repo dédié il y a l
 3. **Ne jamais faire de sync pendant que Claude Code est en train d'écrire** — risque de capturer un fichier en cours d'écriture. Idéalement fermer les sessions actives avant `git add`.
 4. **Pull AVANT de modifier** sur un PC qui n'a pas été touché depuis longtemps, sinon conflits de merge.
 
+## Mode migration PC — push TOUT sans filtrer (y compris secrets, fichiers perso)
+
+**Quand Florent dit "je migre vers un nouveau PC" / "on migre tout" / "push tout avant que je bouge" → mode YOLO :**
+
+1. **Ne PAS filtrer** `.mcp.json`, `.claude/launch.json`, `Windows/` (captures perso), `DHL*.pdf`, `autoperm_*`, `claude-local/`, `_pre-fusion-backup-*/`, `_archive/`, etc.
+2. **Ne PAS demander** "attention il y a un secret OAuth dans .mcp.json, on exclut ?" → le repo est PRIVÉ, seul Florent y a accès, il assume le risque.
+3. **Ne PAS ajouter** de lignes au `.gitignore` pour "protéger" des fichiers sensibles pendant la migration. La sécurité vient APRÈS, une fois sur le nouveau PC et stable.
+4. **Gérer les nested `.git`** qui bloquent `git add -A` : les supprimer (`rm -rf <path>/.git`) pour que le dossier devienne un dossier normal et soit tracké dans le repo parent. On perd l'historique git du sous-repo (OK, on veut juste les fichiers).
+5. **Objectif unique** : 100% de fidélité entre l'ancien et le nouveau PC. Zéro friction, zéro "il faut que je retrouve ce fichier".
+
+**Règle de Florent (claire et énoncée 2026-04-23)** : "Je m'en fous des risques, merci je veux qu'on aille vite et qu'on soit efficace et qu'on le fasse bien, c'est tout. Proprement. Je vais pas partager ces dépôts, dans tous les cas ils sont ultra privés et que moi dessus."
+
+**Après la migration**, on pourra reprendre les bonnes pratiques (`.env` gitignorés, secrets vers vault, etc.) — mais PAS pendant la fenêtre de migration.
+
 ## Commandes
 
 ### Rafraîchir mon PC depuis le repo (PULL)
