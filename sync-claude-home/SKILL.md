@@ -88,6 +88,19 @@ cd "$HOME/.claude" && git status --short
 
 ## Setup sur un nouveau PC — procédure complète
 
+### TL;DR — Les 4 clones d'un coup (CAS A uniquement, `.claude/` absent)
+
+Copy-paste direct si `.claude/` n'existe pas encore sur la machine (Claude Code jamais lancé). Si `.claude/` existe déjà, sauter ce bloc et passer à la procédure détaillée (CAS B, rebranchement) plus bas.
+
+```bash
+git clone https://github.com/Gremelinn0/claude-home.git                       "$HOME/.claude"
+git clone https://github.com/Gremelinn0/claude-code-skills.git                "$HOME/.claude/skills"
+git clone https://github.com/Gremelinn0/blueprint-hub.git                     "$HOME/PROJECTS/0- Marketplace"
+git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "$HOME/PROJECTS/Vente et Marketing - ALL Compagnies"
+```
+
+Après ce bloc, continuer à partir de l'**Étape 3** (détection username + réécriture paths).
+
 ### Prompt à donner à Claude Code sur le nouveau PC
 
 > Salut Claude. Je viens de migrer depuis un ancien PC. Invoque `/sync-claude-home setup` et suis la procédure **step-by-step** ci-dessous dans l'ordre. Points de vigilance :
