@@ -90,18 +90,32 @@ cd "C:/Users/Administrateur/.claude" && git status --short
 
 ### Prompt à donner à Claude Code sur le nouveau PC
 
-> Salut Claude. Je veux setup mon environnement Claude Code sur ce nouveau PC à partir de mon repo `claude-home`. Fais tout ce qui suit :
+> Salut Claude. Je viens de migrer depuis mon ancien PC. Fais-moi le setup complet.
 >
-> 1. Vérifie que Git et GitHub CLI sont installés (`git --version` et `gh --version`). Si non, guide-moi pour les installer.
-> 2. Authentifie-moi sur GitHub si ce n'est pas fait : `gh auth status`. Sinon `gh auth login`.
-> 3. Clone les DEUX repos dans le bon emplacement :
+> 1. Vérifie que git et GitHub CLI sont installés (`git --version`, `gh --version`). S'ils manquent, guide-moi pour les installer.
+> 2. Authentifie-moi sur GitHub : `gh auth status`. Si pas loggé → `gh auth login` (choisir "Login with a web browser").
+> 3. Clone mes 2 repos de config Claude (la sync `~/.claude` est déjà en place sur ce compte GitHub, on récupère tout tel quel) :
 >    ```
->    git clone https://github.com/Gremelinn0/claude-home.git "$HOME/.claude"
->    git clone https://github.com/Gremelinn0/claude-code-skills.git "$HOME/.claude/skills"
+>    git clone https://github.com/Gremelinn0/claude-home.git          "$HOME/.claude"
+>    git clone https://github.com/Gremelinn0/claude-code-skills.git   "$HOME/.claude/skills"
 >    ```
->    (sur Windows, remplacer `$HOME` par `C:\Users\<mon-user>`)
-> 4. Vérifie que les dossiers clés sont là : `skills/` (contenu du 2e repo), `commands/`, `agents/`, `scheduled-tasks/`, `settings.json`.
-> 5. Redémarre Claude Code pour qu'il picke les skills, settings et scheduled-tasks.
+> 4. Crée le dossier PROJECTS et clone les 2 projets actifs dedans :
+>    ```
+>    mkdir -p "$HOME/PROJECTS"
+>    cd       "$HOME/PROJECTS"
+>    git clone https://github.com/Gremelinn0/blueprint-hub.git                     "0- Marketplace"
+>    git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "Vente et Marketing - ALL Compagnies"
+>    ```
+> 5. Dans chaque projet qui a un `package.json` à la racine (Marketplace, LinkedIn Content Agent, etc.) : `npm install`.
+> 6. Préviens-moi de ce qui demande une action manuelle de ma part :
+>    - MCP connectors (Notion, Supabase, Vercel, Google Workspace, Gmail) : re-auth OAuth depuis le panneau Settings de Claude Code
+>    - Vercel CLI : `vercel login` dans un terminal
+>    - Chrome extension "Claude in Chrome" : réinstaller
+>    - Username Windows : si ce n'est PAS `Administrateur`, signaler que les chemins absolus `C:\Users\Administrateur\...` dans les SKILL.md et settings risquent de casser → proposer un find/replace
+> 7. Redémarre Claude Code une fois tout cloné pour qu'il picke les skills, settings et scheduled-tasks.
+> 8. Fais-moi un résumé final : ce qui tourne, ce qui reste à re-auth manuellement.
+>
+> Les 2 repos Claude et les 2 projets contiennent TOUT (secrets, configs locales, archives, backups) — c'est voulu, les repos sont privés et je voulais 100% de fidélité avec l'ancien PC.
 > 6. Préviens-moi de ce qu'il faut reconfigurer manuellement :
 >    - MCP connectors (Notion, Supabase, Vercel, Google Workspace, etc.) — certains demandent une re-auth OAuth
 >    - Vercel CLI : `vercel login`
