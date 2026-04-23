@@ -428,6 +428,153 @@ Pour briefer un client ou pitcher la méthode :
 
 ---
 
+## Patterns d'usage avancés (Nate Herk — vidéo Aw3BkmhYu4I, 2026-04-22)
+
+*(Extrait + synthèse de la nouvelle vidéo "Claude + HyperFrames Just Solved Video Editing" — transcript complet dans `data/nateherk/Aw3BkmhYu4I_*`)*
+
+**Delta clé vs la vidéo précédente (ZNbgOhxhzXg) :** avant, Nate faisait le trim + edit MANUELLEMENT avant de passer Hyperframes. Maintenant, un nouvel outil **`video-use`** automatise le trim/filler/retakes. Le pipeline devient **end-to-end sans intervention humaine sur le trim** :
+
+```
+raw .mp4 -> video-use (trim mistakes + filler + retakes + transcription)
+         -> handoff
+         -> Hyperframes (motion graphics HTML)
+         -> ffmpeg (render MP4)
+```
+
+### Pattern 8 — `video-use` comme trim automatique
+
+Nouvel outil dans l'écosystème vidéo Claude Code. Scope : trim + filler removal + retakes detection + transcription word-level. Avant lui, Claude ne faisait que les motion graphics, le trim restait manuel dans Descript.
+
+**Prompt type à copier :**
+
+> "Hey Claude Code, I would like you to use the video-use tool just to edit this video. I want you to analyze it. I want you to remove any filler words or silences or retakes. Then we're going to use hyperframes to actually add the motion graphics to it. Your first task is just to edit out the mistakes and the filler words."
+
+Le skill dédié dans video-use s'appelle **"edit only for hyperframes handoff"** — il sort le JSON transcript + l'edited MP4 sans faire les motion graphics. C'est Hyperframes qui prend la suite avec ces 2 fichiers.
+
+### Pattern 9 — Architecture dossier `video projects/<name>/`
+
+Claude crée automatiquement cette structure sur nouvelle demande de montage :
+
+```
+video projects/
+  <nom-projet>/
+    assets/
+      clips/              # raw files + edited après video-use
+      transcripts/        # JSON word-by-word (ElevenLabs/Whisper)
+    compositions/         # beats HTML (1 par scène)
+    components/           # reusables (lower-third, caption style, logo)
+    final-renders/
+    verification-screenshots/
+```
+
+Chaque changement dans le timeline editor Hyperframes se reflète dans les HTML compositions et vice-versa.
+
+### Pattern 10 — Plan mode avant motion graphics render
+
+**AVANT** de générer les HTML motion graphics, switcher Claude en **plan mode**. Il lit le transcript timestamped, reçoit la demande en langage naturel, et retourne un plan détaillé (beats, timings, colors, anchors). Sans cramer de tokens en code HTML.
+
+**Bénéfice concret :** économie substantielle de tokens. On approuve ou itère sur le plan, PUIS on exécute le code HTML. Évite le cycle "il a codé 2000 lignes de HTML mais le concept est pas bon".
+
+**Raccourci Claude Code :** Shift+Tab → bascule en Plan Mode.
+
+### Pattern 11 — Training data par type de vidéo
+
+Créer des sous-dossiers par format récurrent :
+
+```
+video projects/
+  lessons/           # 1 dossier par leçon créée
+  intros/            # openers réutilisables
+  shorts/            # format 9:16
+```
+
+Chaque projet réussi devient référence. Après 3-5 vidéos du même type, Claude peut automatiser l'essentiel via un fichier `<type>-design-philosophy.md` à la racine du dossier type. Citation Nate : "All of these videos are training data. So, let's say I make five different lessons. Now, I can basically say, okay, cool, build a lesson design markdown philosophy file, which means every time I build a lesson, just use that."
+
+### Pattern 12 — Screenshots verification par Claude
+
+Instruire Claude explicitement dans le prompt initial :
+
+> "Take screenshots of what's going on in each scene to make sure that it looks good."
+
+Claude rend une frame PNG, la lit comme image, vérifie visuellement (alignement, crop, texte hors cadre, couleur illisible) avant de valider la scène. Évite les rendus "ça a l'air OK dans le code mais c'est nul visuellement".
+
+Les screenshots vont dans `verification-screenshots/` dans l'architecture Pattern 9.
+
+### Pattern 13 — Timeline editor bidirectionnel
+
+L'UI Hyperframes Studio permet de shorten / delete / move / réordonner les beats directement à la souris. Le changement est **écrit dans le HTML sous-jacent**. À la prochaine itération, Claude voit le changement et le respecte.
+
+**Workflow gagnant :**
+1. Claude génère la V1 motion graphics
+2. Florent ouvre `npx hyperframes preview` et ajuste les timings à la souris (drag des beats)
+3. Florent repasse dans Claude Code avec du texte : "now add a subtitle at beat 3"
+4. Claude lit le HTML modifié et applique par-dessus les modifs manuelles de Florent
+
+Raccourci massif pour les ajustements de timing. La UI remplace "à 5.2s le texte part trop vite" par un drag.
+
+### Pattern 14 — Voice-to-text pour prompts longs
+
+Pour donner les specs de motion graphics (scene par scène, 4-10 beats, style, couleurs, sync avec phrases), Nate utilise son outil voice-to-text. Parler est plus naturel que taper pour décrire 20+ specs visuelles séquentielles.
+
+**Avantages concrets :** plus d'infos dans le prompt, phrasé plus naturel qui donne un meilleur parsing Claude, moins de fatigue clavier sur des prompts de 300+ mots.
+
+### Pattern 15 — ElevenLabs API > Whisper pour les cuts
+
+Par défaut Hyperframes utilise **OpenAI Whisper** pour la transcription. Nate a comparé et passe maintenant sur **ElevenLabs API** :
+
+> "Hyperframes likes to default to OpenAI whisper. For this video I am using 11 Labs API because I think that it's actually better at finding the right moments to cut."
+
+**Options disponibles :**
+
+| Transcripteur | Coût | Qualité cuts | Note |
+|---|---|---|---|
+| OpenAI Whisper API | ~$0.006/min | Bonne | Défaut Hyperframes |
+| ElevenLabs API | ~$0.01/min | **Meilleure pour cuts** selon Nate | Choix actuel Nate |
+| Whisper local | Gratuit | Bonne | Consomme RAM pendant le process |
+
+Clé à ajouter dans `.env` : `ELEVENLABS_API_KEY=xxx`
+
+### Pattern 16 — Handoff explicite video-use → Hyperframes
+
+Quand on veut que video-use fasse UNIQUEMENT la partie trim/transcription et laisse Hyperframes gérer les motion graphics, demander explicitement :
+
+> "Use the video-use skill 'edit only for hyperframes handoff' on this raw file."
+
+Ce skill dédié sort :
+- `edited.mp4` — le MP4 trimmed
+- `transcript.json` — le word-level timestamps prêt pour Hyperframes
+
+Puis enchaîner : "Now use Hyperframes to add motion graphics based on `transcript.json`."
+
+Évite que video-use essaie de faire les animations (pas son rôle) ou que Hyperframes refasse le trim (déjà fait).
+
+### Pattern 17 — `.env` obligatoire pour les API keys
+
+**Règle de sécurité rappelée par Nate :**
+
+> "I typically try to avoid just pasting it [API key] straight into the actual chat. The reason for that is just because that would stay in the conversation history and just best practice to not do that."
+
+**À faire :**
+- Via VS Code : ouvrir `.env` à la racine du projet, paste la clé
+- Via Claude Code Desktop : "Claude Code, create me the .env file and drop my 11Labs API key inside it" puis paste dans l'éditeur de fichier qu'il ouvre
+
+**À éviter :** coller la clé dans le chat Claude, même temporairement. Elle reste dans l'historique de session et peut leak si la session est partagée ou si quelqu'un lit le transcript.
+
+**Règle :** `.env` au `.gitignore`, `.env.example` commité avec les noms de clés sans les valeurs.
+
+### Signal coût actualisé (Aw3BkmhYu4I)
+
+| Métrique | Valeur |
+|---|---|
+| Vidéo précédente (ZNbgOhxhzXg) | ~260K tokens |
+| Nouvelle vidéo (Aw3BkmhYu4I) avec video-use + Hyperframes | **238K tokens** |
+| Plafond 5h session $200 Max | ~10-12% par vidéo de 30 min |
+| Durée session humain | ~25-30 min de dialogue + itérations |
+
+Conclusion Nate : "This took us about 238,000 tokens. So, not too bad, but not great either because this will eat some tokens. And that's why the more specific you can be with your planning and with your iterating, the better." → **Plan mode (Pattern 10) est ce qui fait la différence.**
+
+---
+
 ## CAS 3 — Audio pro avec Auphonic
 
 *(Ajouté 2026-04-21 sur recommandation Jack Roberts — vidéo "Claude just changed Content Creation Forever")*
@@ -504,6 +651,7 @@ Docs complètes : https://auphonic.com/help/api/
 |---|---|---|---|
 | Brendan Jowett | How I Fully Automated My Video Editing (Claude Code) | 47k | https://youtube.com/watch?v=G0EH0xdy2-E |
 | Nate Herk | Claude Just Destroyed Every Video Editing Tool | 152k | https://youtube.com/watch?v=ZNbgOhxhzXg |
+| **Nate Herk** | **Claude + HyperFrames Just Solved Video Editing** (video-use end-to-end) | **7.5k** | **https://youtube.com/watch?v=Aw3BkmhYu4I** |
 | Ben AI | Claude Code Changed Content Creation Forever | 21k | https://youtube.com/watch?v=BJuevX91ExM |
 | Brendan Jowett | How To Edit Videos With Claude Code | 20k | https://youtube.com/watch?v=3hzXfTjqiKg |
 | **Jack Roberts** | **Claude just changed Content Creation Forever** (Hyperframes walkthrough + Auphonic) | **7k** | **https://youtube.com/watch?v=34VoezbEvLw** |
