@@ -13,11 +13,11 @@ Sauf si un sous-argument est donné (`pull`, `status`, `setup`), le skill exécu
 
 1. **Wrap-up projet courant** si on est dans un projet qui a le skill `wrapup` → invoquer `wrapup` pour clôturer proprement (handoff, MAJ docs, commit projet, push projet). Sinon sauter.
 2. **Commit + push `~/.claude`** (repo claude-home) :
-   - `cd "C:/Users/Administrateur/.claude"`
+   - `cd "$HOME/.claude"`
    - `git status --short` → montrer à Florent ce qui va partir
    - Si non vide → `git add -A && git commit -m "sync: <desc auto basée sur fichiers modifiés>" && git push origin main`
 3. **Commit + push `~/.claude/skills`** (repo claude-code-skills) :
-   - `cd "C:/Users/Administrateur/.claude/skills"`
+   - `cd "$HOME/.claude/skills"`
    - Idem : status → diff → add → commit → push si modifs.
 4. **Résumé final** : 1 ligne par repo (X fichiers commit, hash, pushé ou rien à faire).
 
@@ -61,7 +61,7 @@ Les 2 sont séparés car `skills/` a été mis en place en repo dédié il y a l
 ### Rafraîchir mon PC depuis le repo (PULL)
 
 ```bash
-cd "C:/Users/Administrateur/.claude" && git pull origin main
+cd "$HOME/.claude" && git pull origin main
 ```
 
 À lancer quand :
@@ -71,61 +71,176 @@ cd "C:/Users/Administrateur/.claude" && git pull origin main
 ### Pousser mes changements (PUSH)
 
 ```bash
-cd "C:/Users/Administrateur/.claude" && git add -A && git status
+cd "$HOME/.claude" && git add -A && git status
 ```
 
 Vérifier ce qui va partir (regarder que le `.gitignore` fait bien son boulot — pas de `projects/`, pas de `cache/`).
 
 ```bash
-cd "C:/Users/Administrateur/.claude" && git commit -m "sync: <description courte>" && git push origin main
+cd "$HOME/.claude" && git commit -m "sync: <description courte>" && git push origin main
 ```
 
 ### Status rapide
 
 ```bash
-cd "C:/Users/Administrateur/.claude" && git status --short
+cd "$HOME/.claude" && git status --short
 ```
 
 ## Setup sur un nouveau PC — procédure complète
 
 ### Prompt à donner à Claude Code sur le nouveau PC
 
-> Salut Claude. Je viens de migrer depuis mon ancien PC. Fais-moi le setup complet.
->
-> 1. Vérifie que git et GitHub CLI sont installés (`git --version`, `gh --version`). S'ils manquent, guide-moi pour les installer.
-> 2. Authentifie-moi sur GitHub : `gh auth status`. Si pas loggé → `gh auth login` (choisir "Login with a web browser").
-> 3. Clone mes 2 repos de config Claude (la sync `~/.claude` est déjà en place sur ce compte GitHub, on récupère tout tel quel) :
->    ```
->    git clone https://github.com/Gremelinn0/claude-home.git          "$HOME/.claude"
->    git clone https://github.com/Gremelinn0/claude-code-skills.git   "$HOME/.claude/skills"
->    ```
-> 4. Crée le dossier PROJECTS et clone les 2 projets actifs dedans :
->    ```
->    mkdir -p "$HOME/PROJECTS"
->    cd       "$HOME/PROJECTS"
->    git clone https://github.com/Gremelinn0/blueprint-hub.git                     "0- Marketplace"
->    git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "Vente et Marketing - ALL Compagnies"
->    ```
-> 5. Dans chaque projet qui a un `package.json` à la racine (Marketplace, LinkedIn Content Agent, etc.) : `npm install`.
-> 6. Préviens-moi de ce qui demande une action manuelle de ma part :
->    - MCP connectors (Notion, Supabase, Vercel, Google Workspace, Gmail) : re-auth OAuth depuis le panneau Settings de Claude Code
->    - Vercel CLI : `vercel login` dans un terminal
->    - Chrome extension "Claude in Chrome" : réinstaller
->    - Username Windows : si ce n'est PAS `Administrateur`, signaler que les chemins absolus `C:\Users\Administrateur\...` dans les SKILL.md et settings risquent de casser → proposer un find/replace
-> 7. Redémarre Claude Code une fois tout cloné pour qu'il picke les skills, settings et scheduled-tasks.
-> 8. Fais-moi un résumé final : ce qui tourne, ce qui reste à re-auth manuellement.
->
-> Les 2 repos Claude et les 2 projets contiennent TOUT (secrets, configs locales, archives, backups) — c'est voulu, les repos sont privés et je voulais 100% de fidélité avec l'ancien PC.
-> 6. Préviens-moi de ce qu'il faut reconfigurer manuellement :
->    - MCP connectors (Notion, Supabase, Vercel, Google Workspace, etc.) — certains demandent une re-auth OAuth
->    - Vercel CLI : `vercel login`
->    - Chrome extension (Claude in Chrome) — à réinstaller
->    - Toute app native référencée par un skill (OBS, Krea, etc.)
-> 7. Résume-moi en fin de setup : ce qui tourne, ce qui demande encore une action manuelle.
+> Salut Claude. Je viens de migrer depuis un ancien PC. Invoque `/sync-claude-home setup` et suis la procédure **step-by-step** ci-dessous dans l'ordre. Points de vigilance :
+> - `.claude/` existe déjà si Claude Code a tourné ici → **pas** de `git clone`, passe en CAS B (rebranchement).
+> - Mon username Windows peut être différent de l'ancien PC → détecte-le et propose le find-replace AVANT qu'un skill ne se plante sur un path périmé.
+> - Les repos sont privés, contiennent secrets + configs → 100% de fidélité attendue avec l'ancien PC.
 
-### Attention — chemin identique ou pas
+### Étape 1 — Prérequis
 
-Si le nouveau PC a un username Windows différent (ex: `Florent` au lieu de `Administrateur`), les chemins absolus `C:\Users\Administrateur\...` dans les SKILL.md de `scheduled-tasks/` et dans certains settings peuvent casser. Solution rapide : chercher-remplacer après le clone.
+```powershell
+git --version    # Git for Windows doit être installé (embarque Git Credential Manager)
+```
+
+Si git manque → installer [Git for Windows](https://git-scm.com/download/win). Pas besoin de `gh` CLI : le Git Credential Manager gère l'auth GitHub au 1er `git clone` (popup navigateur).
+
+### Étape 2 — Récupérer les 2 repos `~/.claude` et `~/.claude/skills`
+
+**Vérifier d'abord si `~/.claude/` existe déjà** (c'est le cas si Claude Code a déjà été lancé une fois sur la machine — il crée `projects/`, `shell-snapshots/`, `plugins/`, `todos/`, `ide/`, `statsig/`, etc.) :
+
+```powershell
+Test-Path "$HOME\.claude"
+Get-ChildItem "$HOME\.claude" -Force -ErrorAction SilentlyContinue | Select-Object Name
+```
+
+#### CAS A — `.claude/` absent ou vide
+
+`git clone` direct :
+
+```bash
+git clone https://github.com/Gremelinn0/claude-home.git        "$HOME/.claude"
+git clone https://github.com/Gremelinn0/claude-code-skills.git "$HOME/.claude/skills"
+```
+
+#### CAS B — `.claude/` existe déjà avec des runtime dirs
+
+**`git clone` échouera** avec `destination path already exists and is not an empty directory`. **Ne pas supprimer le dossier** (on perdrait `projects/` et les transcripts locaux). Faire un **rebranchement** à la place :
+
+```powershell
+cd "$HOME\.claude"
+git init
+git remote add origin https://github.com/Gremelinn0/claude-home.git
+git fetch origin
+git reset --hard origin/main
+git branch --set-upstream-to=origin/main main
+
+# Puis pareil pour le repo skills (lui aussi est un sous-repo dédié)
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+cd "$HOME\.claude\skills"
+git init
+git remote add origin https://github.com/Gremelinn0/claude-code-skills.git
+git fetch origin
+git reset --hard origin/main
+git branch --set-upstream-to=origin/main main
+```
+
+`git reset --hard origin/main` écrase tous les fichiers **trackés** par le contenu distant, mais laisse intactes les runtime dirs non trackées (`projects/`, `shell-snapshots/`, `todos/`, `sessions/`, `plans/`, `ide/`, `backups/`…) grâce au `.gitignore` du repo.
+
+### Étape 3 — Détection username + réécriture des paths hardcodés
+
+Les SKILL.md de `scheduled-tasks/`, certains hooks et parfois `settings.json` contiennent des paths absolus `C:\Users\<ancien_user>\...`. Si l'username Windows a changé, il faut les réécrire.
+
+**Script PowerShell** (à privilégier — sed sur Git Bash Windows gère mal les backslashes, il faut double-échapper et la substitution devient illisible) :
+
+```powershell
+# 3a. Diagnostic — quels usernames sont référencés dans les fichiers du repo ?
+$NewUser = $env:USERNAME
+$Paths = @(
+  "$HOME\.claude\scheduled-tasks",
+  "$HOME\.claude\hooks",
+  "$HOME\.claude\skills",
+  "$HOME\.claude\settings.json",
+  "$HOME\.claude\settings.local.json"
+) | Where-Object { Test-Path $_ }
+
+$Files = Get-ChildItem -Path $Paths -Recurse -File -Include *.md,*.sh,*.json,*.ps1,*.bat `
+         -ErrorAction SilentlyContinue
+$OldUsers = $Files |
+  Select-String -Pattern 'C:[\\/]Users[\\/]([A-Za-z0-9._-]+)[\\/]' -AllMatches |
+  ForEach-Object { $_.Matches } |
+  ForEach-Object { $_.Groups[1].Value } |
+  Sort-Object -Unique |
+  Where-Object { $_ -ne $NewUser -and $_ -notin @('Public','Default','All Users','Default User') }
+
+Write-Host "Username courant : $NewUser"
+Write-Host "Anciens usernames trouvés :"; $OldUsers
+
+# 3b. Application — pour chaque ancien user, remplacer les deux variantes (\ et /)
+foreach ($OldUser in $OldUsers) {
+  $toFix = $Files | Where-Object {
+    $c = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
+    $c -and ($c.Contains("C:\Users\$OldUser\") -or $c.Contains("C:/Users/$OldUser/"))
+  }
+  Write-Host "→ $($toFix.Count) fichier(s) à réécrire pour $OldUser"
+  $toFix | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    $content = $content.Replace("C:\Users\$OldUser\","C:\Users\$NewUser\")
+    $content = $content.Replace("C:/Users/$OldUser/","C:/Users/$NewUser/")
+    # UTF-8 sans BOM — compatible avec les .sh qui ont un shebang
+    [System.IO.File]::WriteAllText($_.FullName, $content, (New-Object System.Text.UTF8Encoding $false))
+  }
+}
+```
+
+Après exécution, `git status` dans `~/.claude` et `~/.claude/skills` montrera les fichiers modifiés — **ne pas** les commiter tout de suite, laisser Florent les relire d'abord et valider avant de push.
+
+### Étape 4 — Cloner les projets actifs dans `~/PROJECTS`
+
+Voir section **Structure projets recommandée** ci-dessous pour la liste complète et les noms de dossier exacts (hardcodés dans les routines).
+
+```bash
+mkdir -p "$HOME/PROJECTS" && cd "$HOME/PROJECTS"
+git clone https://github.com/Gremelinn0/blueprint-hub.git                     "0- Marketplace"
+git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "Vente et Marketing - ALL Compagnies"
+```
+
+### Étape 5 — `npm install` sur chaque projet avec un `package.json` à la racine
+
+Marketplace, LinkedIn Content Agent, etc.
+
+### Étape 6 — Actions manuelles à rappeler à Florent
+
+- **MCP connectors** (Notion, Supabase, Vercel, Google Workspace, Gmail) : re-auth OAuth depuis le panneau Settings de Claude Code.
+- **Vercel CLI** : `vercel login` dans un terminal.
+- **Chrome extension "Claude in Chrome"** : réinstaller + reconnecter.
+- **Apps natives** référencées par un skill (OBS, Krea, SpeakApp…) : à réinstaller.
+
+### Étape 7 — Redémarrer Claude Code
+
+Pour picker les skills, settings et scheduled-tasks nouvellement rebranchés.
+
+### Étape 8 — Résumé final
+
+1 paragraphe : ce qui tourne maintenant / ce qui reste à re-auth manuellement / les paths qui ont été réécrits à l'étape 3 (pour que Florent valide et commit).
+
+## Structure projets recommandée
+
+```
+C:\Users\<User>\PROJECTS\
+├── 0- Marketplace\              → https://github.com/Gremelinn0/blueprint-hub.git
+├── 3- Wisper\speak-app-dev\     → https://github.com/Gremelinn0/wisper-app.git
+├── Vente et Marketing - ALL Compagnies\
+└── navigateur\
+```
+
+**Les noms de dossier sont figés** — ils apparaissent en dur dans les SKILL.md des scheduled-tasks (ex. `C:\Users\<User>\PROJECTS\0- Marketplace\...`). Renommer un dossier casse silencieusement toutes les routines qui pointaient dessus. À ne faire qu'en couplant avec une MAJ de toutes les routines concernées.
+
+## Long terme — à évaluer plus tard (ne pas faire pendant un setup PC)
+
+Les paths absolus `C:\Users\<User>\PROJECTS\...` et `C:\Users\<User>\.claude\...` apparaissent hardcodés dans **~30 scheduled-tasks SKILL.md** et plusieurs hooks. À chaque changement d'username Windows, l'étape 3 ci-dessus est obligatoire.
+
+**L'idéal** : passer à `%USERPROFILE%` (cmd), `$HOME` (bash), `$env:USERPROFILE` (PowerShell) — rendre le skill PC-agnostique.
+
+**Pourquoi pas fait** : chaque SKILL.md doit être testé sur **3 shells** (Windows cmd, Git Bash, PowerShell) qui n'expansent pas les variables de la même façon. Un skill qui marche en bash peut casser en cmd si la routine l'y lance. Gros refactor + beaucoup de tests → session dédiée, pas pendant la fenêtre de migration d'un PC.
 
 ## Cas d'usage — quand invoquer ce skill
 
@@ -182,10 +297,10 @@ Pour consolider sur un seul compte quand on en a 2 :
 
 ## Debug
 
-**Repo absent du nouveau PC :** vérifier l'URL exacte `https://github.com/Gremelinn0/claude-home.git` et que l'auth GitHub est active (`gh auth status`).
+**Repo absent du nouveau PC :** vérifier l'URL exacte `https://github.com/Gremelinn0/claude-home.git`. Au premier `git clone/fetch`, le Git Credential Manager ouvre un popup navigateur pour s'auth sur GitHub — si rien ne se passe, vérifier `git config --global credential.helper` (doit renvoyer `manager` sur Windows).
 
 **Conflit de merge après un pull :** un fichier a été modifié des 2 côtés. Git va lister les fichiers en conflit. Règle de principe : garder la version la plus récente. Si doute, sauvegarder l'ancien fichier sous un autre nom avant de résoudre.
 
-**`settings.json` pete après un pull :** cause probable = le nouveau PC a un path différent. Rechercher `C:\\Users\\Administrateur\\` dans les fichiers de config et remplacer par le nouveau chemin user.
+**`settings.json` pete après un pull :** cause probable = le nouveau PC a un username différent donc les paths absolus sont périmés. Relancer l'**Étape 3** de la procédure setup (script PowerShell de détection + find-replace automatique).
 
 **Secrets vides ou expirés :** normal, les tokens OAuth ont une TTL. Re-authentifier chaque MCP depuis le panneau Settings de Claude Code.
