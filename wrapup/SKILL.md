@@ -44,20 +44,61 @@ Look back through the entire conversation and identify:
 
 **If pending live tests found:** add them to `memory/validation-pending-n4.md` (table row + section entry) before continuing with Step 2.
 
-## Step 2: Save Memories
+## Step 2: Save & Improve Memories
 
-Check the existing memory index and save or update memories as needed:
+**Objectif : améliorer l'état des memories, pas juste en ajouter.**
 
-- **feedback** — any corrections or confirmed approaches from this session
-- **project** — ongoing work, goals, deadlines, or context that future sessions need
-- **user** — anything new learned about the user's role, preferences, or knowledge
-- **reference** — any external resources, tools, or systems referenced
+**2a — Nouvelles memories :** sauvegarder ce qui est appris dans cette session :
 
-Rules:
-- Don't duplicate existing memories — update them instead
-- Don't save things derivable from code or git history
-- Convert relative dates to absolute dates
-- Include **Why:** and **How to apply:** for feedback and project memories
+- **feedback** — corrections ou approches confirmées
+- **project** — travail en cours, objectifs, deadlines, contexte
+- **user** — nouvelles préférences ou connaissances révélées
+- **reference** — ressources ou systèmes externes référencés
+
+**2b — Mise à jour des memories existantes (PROACTIF) :** parcourir MEMORY.md et identifier les memories qui peuvent être améliorées grâce à ce qui a été découvert dans cette session :
+
+- Une memory marquée OBSOLETE → la mettre à jour ou la supprimer
+- Une memory dont le contenu est maintenant plus précis → l'enrichir
+- Une date relative qui a tourné → la corriger en date absolue
+- Une memory "projet" dont le statut a changé → refléter le nouvel état
+- Une memory de feedback dont la règle a été affinée → préciser
+
+**Règles :**
+- Ne pas dupliquer — mettre à jour les existantes plutôt qu'en créer
+- Ne pas sauvegarder ce qui est déductible du code ou du git history
+- Convertir les dates relatives en dates absolues
+- Inclure **Why:** et **How to apply:** pour les memories feedback et project
+
+## Step 2.5: Plan vivant à jour (OBLIGATOIRE — regle CLAUDE.md §3)
+
+**Avant le commit final, verifier que le `## 📌 Plan vivant` des feature docs touchees cette session reflete l'etat reel.**
+
+C'est ce que la session suivante (ou l'autre compte) lira pour reprendre. Sans ca, le systeme "Plan vivant" perd son avantage et on retombe dans les dumps lourds.
+
+**Procedure** :
+
+1. **Lister les features touchees** dans la session :
+   ```bash
+   git log --oneline origin/dev..HEAD --name-only | grep -E "memory/features/|app\.py|wisper-bridge/|cdp_|devtools_|cc_ui/" | sort -u | head -20
+   ```
+
+2. **Pour chaque feature concernee**, ouvrir `memory/features/<feature>.md` et verifier que la section `## 📌 Plan vivant` contient :
+   - **Sujet courant** a jour (ce qu'on a fait dans la session)
+   - **Statut** a jour (si change : 🔧 WIP → ✅ V1, V1 → V1.1, etc.)
+   - **Prochain pas concret** = action immediate post-session (1-3 bullets)
+   - **Bloqueurs actuels** (ou "aucun")
+   - **Derniere session** : YYYY-MM-DD HH:MM + commit hash + lien handoff (si cree)
+
+3. **Si Plan vivant absent** (feature doc sans cette section) → l'ajouter MAINTENANT en haut, juste apres le TL;DR §0. Format dans CLAUDE.md §3 "Plan vivant a jour en continu".
+
+4. **Si Plan vivant obsolete** (refletant l'etat d'avant cette session) → le mettre a jour AVANT le commit final.
+
+**Regle** : aucun commit `/wrapup` ne sort si une feature touchee n'a pas son Plan vivant a jour. Si feature doc n'existe pas du tout pour la feature touchee → creer un stub minimal (TL;DR + Plan vivant uniquement, pas tout le template).
+
+**Cas particuliers** :
+- Session 100% docs/memory/config sans code feature → skip ce step
+- Session touche 2-3 features → MAJ les 2-3 Plan vivant (rare mais possible)
+- Refacto transversal qui touche beaucoup de fichiers → identifier la feature dominante, MAJ son Plan vivant, mentionner le scope dans le sujet courant
 
 ## Step 3: Write Session Summary + Handoff File
 
@@ -173,6 +214,19 @@ Après avoir créé le fichier daté, mettre à jour 2 fichiers complémentaires
 **3c — Mise à jour `roadmap.md`** :
 
 Si la session a changé le statut d'une feature, levé un bloqueur, ou ajouté une tâche → mettre à jour `memory/roadmap/roadmap.md` section concernée MAINTENANT, avant de pusher. Ne pas laisser roadmap.md en retard sur ce qui vient d'être fait.
+
+**3c-bis — Appel `/doc-keeper` si code modifié** :
+
+Vérifier si la session contient des commits qui touchent du code :
+```bash
+git log --oneline origin/dev..HEAD | grep -vE "^[a-f0-9]+ (chore|docs|memory|wrapup)"
+```
+
+Si des commits code sont présents (`.py`, `.js`, `.html` dans `cc_ui/`, `wisper-bridge/`, `app.py`, etc.) → invoquer le skill `/doc-keeper` maintenant, avant le commit final.
+
+`/doc-keeper` identifiera automatiquement les docs à mettre à jour (feature docs, platforms, FEATURES.md, interaction-mechanisms-matrix, validation-pending-n4.md) en fonction des fichiers touchés dans la session. Les mises à jour doc-keeper seront incluses dans le commit 3d.
+
+Si la session est 100% docs/memory/config sans code → skip cette étape.
 
 **3d — Commit + push du handoff** :
 

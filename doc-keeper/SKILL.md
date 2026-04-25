@@ -59,6 +59,55 @@ Every code change MUST be reflected in the project's reference documents. Docume
 | Mecanisme d'interaction change (UIA/CDP/DevTools/Win32/OCR/WS Bridge/hooks) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** MAJ atomique : matrice §2bis (Axe B feature×plateforme) + `memory/platforms/<p>.md` (Axe A selecteurs) + journal §9 (≤60 mots). Matrice gagne sur tout autre doc en cas de conflit. |
 | Reader / methode lecture chat change (statut, limitation, nouveau reader, plateforme) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** Meme procedure (reader-solutions fusionne dans la matrice unique depuis 2026-04-15). MAJ §2bis feature "Lecture chat" ou "Artifact/Doc attache" + journal §9. |
 | Nouveau selecteur / widget / etat decouvert (scan DOM, snapshot, debug) | **Axe A** : `memory/platforms/<plateforme>.md` (catalogue selecteurs). **Axe B** : matrice §2bis si ca change le statut d'une feature. Skill `/update-interaction-matrix` pour la procedure. |
+| **Status lifecycle transition** (module/feature passe "a creer" → "V1 livre" → "V2 pending" → "V2 livre") | **Capitalisation parallele OBLIGATOIRE** sur TOUS les docs qui referencent ce module/feature. Voir section "Status lifecycle capitalization" ci-dessous. Zero doc ne doit rester avec l'ancien statut. |
+| **Code feature modifie** (app.py, wisper-bridge/, cdp_*, devtools_*, cc_ui/, etc.) | **Section `## 📌 Plan vivant` du feature doc** — MAJ avec : sujet/statut/prochain pas/bloqueurs/derniere session (commit hash). Regle CLAUDE.md §3 "Plan vivant a jour en continu" (2026-04-25). Verification post-commit OBLIGATOIRE. |
+
+## Status lifecycle capitalization — parallel cross-doc sync (2026-04-24)
+
+**Contexte** : quand un module ou une feature change de statut lifecycle (ex : `devtools_stealth_reader.py` passe de "a creer" a "primitives V1 livrees, wiring V2 pending"), **toutes les references a ce module dans TOUS les docs doivent etre mises a jour dans la meme session**, avec les memes commits et la meme formule.
+
+**Pourquoi c'est critique** :
+- Un doc qui reste a "a creer" pendant qu'un autre dit "V1 livre" = desinformation + re-decouverte future "mais c'etait livre ou pas ?"
+- Meme dans le meme commit, oublier 1 doc sur 5 = drift immediat
+- Le user pose la question "c'est fait ?" et recoit une reponse contradictoire selon le doc consulte
+
+**Procedure systematique (4 steps)** :
+
+### Step A — Inventaire "tous les docs qui mentionnent ce module"
+
+Avant toute edition, grep explicitement :
+```bash
+grep -rln "devtools_stealth_reader" memory/ .claude/ dashboards/ CLAUDE.md
+```
+**Toujours** etendre a tous les lieux : `memory/features/`, `memory/references/`, `memory/platforms/`, `memory/validation-pending-*.md`, `memory/roadmap/`, feature-capabilities-matrix.md, interaction-mechanisms-matrix.md, skills, CLAUDE.md, dashboards. Un lieu oublie = drift garanti.
+
+### Step B — Formule canonique partagee
+
+Definir **UNE SEULE** formule de statut (mot-a-mot) a copier-coller dans tous les docs. Exemple :
+> "✅ **PRIMITIVES V1 LIVREES 2026-04-24** (commits `abc123`+`def456`+`ghi789`, N lignes, V1 gate PARTIAL_PASS smoke test). **V2 wiring pending** : ..."
+
+**Zero reformulation par doc.** Chaque doc utilise exactement la meme chaine. Si un doc necessite un angle different (ex: matrice = vue capability, feature doc = vue implementation), garder la formule canonique + ajouter contexte specifique au doc, jamais reformuler la formule.
+
+### Step C — Edits paralleles dans UN SEUL batch
+
+Lancer tous les Edit dans **un seul message** avec tool calls paralleles. Jamais sequentiel. Raison : un echec partiel (3/5 OK, 2/5 KO) laisse le systeme dans etat inconsistant si on commit entre-temps.
+
+### Step D — Verification post-edit
+
+Apres batch :
+```bash
+grep -rln "a creer.*devtools_stealth_reader\|devtools_stealth_reader.*a creer" memory/
+```
+Doit retourner 0 match. Si > 0 → un doc a ete oublie → ajouter au batch, re-commit.
+
+**Checklist avant commit `feat(status)` ou `docs(status-propagation)`** :
+- [ ] Grep exhaustif fait (step A) ?
+- [ ] Formule canonique definie (step B) ?
+- [ ] Tous les edits dans un seul batch (step C) ?
+- [ ] Grep "ancien statut" post-edit = 0 match (step D) ?
+- [ ] Commits references coherents partout (meme liste de hashes dans tous les docs) ?
+
+**Anti-pattern** : "je mets a jour le feature doc d'abord, je verrai les autres plus tard" → ne le fera pas. Immediate full propagation ou abandon.
 
 ## Qualite du contenu — regles anti-accumulation
 
@@ -92,6 +141,7 @@ Changer uniquement ce qui est necessaire. Preserver la structure existante.
 - Constantes dans le doc = valeurs dans le code (fichier:ligne)
 - Commandes vocales dans le doc = commandes dans `voice-commands.md` + code
 - Si divergence hub <-> doc → corriger le doc, JAMAIS le hub
+- **Plan vivant coherent avec le commit** (CLAUDE.md §3) : sujet refletant la session, statut refletant le changement (WIP→V1 si livre, etc.), prochain pas = etape suivante reelle, derniere session = commit hash courant. Si Plan vivant obsolete → MAJ avant de conclure le doc-keeper.
 
 ### Step 4: Capture des enseignements transversaux (nouveau 2026-04-14)
 
