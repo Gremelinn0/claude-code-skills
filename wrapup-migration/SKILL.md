@@ -22,25 +22,61 @@ Skill a lancer dans **chaque session Claude Code ouverte** juste avant de change
 
 ---
 
-## Step 1 : Plan vivant a jour (OBLIGATOIRE — contrat principal du switch)
+## Step 1 : Plan vivant — ajouter/maj l'entree de la session courante (OBLIGATOIRE — contrat principal du switch)
 
-**Pour chaque feature touchee dans la session**, verifier que `## 📌 Plan vivant` du feature doc reflete l'etat final.
+**Pour chaque feature touchee dans la session**, ajouter ou mettre a jour l'entree `[slug]` correspondante dans `## 📌 Plan vivant` du feature doc.
 
-C'est le **contrat principal** du switch de compte : sans Plan vivant a jour, le pickup de l'autre compte n'a rien de fiable a lire. Le handoff fichier et la ligne Notion ne servent qu'a pointer vers le Plan vivant.
+C'est le **contrat principal** du switch de compte. Sans entree Plan vivant a jour, le pickup de l'autre compte n'a rien de fiable a lire.
 
-**Procedure** : meme que `/wrapup` Step 2.5. Si Plan vivant absent → l'ajouter (TL;DR + Plan vivant suffisent comme stub). Si obsolete → MAJ.
+**Format multi-session (CLAUDE.md §3 "Plan vivant a jour en continu") :**
 
-**Si tu skip cette etape** : le `/migration-pickup` cote destination ne pourra pas reprendre proprement → echec du switch.
+```markdown
+## 📌 Plan vivant
+
+### 🔧 En cours
+**[slug-explicite]** — <resume 1 ligne>
+- Statut : ...
+- Prochain pas : ...
+- Bloqueurs : ...
+- Derniere session : YYYY-MM-DD HH:MM — commit `<hash>` — [handoff](...)
+
+### ⏸️ En pause
+(meme format + raison de la pause)
+
+### ✅ Recemment livre
+(meme format + date de livraison)
+```
+
+**Procedure :**
+
+1. **Identifier le slug** de la session courante (kebab-case explicite, descriptif, stable). Exemples : `bp034-redispatch`, `uia-name-migration`, `ag-multi-window-fix`. PAS `session-25`, PAS `wip-1`, PAS la date.
+   - Si la session a ete demarree avec un slug deja existant dans le Plan vivant → reutiliser (MAJ l'entree)
+   - Si nouveau chantier → nouveau slug
+   - Si tu ne sais pas → demander explicitement a Florent : "Quel slug pour cette session ? (suggestion : `<X>`)"
+
+2. **Determiner la section cible** selon l'etat :
+   - **🔧 En cours** : prochain pas dans les 7 jours, encore actif
+   - **⏸️ En pause** : mis de cote (manque info, attend feedback, deprio temporaire). Ajouter "Raison : ..."
+   - **✅ Recemment livre** : termine, plus de prochain pas. Ajouter "Livre : YYYY-MM-DD"
+
+3. **Ajouter ou mettre a jour l'entree** `[slug]` dans la bonne section :
+   - Si entree absente → ajouter
+   - Si entree existante → mettre a jour (statut, prochain pas, bloqueurs, derniere session)
+   - Si transition de section (ex: En cours → Recemment livre) → deplacer l'entree
+
+4. **Si feature doc n'a pas de Plan vivant** → l'ajouter (stub minimal TL;DR + Plan vivant avec juste l'entree de cette session).
+
+**Si tu skip cette etape** : le `/migration-pickup` cote destination ne saura pas quelle session reprendre → echec du switch.
 
 ---
 
-## Step 2 : Identifier le sujet de la session
+## Step 2 : Reutiliser le slug + feature de Step 1
 
-3 infos a capturer pour le handoff + Notion :
+3 infos deja determinees en Step 1 :
 
-- **Slug** = 2-4 mots kebab-case qui resument le sujet (ex: `auto-perm-bp034-fix`, `chat-reader-cd-pivot`)
-- **Feature concernee** = nom du feature doc principal touche (`auto-permission`, `chat-reader`, etc.) — celui dont le Plan vivant a ete MAJ
-- **Prochaine action** = 1 ligne, copiee directement du Plan vivant § "Prochain pas concret"
+- **Slug session** = identite stable de cette session (ex: `bp034-redispatch`)
+- **Feature concernee** = feature doc principal touche (ex: `auto-permission`)
+- **Prochaine action** = copiee de l'entree Plan vivant § "Prochain pas"
 
 ---
 
@@ -54,24 +90,24 @@ C'est le **contrat principal** du switch de compte : sans Plan vivant a jour, le
 # Session Handoff — YYYY-MM-DD HH:MM — <slug>
 
 ## Feature concernee
-[memory/features/<feature>.md](../features/<feature>.md) → voir § 📌 Plan vivant
+[memory/features/<feature>.md](../features/<feature>.md) → voir § 📌 Plan vivant entree `[<slug>]`
 
 ## Ce qui a ete fait dans cette session
 <3-5 bullets max, actions concretes, commits cites>
 
 ## PROCHAINE ACTION IMMEDIATE
-<1 ligne — copiee du Plan vivant § "Prochain pas concret">
+<1 ligne — copiee de l'entree Plan vivant `[<slug>]` § "Prochain pas">
 
 ## WIP (travail en cours interrompu)
 <Si arret au milieu : fichier modifie, ou on en est, ce qui restait>
-<Si rien en cours : "RAS — session proprement terminee, voir Plan vivant feature">
+<Si rien en cours : "RAS — session proprement terminee, voir Plan vivant entree [<slug>]">
 
 ## Bloqueurs actifs
-<Copies du Plan vivant § "Bloqueurs actuels", ou "aucun">
+<Copies de l'entree Plan vivant `[<slug>]` § "Bloqueurs", ou "aucun">
 
 ## Comment reprendre (autre compte / nouvelle session)
 1. `git fetch && git pull --rebase origin dev`
-2. Lire `memory/features/<feature>.md` § 📌 Plan vivant (TL;DR + Plan vivant = ~40 lignes)
+2. Lire `memory/features/<feature>.md` § 📌 Plan vivant (entree `[<slug>]` ~10 lignes)
 3. Executer "PROCHAINE ACTION IMMEDIATE"
 ```
 
@@ -90,9 +126,9 @@ C'est le **contrat principal** du switch de compte : sans Plan vivant a jour, le
 ```markdown
 ## HHhMM — <slug>
 
-- **Feature** : [memory/features/<feature>.md](../features/<feature>.md) → § 📌 Plan vivant
+- **Feature** : [memory/features/<feature>.md](../features/<feature>.md) → § 📌 Plan vivant entree `[<slug>]`
 - **Handoff** : [memory/handoffs/YYYY-MM-DD-HHhMM-<slug>.md](../handoffs/YYYY-MM-DD-HHhMM-<slug>.md)
-- **Prochaine action** : <1 ligne, copiee du Plan vivant>
+- **Prochaine action** : <1 ligne, copiee de l'entree Plan vivant>
 - **🔍 Mots-cles** : <5-10 termes courts separes par virgules>
 ```
 
@@ -130,9 +166,9 @@ Si push KO (non-fast-forward) → `git fetch origin && git rebase origin/dev` pu
 3. **Anti-doublon** : verifier qu'aucune sous-sous-page `HHhMM — <slug>` n'existe deja dans la sous-page du jour.
 
 4. **Creer la sous-sous-page** (`mcp__notion__API-post-page`) avec UNIQUEMENT 4 paragraphs (plus de dump !) :
-   - `📌 Feature : <feature>` → lien vers le feature doc + Plan vivant (`https://github.com/.../memory/features/<feature>.md#-plan-vivant`)
+   - `📌 Feature : <feature>` (slug session : `<slug>`) → lien vers le feature doc + Plan vivant (`https://github.com/.../memory/features/<feature>.md#-plan-vivant`)
    - `🔗 Handoff : https://github.com/.../memory/handoffs/YYYY-MM-DD-HHhMM-<slug>.md` (lien GitHub raw)
-   - `🎯 Prochaine action : <1 ligne, copiee du Plan vivant>`
+   - `🎯 Prochaine action : <1 ligne, copiee de l'entree Plan vivant [<slug>]>`
    - `🔍 Mots-cles : <liste virgules>`
 
 5. **Repositionner en haut** (ordre anti-chrono) — meme procedure qu'avant (`API-move-page` ou TOC fallback).
@@ -141,16 +177,17 @@ Si push KO (non-fast-forward) → `git fetch origin && git rebase origin/dev` pu
 
 ---
 
-## Step 7 : Confirm (5 lignes max)
+## Step 7 : Confirm (6 lignes max)
 
 Dire a Florent :
 
 ```
-✅ Plan vivant <feature> a jour : memory/features/<feature>.md
+✅ Entree Plan vivant `[<slug>]` ajoutee/maj dans memory/features/<feature>.md (section <En cours/En pause/Livre>)
 ✅ Handoff cree : memory/handoffs/YYYY-MM-DD-HHhMM-<slug>.md
 ✅ Push Git : <commit hash> sur origin/dev
 ✅ Notion index : <url sous-sous-page>
 🎯 Prochaine action : <1 ligne>
+🔁 Reprise compte 2 : "continue <feature> [<slug>]" OU `/migration-pickup <feature> <slug>`
 ```
 
 Pas de blabla, pas de recap session.
@@ -160,9 +197,10 @@ Pas de blabla, pas de recap session.
 ## Comment relancer la session depuis le nouveau compte
 
 1. Ouvrir Claude Code dans le bon repo
-2. Soit dire "je veux bosser sur <feature>" → hook UserPromptSubmit charge le feature doc + Plan vivant automatiquement
-3. Soit `/migration-pickup <feature>` → version explicite (git pull + lecture Plan vivant)
-4. Executer "Prochaine action" du Plan vivant
+2. Soit dire "je veux continuer <feature> `[<slug>]`" → hook UserPromptSubmit charge feature + Plan vivant + cible la bonne entree
+3. Soit dire "je veux continuer <feature>" → hook charge → si plusieurs sessions En cours → Claude liste les slugs et demande
+4. Soit `/migration-pickup <feature> <slug>` → version explicite avec git pull
+5. Executer "Prochaine action" de l'entree Plan vivant `[<slug>]`
 
 **Plus besoin** d'ouvrir Notion pour reprendre — Notion ne sert qu'a Florent pour visualiser ce qui est en cours, le contenu vit dans le repo git + Plan vivant.
 
@@ -189,4 +227,6 @@ Pas de blabla, pas de recap session.
 
 Refondu 2026-04-25 sur demande Florent — la version precedente dumpait le contexte session entier dans Notion, ce qui bouffait les tokens au pickup et creait un systeme parallele aux feature docs. Avec le Plan vivant integre aux feature docs (CLAUDE.md §3), Notion devient un simple index navigable et le contenu vit dans le repo git.
 
-Quote Florent (2026-04-25) : "C'est en fait c'est de la merde qu'on ait recree un systeme a cote. On a la roadmap, on a les feature docs. Le plan c'est la partie active de la roadmap. Quand je relance, il sait tres bien ou regarder."
+**Affinement multi-session 2026-04-25 (2eme passe)** : Florent a souleve qu'une session != une fonctionnalite — on peut avoir N sessions paralleles sur la meme feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration` + `ag-edge-case`). Solution : Plan vivant gere N entrees `[slug]` par feature, sections En cours / En pause / Recemment livre. `/wrapup-migration` ajoute ou maj une entree `[slug]` (au lieu de remplacer le Plan vivant entier).
+
+Quote Florent (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. Chaque session, chaque plan pour moi, ils appartiennent a une fonctionnalite. On peut en avoir plusieurs par fonctionnalite, sans que ca pose probleme. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."

@@ -27,33 +27,45 @@ Recuperer toute modif faite par la session source (handoff, Plan vivant a jour, 
 
 ---
 
-## Step 2 : Identifier la feature cible
+## Step 2 : Identifier feature + session cible
 
-**Cas A — Feature donnee en argument** (`/migration-pickup auto-permission`) :
+**3 cas selon les arguments :**
+
+**Cas A — Feature + slug session** (`/migration-pickup auto-permission bp034-redispatch`) :
 - Lire directement `memory/features/auto-permission.md`
+- Cibler l'entree `[bp034-redispatch]` dans le Plan vivant
 
-**Cas B — Pas d'argument** :
+**Cas B — Feature seule** (`/migration-pickup auto-permission`) :
+- Lire `memory/features/auto-permission.md`
+- Lister TOUTES les entrees `[slug]` de la section "🔧 En cours"
+- Demander a Florent : "Tu veux reprendre laquelle ? `[bp034-redispatch]` `[uia-name-migration]` ?"
+- Si une seule entree En cours → la prendre directement sans demander
+
+**Cas C — Pas d'argument** :
 - Lire `memory/handoffs/INDEX.md` → prendre la 1ere ligne (plus recente)
-- Suivre le lien handoff → identifier la feature concernee (ligne `## Feature concernee`)
-- Ouvrir le feature doc correspondant
+- Suivre le lien handoff → identifier feature + slug session
+- Ouvrir le feature doc + cibler l'entree `[slug]`
 
 ---
 
-## Step 3 : Lire TL;DR + Plan vivant
+## Step 3 : Lire TL;DR + entree Plan vivant ciblee
 
 Du feature doc, extraire UNIQUEMENT :
 - **§0 TL;DR** (~15 lignes) — etat V1, mecanismes, BPs critiques
-- **## 📌 Plan vivant** (~20 lignes) — sujet courant, statut, prochain pas, bloqueurs, derniere session
+- **## 📌 Plan vivant entree `[<slug>]`** (~10 lignes) — statut, prochain pas, bloqueurs, derniere session
 
-**Ne pas lire le reste du feature doc** sauf si Florent demande explicitement. Plan vivant + TL;DR = ~40 lignes = contexte minimal pour reprendre.
+**Ne pas lire le reste du feature doc** sauf si Florent demande explicitement. TL;DR + entree Plan vivant = ~30 lignes = contexte minimal pour reprendre.
+
+**Si Florent veut voir TOUTES les sessions actives sur la feature** → lire toute la section `## 📌 Plan vivant` (En cours + En pause + Recemment livre).
 
 ---
 
-## Step 4 : Annoncer en 5 lignes
+## Step 4 : Annoncer en 6 lignes
 
 ```
 ✅ Feature : <X>
-✅ Sujet courant : <copie du Plan vivant>
+✅ Session : `[<slug>]`
+✅ Sujet : <resume entree Plan vivant>
 ✅ Statut : <copie>
 🎯 Prochain pas : <copie>
 ⛔ Bloqueurs : <copies ou "aucun">
@@ -61,20 +73,33 @@ Du feature doc, extraire UNIQUEMENT :
 
 Pas de blabla. Pas de recap exhaustif. Juste l'essentiel actionnable.
 
-**Si Plan vivant absent** dans le feature doc cible → signaler a Florent : "⚠️ Pas de Plan vivant dans `<feature>.md` — le feature doc n'a pas ete migre vers le format 2026-04-25. Veux-tu que je l'initialise (stub TL;DR + Plan vivant) ou tu prefere lire le feature doc complet ?"
+**Si entree Plan vivant absente** (slug fourni mais pas dans le Plan vivant) → signaler : "⚠️ Slug `<slug>` introuvable dans `[<feature>].md`. Sessions actives disponibles : `<liste>`. Tu voulais l'une d'elles, ou je cherche dans 'En pause' / 'Recemment livre' ?"
+
+**Si Plan vivant entierement absent** → "⚠️ Pas de Plan vivant dans `<feature>.md` — feature doc pas encore migre. Je l'initialise (stub TL;DR + Plan vivant) ?"
 
 ---
 
 ## Cas particuliers
 
-### Aucun handoff recent (Cas B sans argument)
+### Aucun handoff recent (Cas C sans argument)
 Si `memory/handoffs/INDEX.md` est vide ou la 1ere entree est > 7 jours → demander a Florent : "Aucune session recente. Sur quelle feature tu veux bosser ?"
 
-### Feature inconnue (Cas A avec argument errone)
+### Feature inconnue (Cas A/B avec feature errone)
 Si `memory/features/<arg>.md` n'existe pas → lister les features disponibles (`ls memory/features/*.md`) + demander correction.
 
-### Plusieurs features touchees dans la derniere session
-Si le handoff cite 2-3 features (cas rare, refacto transversal) → lire les 2-3 Plan vivant + annoncer en table 5-colonnes (1 ligne par feature).
+### Plusieurs features touchees dans le dernier handoff
+Si le handoff cite 2-3 features (cas rare, refacto transversal) → lire les 2-3 Plan vivant + annoncer en table 6-colonnes (1 ligne par couple feature × slug).
+
+### Vue d'ensemble multi-features (commande implicite)
+Si Florent demande "liste-moi mes sessions actives" / "qu'est-ce que j'ai en cours" / "vue d'ensemble" → grep tous les feature docs `memory/features/*.md` pour extraire les sections "🔧 En cours" → annoncer en table :
+```
+Feature        | Slug                | Prochain pas              | Derniere session
+---------------+---------------------+---------------------------+-----------------
+auto-perm      | bp034-redispatch    | Monitorer prod 2j        | 2026-04-25 abc
+auto-perm      | uia-name-migration  | Implementer 3 modes      | 2026-04-24 def
+chat-reader    | cd-uia-extraction   | Tester sur session live  | 2026-04-23 ghi
+```
+Pas de skill dedie — c'est juste un grep + extraction.
 
 ---
 
@@ -110,6 +135,8 @@ Mais 99% du temps, git pull + lecture Plan vivant suffit. Notion = backup visuel
 
 Refondu 2026-04-25 sur demande Florent — la version precedente fetchait Notion + parsait des blocs + filtrait par mots-cles, ce qui bouffait les tokens et creait un systeme parallele aux feature docs.
 
-Avec le Plan vivant integre aux feature docs (CLAUDE.md §3 "Plan vivant a jour en continu"), 90% du temps le hook UserPromptSubmit fait le job en amont. Ce skill garde sa place comme filet de securite explicite, mais devient ultra-court (2 etapes git pull + Read, ~30 lignes au lieu de 210).
+Avec le Plan vivant integre aux feature docs (CLAUDE.md §3 "Plan vivant a jour en continu"), 90% du temps le hook UserPromptSubmit fait le job en amont. Ce skill garde sa place comme filet de securite explicite.
 
-Quote Florent (2026-04-25) : "Je dis je veux bosser sur tel sujet, automatiquement il sait tres bien ou regarder, tu vois."
+**Affinement multi-session 2026-04-25 (2eme passe)** : Florent a souleve qu'on peut avoir N sessions actives par feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration`). Solution : `/migration-pickup` accepte 2 arguments (`feature` + `slug`). Si slug fourni → cible direct. Si feature seule → liste les sessions En cours et demande. Cela rend le skill **vraiment utile** (vs ancienne version 90% redondante avec hook).
+
+Quote Florent (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. On peut en avoir plusieurs par fonctionnalite. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."
