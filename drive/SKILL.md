@@ -36,6 +36,34 @@ Si un sujet aborde dans la session reste "a moitie" → c'est dans le perimetre 
 
 **Interdit** de finaliser `/drive` avec juste le dernier sujet boucle si 3 autres sujets ont ete evoques et laisses en suspens dans la meme session.
 
+### Mecanique de boucle automatique — "le hook /drive" (pattern 2-3 sujets typique)
+
+`/drive` est un skill **auto-bouclant** : il itere sur les sujets de la session SANS attendre que Florent relance manuellement entre chaque. C'est le "hook" qui automatise — pas de hook config externe necessaire, la boucle est dans le skill lui-meme.
+
+**Apres chaque sujet boucle en Phase 3 :**
+
+1. **Checkpoint obligatoire** — relire la liste Phase 1, cocher le sujet termine `[x] DONE — commit <hash>` dans la TODO interne
+2. **Decision automatique :**
+   - **Sujets restants ≥ 1** → annoncer en 1 ligne : "Sujet X DONE (commit `<hash>`). Sujet suivant : Y" → **retour Phase 3 sur Y**, sans pause
+   - **Sujets restants = 0** → **Phase 4** (etat DONE final → `/wrapup` → `/recap`)
+3. **Pas de pause utilisateur entre sujets** — c'est l'avantage de `/drive` vs N sessions separees. Florent voit le defilement des sujets termines en temps reel mais n'a pas a relancer.
+
+**Anti-pattern interdit** : sortir en DONE / invoquer `/wrapup` avant que TOUS les sujets de Phase 1 soient coches `[x]`. Si 1 sujet reste a moitie → forcement retour Phase 3 sur ce sujet, pas finalisation.
+
+**Pattern type session 2-3 sujets** :
+```
+Phase 1 : scan → 3 sujets identifies (A, B, C)
+Phase 3 sujet A → DONE commit aaa
+[checkpoint : reste B, C → continue]
+Phase 3 sujet B → DONE commit bbb
+[checkpoint : reste C → continue]
+Phase 3 sujet C → DONE commit ccc
+[checkpoint : 0 reste → Phase 4]
+Phase 4 : DONE final → /wrapup auto → /recap auto
+```
+
+**Exception** : si un sujet rencontre un cas d'escalade des 5 (cf Phase 3) → BLOCKED + handoff + question Florent. Les autres sujets DONE deja restent acquis.
+
 ---
 
 ## Phase 1 — Cadrer l'objectif (scan complet de la session)
