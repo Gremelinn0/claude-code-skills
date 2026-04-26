@@ -7,6 +7,17 @@ scope: global — tout projet
 
 # /autopilot — Orchestrateur Autonome
 
+## Articulation avec les autres skills
+
+| Skill | Scope | Articulation avec `/autopilot` |
+|-------|-------|------------------------------|
+| **`/drive`** | Session courante en autonomie inline (cette conv) | Different scope — `/drive` finit ce qui est dans la conv, `/autopilot` lance un objectif separe |
+| **`/dev-orchestrator`** | Bilan macro projet, priorisation | Peut proposer a Florent de lancer une next step goal-driven via `/autopilot <objectif>` (cf section "Articulation /autopilot" dans `dev-orchestrator/SKILL.md`) |
+| **`/dispatch`** | Execution parallele d'un batch additif | Different — `/autopilot` boucle sur un objectif (multi-iterations), `/dispatch` execute N micro-taches one-shot |
+| **Main session** | Florent invoque `/autopilot <objectif>` directement | Cas le plus courant |
+
+**Resume** : `/autopilot` = agent goal-driven en background sur un objectif **separe** de la session courante. Multi-iterations via `/loop` + `state.md`. Lance-able par Florent directement OU par `/dev-orchestrator` quand il identifie une next step qui merite un agent autonome.
+
 ## Invocation
 
 ```

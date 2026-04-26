@@ -71,7 +71,17 @@ Decomposer en 3 a 7 etapes concretes. Criteres :
 - L'ordre respecte les dependances
 - Si une etape depasse clairement le scope session → la marquer `[HANDOFF]` des le plan (on ne la fera pas, on la trace)
 
-**Si 2-8 etapes sont des micro-taches additives independantes** (ajout selecteur, mapping, prefixe, sur fichiers differents) → ne pas les executer une par une, **invoquer `/dispatch`** apres validation du plan pour les lancer en parallele via N sous-agents Sonnet + review Opus finale. Le plan reste sous responsabilite de `/drive`, `/dispatch` est juste l'executeur.
+**Si 2-8 etapes sont des micro-taches additives independantes** (ajout selecteur, mapping, prefixe, sur fichiers differents) → ne pas les executer une par une.
+
+**Pattern correct : STOP + handoff Florent pour switch modele** (PAS de chaining auto vers /dispatch) :
+
+1. Finaliser le plan (audit Phase 0 fait, tâches marquées GO)
+2. **STOP** — annoncer à Florent : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
+3. **Attendre** — Florent gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Pas de chaining auto qui priverait Florent de ce contrôle.
+
+**Exception** : si Florent dit explicitement "lance le dispatch direct" ou "enchaîne" → ok chainer sans stopper.
+
+`/drive` reste responsable du plan ; `/dispatch` est juste l'executeur quand Florent decide de le lancer.
 
 **Ecrire le plan en debut de reponse, puis attaquer.**
 

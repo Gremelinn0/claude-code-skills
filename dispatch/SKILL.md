@@ -18,9 +18,21 @@ scope: global — tout projet
 | Situation | Chemin |
 |-----------|--------|
 | Florent dit explicitement "dispatch ce batch" / "lance les agents sur ces tâches" | `/dispatch` direct |
-| `/drive` arrive sur une session avec 5+ petits items indépendants | `/drive` invoque `/dispatch` après validation du plan |
-| `/dev-orchestrator` a fait son bilan et identifié 3-8 GAPs additifs prêts | `/dev-orchestrator` invoque `/dispatch` après priorisation |
+| `/drive` arrive sur une session avec 5+ petits items indépendants | `/drive` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
+| `/dev-orchestrator` a fait son bilan et identifié 3-8 GAPs additifs prêts | `/dev-orchestrator` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
 | Main session après audit explicite (Phase 0 faite, GO/PENDING/SKIP déterminés) | Invoquer `/dispatch` avec la liste des GO |
+
+### Règle non-négociable — STOP + handoff Florent avant `/dispatch` (jamais de chaining auto)
+
+Quand `/drive` ou `/dev-orchestrator` arrive au point d'invoquer `/dispatch`, il **NE LE FAIT PAS LUI-MÊME**. Il doit :
+
+1. **STOP** — finir son audit + plan, ne pas chainer automatiquement vers `/dispatch`
+2. **Présenter à Florent** : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
+3. **Attendre** — c'est Florent qui décide quand lancer le dispatch (et avec quel modèle).
+
+**Pourquoi** : Florent gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Le chaining auto `/drive → /dispatch` priverait Florent de ce contrôle. Le pattern correct est **STOP + handoff explicite**, pas auto-chaining.
+
+**Exception** : si Florent dit explicitement "lance le dispatch direct" ou "enchaîne", alors le skill peut chainer sans stopper.
 
 ✅ **Conditions pour lancer `/dispatch` (toutes obligatoires)** :
 - 2-8 micro-tâches **indépendantes** (≤30 min chacune)
