@@ -71,6 +71,8 @@ Decomposer en 3 a 7 etapes concretes. Criteres :
 - L'ordre respecte les dependances
 - Si une etape depasse clairement le scope session → la marquer `[HANDOFF]` des le plan (on ne la fera pas, on la trace)
 
+**Si 2-8 etapes sont des micro-taches additives independantes** (ajout selecteur, mapping, prefixe, sur fichiers differents) → ne pas les executer une par une, **invoquer `/dispatch`** apres validation du plan pour les lancer en parallele via N sous-agents Sonnet + review Opus finale. Le plan reste sous responsabilite de `/drive`, `/dispatch` est juste l'executeur.
+
 **Ecrire le plan en debut de reponse, puis attaquer.**
 
 ---

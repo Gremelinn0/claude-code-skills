@@ -5,6 +5,22 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
+## When to prefer another skill
+
+Before using this skill, check if a more specialized one fits better:
+
+| Cas | Skill à préférer | Pourquoi |
+|-----|------------------|----------|
+| Florent dit "lance un agent sur X" / "fais avancer ça tout seul" sur le sujet en cours | **`/drive`** | Claude finit en autonomie inline dans la conv courante. Couvre 90% des cas de délégation tactique. |
+| Objectif séparé / nouveau projet, agent qui boucle en background | `/autopilot <objectif>` | Goal-driven, multi-itérations avec state.md |
+| Batch de 2-8 micro-tâches additives (ajout sélecteur, mapping, préfixe) | `/dispatch` | Audit Phase 0 GO/PENDING/SKIP + 5 règles ultra-conservatrices + review Opus finale |
+| Debug de tests / sous-systèmes indépendants en parallèle | `/dispatching-parallel-agents` | Plus simple — pas de plan, juste dispatch parallèle pour debug |
+| Diagnostic projet macro / routage stratégique | `/dev-orchestrator` (SpeakApp) | Phase 0-6 (scan multi-sources, priorisation, prompts session) |
+
+**Ce skill reste pertinent pour :** exécuter un plan d'implémentation écrit, multi-tâches, où chaque tâche bénéficie d'une review en 2 étages (spec puis qualité). Workflow plus lourd que `/dispatch`, justifié quand la qualité produit > vitesse de dispatch.
+
+---
+
 Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
