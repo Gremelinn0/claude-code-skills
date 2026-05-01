@@ -9,7 +9,7 @@ Déclencher quand il faut :
 
 ---
 
-## Le prompt "Write Well" (source : bibliothèque personnelle Florent)
+## Le prompt "Write Well" (source : bibliothèque personnelle l'utilisateur)
 
 **Notion :** `2fe01e69-443c-80fe-94ac-f442970eb8ae` ("Write Well from Dust")
 
@@ -38,17 +38,17 @@ Coller ce prompt comme instruction système, puis donner le texte brut à rééc
 
 ---
 
-## Quand l'utiliser dans le workflow Florent
+## Quand l'utiliser dans le workflow l'utilisateur
 
 - **Posts LinkedIn** : passer le brouillon par ce prompt avant finalisation
 - **Pages Notion** : synthétiser des notes de session, briefs, analyses
 - **Recaps session** : si le recap est trop verbeux ou technique
 
-## Règles de style de Florent (à faire respecter)
+## Règles de style de l'utilisateur (à faire respecter)
 
 - **Pas d'em-dash (—)** — signature IA trop visible
 - **Pas de blocs de code** pour du texte normal (règle Notion globale)
-- **Ton direct** — "je" quand c'est Florent qui s'exprime
+- **Ton direct** — "je" quand c'est l'utilisateur qui s'exprime
 - **Phrases courtes** — max 2 lignes par phrase
 - **Pas de "Voici"** en début de phrase
 - **Pas de jargon IA** sans explication simple à côté

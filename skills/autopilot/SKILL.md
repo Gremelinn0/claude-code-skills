@@ -12,11 +12,11 @@ scope: global — tout projet
 | Skill | Scope | Articulation avec `/autopilot` |
 |-------|-------|------------------------------|
 | **`/drive`** | Session courante en autonomie inline (cette conv) | Different scope — `/drive` finit ce qui est dans la conv, `/autopilot` lance un objectif separe |
-| **`/dev-orchestrator`** | Bilan macro projet, priorisation | Peut proposer a Florent de lancer une next step goal-driven via `/autopilot <objectif>` (cf section "Articulation /autopilot" dans `dev-orchestrator/SKILL.md`) |
+| **`/dev-orchestrator`** | Bilan macro projet, priorisation | Peut proposer a l'utilisateur de lancer une next step goal-driven via `/autopilot <objectif>` (cf section "Articulation /autopilot" dans `dev-orchestrator/SKILL.md`) |
 | **`/dispatch`** | Execution parallele d'un batch additif | Different — `/autopilot` boucle sur un objectif (multi-iterations), `/dispatch` execute N micro-taches one-shot |
-| **Main session** | Florent invoque `/autopilot <objectif>` directement | Cas le plus courant |
+| **Main session** | l'utilisateur invoque `/autopilot <objectif>` directement | Cas le plus courant |
 
-**Resume** : `/autopilot` = agent goal-driven en background sur un objectif **separe** de la session courante. Multi-iterations via `/loop` + `state.md`. Lance-able par Florent directement OU par `/dev-orchestrator` quand il identifie une next step qui merite un agent autonome.
+**Resume** : `/autopilot` = agent goal-driven en background sur un objectif **separe** de la session courante. Multi-iterations via `/loop` + `state.md`. Lance-able par l'utilisateur directement OU par `/dev-orchestrator` quand il identifie une next step qui merite un agent autonome.
 
 ## Invocation
 
@@ -172,12 +172,12 @@ Lis `.autopilot/state.md`. Tu es un agent autonome — ton seul objectif est d'a
 
 **FORMAT RAPPORT FINAL (à produire quand Statut = DONE) :**
 
-**Principe** : le rapport est lu par Florent qui n'est pas développeur. Il doit comprendre **ce qui a changé**, **pourquoi j'ai fait les choix que j'ai faits**, et **ce qui arrive après** — sans jargon technique et sans relire le log.
+**Principe** : le rapport est lu par l'utilisateur qui n'est pas développeur. Il doit comprendre **ce qui a changé**, **pourquoi j'ai fait les choix que j'ai faits**, et **ce qui arrive après** — sans jargon technique et sans relire le log.
 
 **Règles de forme (obligatoires)** :
 1. **Vraies phrases, pas de tableau de logs** en sortie principale
 2. **Langage simple** — remplacer le jargon par des équivalents lisibles (ex: "CronDelete" → "tâche programmée supprimée", "git diff --name-only" → "la liste des fichiers modifiés", "itération" → "cycle de travail")
-3. **Expliquer les choix** — chaque décision non-triviale = ce que j'ai choisi + **pourquoi** (ce que ça évite ou ce que ça gagne). Florent doit pouvoir dire "ok" ou "reviens en arrière".
+3. **Expliquer les choix** — chaque décision non-triviale = ce que j'ai choisi + **pourquoi** (ce que ça évite ou ce que ça gagne). l'utilisateur doit pouvoir dire "ok" ou "reviens en arrière".
 4. **Structure narrative** — intro (ce qu'on voulait faire) → développement (ce qui a été fait, item par item, avec les choix expliqués) → conclusion (ce qui reste)
 5. **Pas de plafond de longueur** — clair > compact. Un rapport clair de 500 mots > rapport obscur de 80 mots.
 6. **Pas de code, de hash, ni de chemin fichier** dans le corps. Si vraiment nécessaire, dans une annexe technique ignorable à la fin.
@@ -218,7 +218,7 @@ Lis `.autopilot/state.md`. Tu es un agent autonome — ton seul objectif est d'a
 - Plafond artificiel de longueur qui force la compression illisible
 
 **Test de relecture** (Claude fait ce check avant d'envoyer) :
-> "Si Florent relit ce rapport dans 2 semaines sans contexte, comprend-il (a) ce qui a changé, (b) pourquoi j'ai choisi X plutôt que Y, (c) ce qu'il doit faire ensuite ?" Si non → réécrire.
+> "Si l'utilisateur relit ce rapport dans 2 semaines sans contexte, comprend-il (a) ce qui a changé, (b) pourquoi j'ai choisi X plutôt que Y, (c) ce qu'il doit faire ensuite ?" Si non → réécrire.
 
 **FIN DU PROMPT DE DÉCISION**
 

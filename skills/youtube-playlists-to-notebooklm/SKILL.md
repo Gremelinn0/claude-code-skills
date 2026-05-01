@@ -15,7 +15,7 @@ Déclenché quand l'utilisateur veut :
 
 ```bash
 # Activer le venv notebooklm-py
-source /c/Users/Administrateur/.notebooklm-venv/Scripts/activate
+source ~/.notebooklm-venv/Scripts/activate
 
 # Toujours préfixer les commandes notebooklm avec :
 PYTHONIOENCODING=utf-8 notebooklm <commande>
@@ -30,7 +30,7 @@ Auth stockée dans `~/.notebooklm/storage_state.json`. Si expirée → relancer 
 ### 📋 Règle de nommage
 - 1 playlist = 1 notebook (sauf fusions explicites ci-dessous)
 - Notebook title = nom clair en français ou anglais cohérent avec le thème
-- Les notebooks sont destinés au projet **Vente et Marketing** de Florent
+- Les notebooks sont destinés au projet **Vente et Marketing** de l'utilisateur
 
 ---
 
@@ -56,8 +56,8 @@ Auth stockée dans `~/.notebooklm/storage_state.json`. Si expirée → relancer 
 | Entrepreneuriat *(ex: Y.combPitchDeck)* | PLLsnm64NWGpYZnug7H6eY4fKgOoB13q4T | Entrepreneuriat | a4006a1a-7351-496c-8d31-1396db00e376 | ✅ Synced (1 source) |
 | OpenClaw | PLLsnm64NWGpZB6f7vAHJxe4I07b2CZyKn | IA Locale | a57d1f3a-ca5c-412f-a445-9076aaf8b0a3 | ⚠️ Playlist vide/privée (0 sources) |
 | ADHD | PLLsnm64NWGpbCvaEkbjP0_VJlGGZxW51B | ADHD | 0a2a683c-23eb-4540-9079-90926ee88b7f | ✅ Synced (1 source) |
-| My Youtube channel | PLLsnm64NWGpbAKxQMLga_kbEgv27f6u1U | *(à clarifier)* | — | ❓ À décider avec Florent |
-| Posts | PLLsnm64NWGpZcgUAxSBnFZ-QBwIUoi6ir | *(à clarifier)* | — | ❓ À décider avec Florent |
+| My Youtube channel | PLLsnm64NWGpbAKxQMLga_kbEgv27f6u1U | *(à clarifier)* | — | ❓ À décider avec l'utilisateur |
+| Posts | PLLsnm64NWGpZcgUAxSBnFZ-QBwIUoi6ir | *(à clarifier)* | — | ❓ À décider avec l'utilisateur |
 
 ---
 
@@ -90,7 +90,7 @@ yt-dlp --flat-playlist --dump-json \
 ### Étape 2 : Récupérer les sources actuelles du notebook
 
 ```bash
-source /c/Users/Administrateur/.notebooklm-venv/Scripts/activate
+source ~/.notebooklm-venv/Scripts/activate
 PYTHONIOENCODING=utf-8 notebooklm use NOTEBOOK_ID
 PYTHONIOENCODING=utf-8 notebooklm source list --json
 ```
@@ -145,7 +145,7 @@ for s in d['sources']:
 PYTHONIOENCODING=utf-8 notebooklm source delete SOURCE_ID
 ```
 
-**Règle de sécurité :** Ne jamais supprimer sans montrer la liste des sources candidates à la suppression et attendre validation explicite de Florent.
+**Règle de sécurité :** Ne jamais supprimer sans montrer la liste des sources candidates à la suppression et attendre validation explicite de l'utilisateur.
 
 ---
 
@@ -190,8 +190,8 @@ for line in sys.stdin:
 2. Récupérer vidéos playlist via yt-dlp --flat-playlist
 3. notebooklm source list → comparer
 4. Ajouter les manquantes (notebooklm source add)
-5. Identifier les potentiellement obsolètes → montrer à Florent → supprimer si validé
-6. Rechercher nouvelles vidéos récentes → proposer à Florent → ajouter si validé
+5. Identifier les potentiellement obsolètes → montrer à l'utilisateur → supprimer si validé
+6. Rechercher nouvelles vidéos récentes → proposer à l'utilisateur → ajouter si validé
 7. notebooklm source wait (attendre que tout soit ready)
 ```
 
@@ -204,7 +204,7 @@ Ces notebooks existent déjà mais ne viennent pas des playlists YouTube. Les ga
 | Notebook | ID | Note |
 |---|---|---|
 | Mastering Local AI (Gemma 4) | d0112802 | Correspond potentiellement à IA Locale / OpenClaw |
-| Architectural Foundations Voice AI | e2cb1b8d | SpeakApp related |
+| Architectural Foundations Voice AI | e2cb1b8d | <your-project> related |
 | Mastering Professional Web Design | 103a33cb | Pourrait merger dans Web Design |
 | Agentic Workflow | 2c0b03f9 | Vérifier si redondant avec n8n/Agent IA |
 | Lovable | b14fc32e | Outil no-code |
@@ -221,7 +221,7 @@ Ces notebooks existent déjà mais ne viennent pas des playlists YouTube. Les ga
 ## Sauvegarde état — Mémoire
 
 Après chaque session de sync, mettre à jour :
-`C:/Users/Administrateur/.claude/projects/C--Users-Administrateur-PROJECTS-navigateur/memory/youtube_notebooks_state.md`
+`~/.claude/projects/<project-path>-PROJECTS-navigateur/memory/youtube_notebooks_state.md`
 
 Format :
 ```
@@ -240,7 +240,7 @@ Dernière mise à jour : DATE
 
 1. **Un notebook = une thématique cohérente** — pas de mélange de sujets non liés
 2. **Toujours vérifier avant de créer** : `notebooklm list --json` pour éviter doublons
-3. **Nettoyage = validation Florent** — ne jamais supprimer sans confirmation
+3. **Nettoyage = validation l'utilisateur** — ne jamais supprimer sans confirmation
 4. **Nouvelles vidéos = proposer avant d'ajouter** si non issues directement de la playlist
 5. **Rate limiting Google** : attendre 2-3s entre chaque `source add`, max 10/min
 6. **Encodage Windows** : toujours préfixer `PYTHONIOENCODING=utf-8`

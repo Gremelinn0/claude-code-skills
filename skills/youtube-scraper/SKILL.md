@@ -167,7 +167,7 @@ for t in transcripts:
 
 ## Assets Make.com disponibles dans le Marketplace
 
-Dossier : `C:\Users\Administrateur\PROJECTS\0- Marketplace\1- Agence & Content\Skool Scraper\data\aiautomationsbyjack\`
+Dossier : `%USERPROFILE%\PROJECTS\<your-projects>\1- Agence & Content\Skool Scraper\data\<skool-community-slug>\`
 
 Workflows Make.com téléchargés (blueprints JSON) :
 - `Youtube Comment Scraper 1:2.json` + `2:2.json` — scraper de commentaires YouTube

@@ -67,7 +67,7 @@ Il y a 6+ CTA qui crient en meme temps sur la page. Reduis a 1 CTA primaire + 1 
 ## Template 11 — Photos stock generiques
 
 ```
-Les images sont du stock (poignees de main, equipe multiculturelle souriante, graphiques abstraits). Remplace par un placeholder marque [Photo Florent - a uploader] ou par une illustration abstraite Antigravity (particules, gradients geometriques). Pas de stock generique.
+Les images sont du stock (poignees de main, equipe multiculturelle souriante, graphiques abstraits). Remplace par un placeholder marque [Photo l'utilisateur - a uploader] ou par une illustration abstraite Antigravity (particules, gradients geometriques). Pas de stock generique.
 ```
 
 ## Template 12 — Pricing pas lisible
@@ -103,7 +103,7 @@ Cette direction ressemble trop a la direction <autre ref>. Ecarte-toi franchemen
 | "C'est beau mais generique" | 1, 3 |
 | "Ca se fond, on ne voit rien" | 2, 4, 6 |
 | "Trop charge" | 5, 10 |
-| "Les regles Florent pas respectees" | 7, 8 |
+| "Les regles l'utilisateur pas respectees" | 7, 8 |
 | "Mobile HS" | 9 |
 | "Images bofs" | 11 |
 | "Pricing bloquant" | 12 |

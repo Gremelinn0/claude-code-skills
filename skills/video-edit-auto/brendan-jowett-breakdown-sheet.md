@@ -41,7 +41,7 @@
 
 ---
 
-## Notes d'analyse (Florent / Claude)
+## Notes d'analyse (l'utilisateur / Claude)
 
 **Ce que Brendan fait que Descript ne fait PAS :**
 - Motion graphics / animations synchronisées sur la parole (pas juste des sous-titres)
@@ -54,7 +54,7 @@
 - Nettoyage audio (Studio Sound)
 - Correction de l'enregistrement brut
 
-**Conclusion workflow idéal pour Florent :**
+**Conclusion workflow idéal pour l'utilisateur :**
 1. Enregistrer avec Tella ou Descript recorder
 2. Nettoyer dans Descript (silences, erreurs, filler words) → exporter MP4 propre
 3. Passer le MP4 propre dans le pipeline Remotion+Whisper → motion graphics synchronisées

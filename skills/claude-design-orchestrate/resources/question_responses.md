@@ -36,7 +36,7 @@ Pas de fichiers a fournir. Reconstruis a partir du brief et des tokens que je t'
 Oui : {site_url}. Inspire-toi de la structure mais ne la copie pas. L'objectif est de montrer des alternatives convaincantes.
 ```
 
-Extraire `{site_url}` depuis `CLAUDE_DESIGN_PROJECT_INSTRUCTIONS.md` ou la brand identity. Defaut pour Florent : `https://marketplace-iaaa.vercel.app`.
+Extraire `{site_url}` depuis `CLAUDE_DESIGN_PROJECT_INSTRUCTIONS.md` ou la brand identity. Defaut pour l'utilisateur : `https://marketplace-iaaa.vercel.app`.
 
 ## Pattern 4 — Traitement des photos
 
@@ -44,7 +44,7 @@ Extraire `{site_url}` depuis `CLAUDE_DESIGN_PROJECT_INSTRUCTIONS.md` ou la brand
 
 **Reponse** :
 ```
-Placeholder clair avec label "[Photo <sujet> a uploader]" ou "[Logo client X]". Pas de stock photos generiques, pas de portraits IA. Si la section a besoin d'une vraie photo (Florent perso), indique-le explicitement en overlay.
+Placeholder clair avec label "[Photo <sujet> a uploader]" ou "[Logo client X]". Pas de stock photos generiques, pas de portraits IA. Si la section a besoin d'une vraie photo (l'utilisateur perso), indique-le explicitement en overlay.
 ```
 
 ## Pattern 5 — Ton de voix et copy

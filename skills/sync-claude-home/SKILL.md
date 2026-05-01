@@ -1,20 +1,20 @@
 ---
 name: sync-claude-home
-description: Synchroniser le dossier ~/.claude/ entre plusieurs PC via un repo git privé. Invoquer quand Florent dit "/sync-claude-home", "sync mon claude home", "push mon claude", "rafraîchir mon claude", "je change de PC", "setup claude sur nouveau PC", "cloner mon claude sur ce PC".
+description: Synchroniser le dossier ~/.claude/ entre plusieurs PC via un repo git privé. Invoquer quand l'utilisateur dit "/sync-claude-home", "sync mon claude home", "push mon claude", "rafraîchir mon claude", "je change de PC", "setup claude sur nouveau PC", "cloner mon claude sur ce PC".
 trigger: user-invocable
 scope: global
 ---
 
 # sync-claude-home — Sync du dossier `~/.claude/` entre PC
 
-## Comportement par défaut quand Florent invoque `/sync-claude-home`
+## Comportement par défaut quand l'utilisateur invoque `/sync-claude-home`
 
 Sauf si un sous-argument est donné (`pull`, `status`, `setup`), le skill exécute un **push complet "fin de session"** dans cet ordre :
 
 1. **Wrap-up projet courant** si on est dans un projet qui a le skill `wrapup` → invoquer `wrapup` pour clôturer proprement (handoff, MAJ docs, commit projet, push projet). Sinon sauter.
 2. **Commit + push `~/.claude`** (repo claude-home) :
    - `cd "$HOME/.claude"`
-   - `git status --short` → montrer à Florent ce qui va partir
+   - `git status --short` → montrer à l'utilisateur ce qui va partir
    - Si non vide → `git add -A && git commit -m "sync: <desc auto basée sur fichiers modifiés>" && git push origin main`
 3. **Commit + push `~/.claude/skills`** (repo claude-code-skills) :
    - `cd "$HOME/.claude/skills"`
@@ -30,8 +30,8 @@ Arguments alternatifs :
 
 **DEUX repos git privés** qui, ensemble, reconstituent `~/.claude/` sur un nouveau PC :
 
-1. **`claude-home`** (https://github.com/Gremelinn0/claude-home) — config, scheduled-tasks, secrets, agents, hooks, commands.
-2. **`claude-code-skills`** (https://github.com/Gremelinn0/claude-code-skills) — tous les skills globaux, qui vivent dans `~/.claude/skills/`.
+1. **`claude-home`** (https://github.com/<github-username>/claude-home) — config, scheduled-tasks, secrets, agents, hooks, commands.
+2. **`claude-code-skills`** (https://github.com/<github-username>/claude-code-skills) — tous les skills globaux, qui vivent dans `~/.claude/skills/`.
 
 Les 2 sont séparés car `skills/` a été mis en place en repo dédié il y a longtemps. On garde cette séparation.
 
@@ -44,15 +44,15 @@ Les 2 sont séparés car `skills/` a été mis en place en repo dédié il y a l
 
 ## Mode migration PC — push TOUT sans filtrer (y compris secrets, fichiers perso)
 
-**Quand Florent dit "je migre vers un nouveau PC" / "on migre tout" / "push tout avant que je bouge" → mode YOLO :**
+**Quand l'utilisateur dit "je migre vers un nouveau PC" / "on migre tout" / "push tout avant que je bouge" → mode YOLO :**
 
 1. **Ne PAS filtrer** `.mcp.json`, `.claude/launch.json`, `Windows/` (captures perso), `DHL*.pdf`, `autoperm_*`, `claude-local/`, `_pre-fusion-backup-*/`, `_archive/`, etc.
-2. **Ne PAS demander** "attention il y a un secret OAuth dans .mcp.json, on exclut ?" → le repo est PRIVÉ, seul Florent y a accès, il assume le risque.
+2. **Ne PAS demander** "attention il y a un secret OAuth dans .mcp.json, on exclut ?" → le repo est PRIVÉ, seul l'utilisateur y a accès, il assume le risque.
 3. **Ne PAS ajouter** de lignes au `.gitignore` pour "protéger" des fichiers sensibles pendant la migration. La sécurité vient APRÈS, une fois sur le nouveau PC et stable.
 4. **Gérer les nested `.git`** qui bloquent `git add -A` : les supprimer (`rm -rf <path>/.git`) pour que le dossier devienne un dossier normal et soit tracké dans le repo parent. On perd l'historique git du sous-repo (OK, on veut juste les fichiers).
 5. **Objectif unique** : 100% de fidélité entre l'ancien et le nouveau PC. Zéro friction, zéro "il faut que je retrouve ce fichier".
 
-**Règle de Florent (claire et énoncée 2026-04-23)** : "Je m'en fous des risques, merci je veux qu'on aille vite et qu'on soit efficace et qu'on le fasse bien, c'est tout. Proprement. Je vais pas partager ces dépôts, dans tous les cas ils sont ultra privés et que moi dessus."
+**Règle de l'utilisateur (claire et énoncée 2026-04-23)** : "Je m'en fous des risques, merci je veux qu'on aille vite et qu'on soit efficace et qu'on le fasse bien, c'est tout. Proprement. Je vais pas partager ces dépôts, dans tous les cas ils sont ultra privés et que moi dessus."
 
 **Après la migration**, on pourra reprendre les bonnes pratiques (`.env` gitignorés, secrets vers vault, etc.) — mais PAS pendant la fenêtre de migration.
 
@@ -93,10 +93,10 @@ cd "$HOME/.claude" && git status --short
 Copy-paste direct si `.claude/` n'existe pas encore sur la machine (Claude Code jamais lancé). Si `.claude/` existe déjà, sauter ce bloc et passer à la procédure détaillée (CAS B, rebranchement) plus bas.
 
 ```bash
-git clone https://github.com/Gremelinn0/claude-home.git                       "$HOME/.claude"
-git clone https://github.com/Gremelinn0/claude-code-skills.git                "$HOME/.claude/skills"
-git clone https://github.com/Gremelinn0/blueprint-hub.git                     "$HOME/PROJECTS/0- Marketplace"
-git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "$HOME/PROJECTS/Vente et Marketing - ALL Compagnies"
+git clone https://github.com/<github-username>/claude-home.git                       "$HOME/.claude"
+git clone https://github.com/<github-username>/claude-code-skills.git                "$HOME/.claude/skills"
+git clone https://github.com/<github-username>/blueprint-hub.git                     "$HOME/PROJECTS/<your-projects>"
+git clone https://github.com/<github-username>/vente-et-marketing-all-compagnies.git "$HOME/PROJECTS/<your-project-folder>"
 ```
 
 Après ce bloc, continuer à partir de l'**Étape 3** (détection username + réécriture paths).
@@ -130,8 +130,8 @@ Get-ChildItem "$HOME\.claude" -Force -ErrorAction SilentlyContinue | Select-Obje
 `git clone` direct :
 
 ```bash
-git clone https://github.com/Gremelinn0/claude-home.git        "$HOME/.claude"
-git clone https://github.com/Gremelinn0/claude-code-skills.git "$HOME/.claude/skills"
+git clone https://github.com/<github-username>/claude-home.git        "$HOME/.claude"
+git clone https://github.com/<github-username>/claude-code-skills.git "$HOME/.claude/skills"
 ```
 
 #### CAS B — `.claude/` existe déjà avec des runtime dirs
@@ -141,7 +141,7 @@ git clone https://github.com/Gremelinn0/claude-code-skills.git "$HOME/.claude/sk
 ```powershell
 cd "$HOME\.claude"
 git init
-git remote add origin https://github.com/Gremelinn0/claude-home.git
+git remote add origin https://github.com/<github-username>/claude-home.git
 git fetch origin
 git reset --hard origin/main
 git branch --set-upstream-to=origin/main main
@@ -150,7 +150,7 @@ git branch --set-upstream-to=origin/main main
 New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
 cd "$HOME\.claude\skills"
 git init
-git remote add origin https://github.com/Gremelinn0/claude-code-skills.git
+git remote add origin https://github.com/<github-username>/claude-code-skills.git
 git fetch origin
 git reset --hard origin/main
 git branch --set-upstream-to=origin/main main
@@ -204,7 +204,7 @@ foreach ($OldUser in $OldUsers) {
 }
 ```
 
-Après exécution, `git status` dans `~/.claude` et `~/.claude/skills` montrera les fichiers modifiés — **ne pas** les commiter tout de suite, laisser Florent les relire d'abord et valider avant de push.
+Après exécution, `git status` dans `~/.claude` et `~/.claude/skills` montrera les fichiers modifiés — **ne pas** les commiter tout de suite, laisser l'utilisateur les relire d'abord et valider avant de push.
 
 ### Étape 4 — Cloner les projets actifs dans `~/PROJECTS`
 
@@ -212,20 +212,20 @@ Voir section **Structure projets recommandée** ci-dessous pour la liste complè
 
 ```bash
 mkdir -p "$HOME/PROJECTS" && cd "$HOME/PROJECTS"
-git clone https://github.com/Gremelinn0/blueprint-hub.git                     "0- Marketplace"
-git clone https://github.com/Gremelinn0/vente-et-marketing-all-compagnies.git "Vente et Marketing - ALL Compagnies"
+git clone https://github.com/<github-username>/blueprint-hub.git                     "<your-projects>"
+git clone https://github.com/<github-username>/vente-et-marketing-all-compagnies.git "<your-project-folder>"
 ```
 
 ### Étape 5 — `npm install` sur chaque projet avec un `package.json` à la racine
 
 Marketplace, LinkedIn Content Agent, etc.
 
-### Étape 6 — Actions manuelles à rappeler à Florent
+### Étape 6 — Actions manuelles à rappeler à l'utilisateur
 
 - **MCP connectors** (Notion, Supabase, Vercel, Google Workspace, Gmail) : re-auth OAuth depuis le panneau Settings de Claude Code.
 - **Vercel CLI** : `vercel login` dans un terminal.
 - **Chrome extension "Claude in Chrome"** : réinstaller + reconnecter.
-- **Apps natives** référencées par un skill (OBS, Krea, SpeakApp…) : à réinstaller.
+- **Apps natives** référencées par un skill (OBS, Krea, <your-project>…) : à réinstaller.
 
 ### Étape 7 — Redémarrer Claude Code
 
@@ -233,19 +233,19 @@ Pour picker les skills, settings et scheduled-tasks nouvellement rebranchés.
 
 ### Étape 8 — Résumé final
 
-1 paragraphe : ce qui tourne maintenant / ce qui reste à re-auth manuellement / les paths qui ont été réécrits à l'étape 3 (pour que Florent valide et commit).
+1 paragraphe : ce qui tourne maintenant / ce qui reste à re-auth manuellement / les paths qui ont été réécrits à l'étape 3 (pour que l'utilisateur valide et commit).
 
 ## Structure projets recommandée
 
 ```
 C:\Users\<User>\PROJECTS\
-├── 0- Marketplace\              → https://github.com/Gremelinn0/blueprint-hub.git
-├── 3- Wisper\speak-app-dev\     → https://github.com/Gremelinn0/wisper-app.git
-├── Vente et Marketing - ALL Compagnies\
+├── <your-projects>\              → https://github.com/<github-username>/blueprint-hub.git
+├── <your-project-folder>\<project-folder>\     → https://github.com/<github-username>/wisper-app.git
+├── <your-project-folder>\
 └── navigateur\
 ```
 
-**Les noms de dossier sont figés** — ils apparaissent en dur dans les SKILL.md des scheduled-tasks (ex. `C:\Users\<User>\PROJECTS\0- Marketplace\...`). Renommer un dossier casse silencieusement toutes les routines qui pointaient dessus. À ne faire qu'en couplant avec une MAJ de toutes les routines concernées.
+**Les noms de dossier sont figés** — ils apparaissent en dur dans les SKILL.md des scheduled-tasks (ex. `C:\Users\<User>\PROJECTS\<your-projects>\...`). Renommer un dossier casse silencieusement toutes les routines qui pointaient dessus. À ne faire qu'en couplant avec une MAJ de toutes les routines concernées.
 
 ## Long terme — à évaluer plus tard (ne pas faire pendant un setup PC)
 
@@ -286,7 +286,7 @@ Les fichiers des routines (`scheduled-tasks/<id>/SKILL.md`) voyagent via git, MA
 
 Les routines qui font du **Computer Use** (screenshot, clic, pilotage d'une app native) doivent tourner sur le PC qui a physiquement accès à l'écran à piloter. Pas le choix.
 
-Exemple : une routine qui check SpeakApp via Computer Use → doit tourner sur le PC où SpeakApp est lancée, même si ce n'est pas le PC "principal". Dans ce cas :
+Exemple : une routine qui check <your-project> via Computer Use → doit tourner sur le PC où <your-project> est lancée, même si ce n'est pas le PC "principal". Dans ce cas :
 - On garde la routine active sur ce PC (on ne la désactive pas même si c'est le "secondaire")
 - On la désactive sur tous les autres PCs (qui verraient un écran vide ou l'écran du mauvais poste)
 
@@ -310,7 +310,7 @@ Pour consolider sur un seul compte quand on en a 2 :
 
 ## Debug
 
-**Repo absent du nouveau PC :** vérifier l'URL exacte `https://github.com/Gremelinn0/claude-home.git`. Au premier `git clone/fetch`, le Git Credential Manager ouvre un popup navigateur pour s'auth sur GitHub — si rien ne se passe, vérifier `git config --global credential.helper` (doit renvoyer `manager` sur Windows).
+**Repo absent du nouveau PC :** vérifier l'URL exacte `https://github.com/<github-username>/claude-home.git`. Au premier `git clone/fetch`, le Git Credential Manager ouvre un popup navigateur pour s'auth sur GitHub — si rien ne se passe, vérifier `git config --global credential.helper` (doit renvoyer `manager` sur Windows).
 
 **Conflit de merge après un pull :** un fichier a été modifié des 2 côtés. Git va lister les fichiers en conflit. Règle de principe : garder la version la plus récente. Si doute, sauvegarder l'ancien fichier sous un autre nom avant de résoudre.
 

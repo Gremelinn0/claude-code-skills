@@ -9,9 +9,9 @@ Skill pour construire la **base de travail Notion** d'une formation à partir de
 
 ## Quand l'utiliser
 
-- Florent lance la consolidation d'une formation (Claude Code, Antigravity, Cursor, etc.)
+- l'utilisateur lance la consolidation d'une formation (Claude Code, Antigravity, Cursor, etc.)
 - Plusieurs sources dispersées (fichiers .md, .html, Notion, dashboards Vercel, posts LinkedIn) doivent être rassemblées
-- But : une base Notion propre, 1 sous-page par partie, où chaque bloc porte sa référence, pour que Florent puisse ensuite retravailler chaque partie à son rythme
+- But : une base Notion propre, 1 sous-page par partie, où chaque bloc porte sa référence, pour que l'utilisateur puisse ensuite retravailler chaque partie à son rythme
 
 **Pas pour :** rédiger des posts LinkedIn, écrire du texte nouveau, faire de l'analyse/synthèse. Juste de la **consolidation verbatim**.
 
@@ -26,12 +26,12 @@ Skill pour construire la **base de travail Notion** d'une formation à partir de
    - Dashboard / site web → URL complète
    - Post / vidéo → URL + ID
 5. **1 sous-page Notion par partie** — jamais de contenu linéaire dans la page principale. La page principale = intro + TOC cliquable vers les sous-pages + bloc "Références globales"
-6. **Séquentiel** — une partie terminée, validation Florent ("OK"), puis la suivante. Jamais deux parties en parallèle
+6. **Séquentiel** — une partie terminée, validation l'utilisateur ("OK"), puis la suivante. Jamais deux parties en parallèle
 7. **Préférer l'API Notion MCP** (`mcp__notion__*`, `mcp__decc5ebf-*__notion-*`) au Chrome MCP — plus fiable, pas de déconnexion
 
 ## Input attendu
 
-Florent (ou un plan validé) fournit :
+l'utilisateur (ou un plan validé) fournit :
 
 - **Sujet** de la formation (ex: "Claude Code", "Antigravity", "Cursor")
 - **TOC figée** — liste numérotée des parties (ex: 15 parties de Claude Code)
@@ -59,7 +59,7 @@ Pour chaque source du catalogue :
    - Partie cible (numéro de la TOC)
    - Référence (chemin + lignes ou URL)
    - Court titre interne pour s'y retrouver (pas pour Notion)
-4. Si un passage ne rentre dans aucune partie → le noter dans un bloc "Hors TOC" à vider à la fin avec Florent
+4. Si un passage ne rentre dans aucune partie → le noter dans un bloc "Hors TOC" à vider à la fin avec l'utilisateur
 5. Si une partie n'a aucun passage → le noter aussi (gap à combler plus tard)
 
 **Résultat :** une map `partie N → liste de (source, référence, passage)` prête à être déversée dans Notion.
@@ -95,43 +95,43 @@ Créer une sous-page enfant de la page principale avec la structure figée suiva
   - **H3** : identifiant court de la source + référence courte (ex: `Source B1 — formations/claude-code-script.md:19-57`)
   - **Paragraphe sous le H3** : texte verbatim, tel quel, sans reformulation. Conserver le formatage original du mieux possible (titres Markdown du source → sous-titres Notion, listes → listes Notion, italique → italique). Ne pas "nettoyer" les coquilles, ne pas retirer les emojis, ne pas retirer les `[🎬 DÉMO]` ou `[📌 TODO]` du source.
   - Si le passage source contient lui-même des sous-sections, les conserver.
-- **Pas** de H2 "Texte retravaillé" à cette étape. Le retravail = phase ultérieure, déclenchée explicitement par Florent, partie par partie.
+- **Pas** de H2 "Texte retravaillé" à cette étape. Le retravail = phase ultérieure, déclenchée explicitement par l'utilisateur, partie par partie.
 - **Pas** de flags, de divergences, de notes "à dédupliquer", de "à voir plus tard". Rien.
 
-**Ordre des sources dans la sous-page** : par ordre de création / pertinence, pas d'ordre strict. Si Florent préfère un ordre spécifique, il le dit.
+**Ordre des sources dans la sous-page** : par ordre de création / pertinence, pas d'ordre strict. Si l'utilisateur préfère un ordre spécifique, il le dit.
 
 **Une fois la sous-page créée** :
 1. Revenir sur la page principale
 2. Mettre à jour l'item de la TOC pour qu'il pointe en lien vers la sous-page (`notion-update-page`)
 3. Ajouter les sources utilisées au bloc "Références globales" si pas déjà présentes
 
-### Phase 3 — Validation Florent entre chaque partie
+### Phase 3 — Validation l'utilisateur entre chaque partie
 
-**Règle absolue** : après la création de chaque sous-page, présenter à Florent un message court :
+**Règle absolue** : après la création de chaque sous-page, présenter à l'utilisateur un message court :
 
 > Partie N `<titre>` consolidée dans Notion. Sources incluses : B1, A2, C5, D1. Lien : `<url>`. OK pour passer à la Partie N+1 ?
 
 Attendre le "OK" explicite. Pas de passage à la partie suivante sans validation.
 
-Si Florent signale un oubli / un problème sur la partie N → corriger la partie N avant de continuer.
+Si l'utilisateur signale un oubli / un problème sur la partie N → corriger la partie N avant de continuer.
 
 ### Phase 4 — Miroir local optionnel
 
 Si utile pour la session suivante (ex: gros scan à re-parcourir, aide mémoire), générer en parallèle un fichier `.md` dans le projet (ex: `formations/CONSOLIDE_<SUJET>.md`) avec la même structure que les sous-pages Notion. Mais **Notion reste la source de vérité**.
 
-Ne PAS générer ce miroir par défaut — uniquement si Florent le demande ou si c'est explicitement utile pour continuer le travail plus tard.
+Ne PAS générer ce miroir par défaut — uniquement si l'utilisateur le demande ou si c'est explicitement utile pour continuer le travail plus tard.
 
 ### Phase 5 — Finalisation
 
 Une fois les N sous-pages créées et validées :
 1. Vérifier que la TOC de la page principale pointe bien vers chaque sous-page (liens cliquables)
 2. Vérifier que le bloc "Références globales" liste bien toutes les sources utilisées
-3. Présenter à Florent un message de clôture : nombre de sous-pages, nombre de sources, URL de la page principale
+3. Présenter à l'utilisateur un message de clôture : nombre de sous-pages, nombre de sources, URL de la page principale
 
 ## Ce que le skill NE fait PAS
 
 - **Pas de retravail / réécriture** — même pas "je nettoie les coquilles", même pas "je reformule pour plus de clarté"
-- **Pas de synthèse / dédup / analyse de divergences** — si deux sources se contredisent, on garde les deux, Florent tranchera plus tard
+- **Pas de synthèse / dédup / analyse de divergences** — si deux sources se contredisent, on garde les deux, l'utilisateur tranchera plus tard
 - **Pas de création de posts LinkedIn** — ce skill ne génère jamais de post. Pour ça, voir `/linkedin-post-creator`
 - **Pas de scraping YouTube / Skool** — si une vidéo YouTube doit être incluse, passer par `/youtube-scraper` en amont, mettre le transcript dans une source locale, puis inclure cette source
 - **Pas de montage vidéo, pas de Jack Roberts** — sujets hors scope
@@ -167,7 +167,7 @@ Une fois les N sous-pages créées et validées :
 ## Exemple d'utilisation
 
 ```
-Florent : "On consolide la formation Cursor. 10 parties, sources :
+l'utilisateur : "On consolide la formation Cursor. 10 parties, sources :
 - cursor-script.md (local)
 - hub/cursor.html (local)
 - Notion page Cursor (URL)
@@ -178,7 +178,7 @@ Claude :
 1. Phase 0 — Lit tout, mappe les passages par partie
 2. Phase 1 — Crée page "📘 Formation Cursor — Base de travail" avec intro + TOC 10 items
 3. Phase 2 — Crée sous-page "Partie 1 — Intro", y met H2 + H3 par source + verbatim
-4. Dit à Florent : "Partie 1 faite, sources : X, Y, Z. OK pour Partie 2 ?"
+4. Dit à l'utilisateur : "Partie 1 faite, sources : X, Y, Z. OK pour Partie 2 ?"
 5. Attend OK, enchaîne.
 ```
 
@@ -191,6 +191,6 @@ Avant de démarrer :
 - [ ] MCP Notion disponible (sinon fallback Chrome MCP documenté)
 - [ ] Aucune source "à scanner plus tard"
 - [ ] Règle mot-pour-mot rappelée
-- [ ] Workflow validation partie-par-partie acté avec Florent
+- [ ] Workflow validation partie-par-partie acté avec l'utilisateur
 
-Si une case n'est pas cochable → demander à Florent avant de démarrer la Phase 0.
+Si une case n'est pas cochable → demander à l'utilisateur avant de démarrer la Phase 0.

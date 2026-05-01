@@ -1,6 +1,6 @@
 ---
 name: dashboards-hub-master
-description: Skill global LIGHT — workflow déploiement Vercel + Master Hub central pour TOUS les projets PROJECTS/. Invoquer dès qu'un dashboard HTML / hub / page web est créé ou modifié dans un projet (Marketplace, Vente et Marketing, Vote app, SpeakApp, etc.). Triggers — "dashboard", "html", "vercel deploy", "master hub", "hub projet", "redéploie".
+description: Skill global LIGHT — workflow déploiement Vercel + Master Hub central pour TOUS les projets PROJECTS/. Invoquer dès qu'un dashboard HTML / hub / page web est créé ou modifié dans un projet (Marketplace, Vente et Marketing, Vote app, <your-project>, etc.). Triggers — "dashboard", "html", "vercel deploy", "master hub", "hub projet", "redéploie".
 ---
 
 # dashboards-hub-master
@@ -31,15 +31,15 @@ Création/modif HTML dans un projet :
 ## §3 Master Hub central
 
 URL : `https://antigravity-master-hub.vercel.app/`
-Source : `Vente et Marketing - ALL Compagnies/hub/master-hub/index.html`
+Source : `<your-project-folder>/hub/master-hub/index.html`
 
 **TOUT dashboard / hub projet / URL Vercel transversale** doit être référencé depuis le Master Hub. Pas de dashboard orphelin.
 
 Workflow à chaque création/modif dashboard projet :
 1. Créer/modifier dashboard dans son projet
 2. Déployer sur Vercel projet
-3. Éditer Master Hub `Vente et Marketing - ALL Compagnies/hub/master-hub/index.html` — ajouter carte ou MAJ section projet
-4. Déployer Master Hub : `cd "Vente et Marketing - ALL Compagnies/hub/master-hub" && npx vercel deploy --prod --yes`
+3. Éditer Master Hub `<your-project-folder>/hub/master-hub/index.html` — ajouter carte ou MAJ section projet
+4. Déployer Master Hub : `cd "<your-project-folder>/hub/master-hub" && npx vercel deploy --prod --yes`
 5. Vérifier `https://antigravity-master-hub.vercel.app/` pointe bien vers nouveau dashboard
 
 ## §4 Hub & Backlog interne (source vérité projet)
@@ -51,7 +51,7 @@ Chaque projet a un fichier central de suivi (`BACKLOG_ROADMAP.md` ou `roadmap.md
 
 Hub Dashboard HTML = lien VISIBLE vers le fichier de suivi. Divergence fichier ↔ Hub → fichier interne arbitre.
 
-Exception : `3- Wisper/speak-app-dev/` utilise `memory/roadmap/roadmap.md`.
+Exception : `<your-project-folder>/<project-folder>/` utilise `memory/roadmap/roadmap.md`.
 
 ## §5 Anti-patterns
 

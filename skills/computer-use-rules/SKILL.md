@@ -9,7 +9,7 @@ scope: global — tous les projets
 
 ## Pourquoi ce skill existe
 
-Florent a perdu ~30 min de session parce que Claude :
+l'utilisateur a perdu ~30 min de session parce que Claude :
 - A essayé d'ouvrir/fermer des fenêtres de l'utilisateur
 - A cliqué dans le vide sans vérifier ce qui était ouvert
 - A switché vers un display qui n'existe plus (anciennes sessions : spacedesk retiré 2026-04-23)
@@ -20,7 +20,7 @@ Ces erreurs se répètent. Ce skill est le garde-fou.
 
 ## Règle 1 — 1 seul écran, pas de `switch_display` nécessaire
 
-**Setup actuel (2026-04-23) :** Florent a **1 seul écran principal**. L'écran secondaire spacedesk (`display 3988289358`) a été retiré.
+**Setup actuel (2026-04-23) :** l'utilisateur a **1 seul écran principal**. L'écran secondaire spacedesk (`display 3988289358`) a été retiré.
 
 ```
 display principal = unique écran disponible
@@ -34,10 +34,10 @@ display principal = unique écran disponible
 **Apps qui vivent sur ce seul écran :**
 - AntiGravity (AG)
 - **Claude Desktop (Electron) + sa DevTools** (voir Règle 1bis ci-dessous — pilotage prioritaire via scripts UIA/Python, pas computer-use)
-- Control Center (pywebview = SpeakApp)
+- Control Center (pywebview = <your-project>)
 - Chrome (Claude.ai, ChatGPT, Gemini) → **Chrome MCP préférable** à computer-use (tier "read", clics bloqués)
 - Toutes apps natives Python/GUI du projet
-- **Tout ce que Florent utilise pour bosser** (IDE, terminal, navigateur)
+- **Tout ce que l'utilisateur utilise pour bosser** (IDE, terminal, navigateur)
 
 **Cohabitation :** puisqu'il n'y a qu'un seul écran, Claude doit être **le plus discret possible** — pas de flash DevTools, pas de vol de focus. Privilégier les mécanismes qui travaillent en arrière-plan (UIA Invoke, CDP, WS Bridge, hooks JSONL). Computer-use reste le **dernier recours** pour du vrai GUI natif.
 
@@ -45,7 +45,7 @@ display principal = unique écran disponible
 
 ## Règle 1bis — Claude Desktop = pilotage prioritaire via scripts UIA/Python, pas computer-use
 
-**Ce qu'il faut savoir :** quand Florent bosse sur CD, la **sidebar est souvent repliée** (zone étroite, boutons sessions collapsed).
+**Ce qu'il faut savoir :** quand l'utilisateur bosse sur CD, la **sidebar est souvent repliée** (zone étroite, boutons sessions collapsed).
 
 **Bonne nouvelle :** les éléments UIA restent présents dans l'arbre même sidebar repliée. `cd_uia_scan.py` voit tout, `cd_nav_to_session.py` peut invoquer la bonne session sans que l'état visuel de la sidebar bouge.
 
@@ -62,11 +62,11 @@ display principal = unique écran disponible
 **Ces scripts fonctionnent indépendamment de :**
 - la visibilité de la fenêtre (CD peut être minimisée, cachée, derrière une autre app)
 - l'état de la sidebar (repliée ou étendue)
-- ce que Florent est en train de faire ailleurs
+- ce que l'utilisateur est en train de faire ailleurs
 
 **Computer-use sur CD = fallback exotique uniquement** (cas où UIA ne voit pas un élément, ou validation visuelle d'un pixel). Sinon → scripts Python.
 
-**Règle DevTools CD inject (2026-04-23) :** libre à toute heure, jour comme nuit. Florent : "Tu ne me perturberas jamais, le PC est complètement disponible. Pour faire les scans DOM, il ne faut vraiment pas que tu hésites."
+**Règle DevTools CD inject (2026-04-23) :** libre à toute heure, jour comme nuit. l'utilisateur : "Tu ne me perturberas jamais, le PC est complètement disponible. Pour faire les scans DOM, il ne faut vraiment pas que tu hésites."
 
 ---
 
@@ -75,8 +75,8 @@ display principal = unique écran disponible
 `open_application(...)` est autorisé quand c'est nécessaire pour la tâche (ex: ouvrir Chrome pour un test).
 
 **INTERDIT :**
-- Fermer, minimiser, maximiser une fenêtre de Florent
-- Alt+Tab, Win+Tab, Win+D pour changer la fenêtre active de Florent
+- Fermer, minimiser, maximiser une fenêtre de l'utilisateur
+- Alt+Tab, Win+Tab, Win+D pour changer la fenêtre active de l'utilisateur
 - Redimensionner une fenêtre sans demander
 
 **AUTORISÉ :**
@@ -93,7 +93,7 @@ display principal = unique écran disponible
 1. `screenshot()` — observer ce qui est ouvert
 2. Analyser : est-ce que tout ce dont j'ai besoin est visible ?
 3. Si oui → `request_access(apps=[...])` avec seulement ce qui est nécessaire → agir
-4. Si non → **STOP**, dire à Florent : _"J'ai besoin que [X] soit ouvert. Tu peux l'ouvrir ?"_
+4. Si non → **STOP**, dire à l'utilisateur : _"J'ai besoin que [X] soit ouvert. Tu peux l'ouvrir ?"_
 5. Attendre "ok" explicite avant de continuer
 
 **Jamais :**
@@ -109,12 +109,12 @@ Ne demander accès qu'aux apps réellement nécessaires pour la tâche en cours.
 
 **Bon :**
 ```python
-request_access(apps=["SpeakApp"], reason="Vérifier le Control Center")
+request_access(apps=["<your-project>"], reason="Vérifier le Control Center")
 ```
 
 **Mauvais :**
 ```python
-request_access(apps=["SpeakApp", "Google Chrome", "Claude", "Antigravity", "Visual Studio Code"], reason="...")
+request_access(apps=["<your-project>", "Google Chrome", "Claude", "Antigravity", "Visual Studio Code"], reason="...")
 ```
 
 Trop d'apps dans l'allowlist = les autres fenêtres sont masquées = screenshots inutiles.
@@ -152,19 +152,19 @@ Quand `mcp__Claude_in_Chrome__tabs_context_mcp` retourne "not connected" :
 - Dire "Chrome est déconnecté" et s'arrêter là
 
 **Si après 2 retries Chrome MCP ne se reconnecte pas :**
-→ Dire à Florent : _"Chrome MCP ne se reconnecte pas. Tu peux vérifier que l'extension Claude est bien activée dans Chrome ?"_
+→ Dire à l'utilisateur : _"Chrome MCP ne se reconnecte pas. Tu peux vérifier que l'extension Claude est bien activée dans Chrome ?"_
 → Continuer les tâches qui ne nécessitent pas Chrome pendant ce temps.
 
 ---
 
 ## Règle 7 — Pas de question si les logs peuvent répondre
 
-Avant de demander à Florent ce qui se passe dans l'app :
+Avant de demander à l'utilisateur ce qui se passe dans l'app :
 1. Lire les logs via Bash : `tail -50 debug.log | grep -E "\[CC|lecture|TTS"`
 2. Lire `cc_state.json` via Python
 3. Vérifier le screenshot
 
-Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = logs, code, screenshots, Chrome MCP, scripts Python UIA.
+l'utilisateur = validation visuelle + actions physiques (micro, fenêtre). Claude = logs, code, screenshots, Chrome MCP, scripts Python UIA.
 
 ---
 
@@ -174,7 +174,7 @@ Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = lo
 [ ] La cible est Claude Desktop ? → privilégier scripts UIA/Python (cd_uia_scan, cd_nav_to_session)
 [ ] La cible est Chrome/pywebview ? → Chrome MCP à la place
 [ ] J'ai vérifié ce qui est ouvert avant request_access ?
-[ ] Je vais fermer/minimiser une fenêtre de Florent ? → STOP, interdit
+[ ] Je vais fermer/minimiser une fenêtre de l'utilisateur ? → STOP, interdit
 [ ] request_access = uniquement les apps nécessaires ?
 ```
 
@@ -182,5 +182,5 @@ Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = lo
 
 ## Historique
 
-- **2026-04-14** — Créé suite à erreurs répétées d'écran + fenêtres. Validé par Florent.
-- **2026-04-23** — Écran secondaire spacedesk retiré par Florent. Règles 1 + 1bis réécrites : 1 seul écran, pas de `switch_display`, pilotage CD via scripts UIA/Python en priorité (sidebar repliée = pas bloquant car UIA voit tout). Computer-use = fallback exotique.
+- **2026-04-14** — Créé suite à erreurs répétées d'écran + fenêtres. Validé par l'utilisateur.
+- **2026-04-23** — Écran secondaire spacedesk retiré par l'utilisateur. Règles 1 + 1bis réécrites : 1 seul écran, pas de `switch_display`, pilotage CD via scripts UIA/Python en priorité (sidebar repliée = pas bloquant car UIA voit tout). Computer-use = fallback exotique.

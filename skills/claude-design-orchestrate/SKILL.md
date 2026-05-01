@@ -20,18 +20,18 @@ description: Orchestre de bout en bout la generation de directions de design sur
 - Un projet Claude Design existant avec son URL (OU bien le skill cree un nouveau projet a l'Etape 0)
 - Idealement le Design System dans ce projet est propre (sinon invoque d'abord `claude-design-system-audit`)
 - Brand identity locale connue (`brand-identity` skill dans le projet ou `CLAUDE_DESIGN_PROJECT_INSTRUCTIONS.md`)
-- **Banque de DS de reference** : `Vente et Marketing - ALL Compagnies/awesome-design-md/design-md/<marque>/README.md` (66+ DESIGN.md ready-to-use : stripe, linear, notion, spotify, claude, cohere, elevenlabs, raycast, vercel, framer, etc.). A utiliser comme **inspiration** quand un template demande un style "linear-energetic", "stripe-minimal", etc.
+- **Banque de DS de reference** : `<your-project-folder>/awesome-design-md/design-md/<marque>/README.md` (66+ DESIGN.md ready-to-use : stripe, linear, notion, spotify, claude, cohere, elevenlabs, raycast, vercel, framer, etc.). A utiliser comme **inspiration** quand un template demande un style "linear-energetic", "stripe-minimal", etc.
 
-## Comptes claude.ai (Florent en a 2)
+## Comptes claude.ai (l'utilisateur en a 2)
 
-**REGLE OBLIGATOIRE : avant tout lancement, verifier sur QUEL compte Chrome est connecte.** Florent alterne entre 2 comptes claude.ai. Generer 3 directions sur le mauvais compte = projets invisibles cote Florent + confusion garantie.
+**REGLE OBLIGATOIRE : avant tout lancement, verifier sur QUEL compte Chrome est connecte.** l'utilisateur alterne entre 2 comptes claude.ai. Generer 3 directions sur le mauvais compte = projets invisibles cote l'utilisateur + confusion garantie.
 
 | Compte | Email | Org affichee | Usage |
 |--------|-------|--------------|-------|
-| **Compte principal** | `florent.maisoncelle@gmail.com` | `florent.maisoncelle@gmail.com's Organization` | Defaut SpeakApp + projets perso |
+| **Compte principal** | `<your-email>` | `<your-email>'s Organization` | Defaut <your-project> + projets perso |
 | **Compte secondaire** | (a documenter) | (a documenter) | A preciser quand identifie |
 
-Si le compte connecte ne correspond pas a l'attendu → **stopper et demander a Florent de switch** avant de creer le projet.
+Si le compte connecte ne correspond pas a l'attendu → **stopper et demander a l'utilisateur de switch** avant de creer le projet.
 
 ## Inputs attendus
 
@@ -46,20 +46,20 @@ Si le compte connecte ne correspond pas a l'attendu → **stopper et demander a 
 
 ### Etape 0 — Pre-flight OBLIGATOIRE (account check + DS announce)
 
-**Avant tout clic dans claude.ai/design, le skill DOIT executer ce pre-flight et afficher un recapitulatif structure a Florent. Aucune conversation n'est lancee tant que le recap n'est pas affiche.**
+**Avant tout clic dans claude.ai/design, le skill DOIT executer ce pre-flight et afficher un recapitulatif structure a l'utilisateur. Aucune conversation n'est lancee tant que le recap n'est pas affiche.**
 
 #### 0.1 — Account check via Chrome MCP
 
 1. `mcp__Claude_in_Chrome__navigate` vers `https://claude.ai/design`
-2. `screenshot` pour identifier le compte connecte (badge en bas-gauche : "florent.maisoncelle@gmail.com's Organization" + nom utilisateur)
-3. **Verifier** : compte attendu = celui specifie dans la commande, OU defaut `florent.maisoncelle@gmail.com`
+2. `screenshot` pour identifier le compte connecte (badge en bas-gauche : "<your-email>'s Organization" + nom utilisateur)
+3. **Verifier** : compte attendu = celui specifie dans la commande, OU defaut `<your-email>`
 4. **Si mismatch** : stopper immediatement, afficher :
    > "Compte connecte = X. Tu attendais Y. Switch de compte necessaire avant de continuer. Dis-moi 'go' une fois switch."
 5. **Si match** : continuer
 
 #### 0.2 — DS announce (recap obligatoire avant lancement)
 
-Avant de lancer la moindre conversation, AFFICHER ce bloc structure a Florent :
+Avant de lancer la moindre conversation, AFFICHER ce bloc structure a l'utilisateur :
 
 ```
 ═══════════════════════════════════════════════
@@ -89,11 +89,11 @@ OUTPUT prevu              : design_outputs/<date>/<page>/
 ```
 
 Puis :
-- Si Florent dit "go" / "ok" → lancer Etape 1+
-- Si Florent dit "stop" / corrige un point → ajuster + re-afficher le recap
-- Si Florent ne repond pas explicitement → ne PAS lancer (par defaut on attend confirmation)
+- Si l'utilisateur dit "go" / "ok" → lancer Etape 1+
+- Si l'utilisateur dit "stop" / corrige un point → ajuster + re-afficher le recap
+- Si l'utilisateur ne repond pas explicitement → ne PAS lancer (par defaut on attend confirmation)
 
-**Pourquoi cette etape existe (incident 2026-04-25)** : un agent a lance 3 directions widget SpeakApp sans annoncer le DS utilise ni verifier le compte. Resultat : Florent ne voyait rien (mauvais compte suspecte) + n'avait aucune trace du DS choisi + l'extract local n'a pas tourne. Cette regle elimine les 3 problemes d'un coup.
+**Pourquoi cette etape existe (incident 2026-04-25)** : un agent a lance 3 directions widget <your-project> sans annoncer le DS utilise ni verifier le compte. Resultat : l'utilisateur ne voyait rien (mauvais compte suspecte) + n'avait aucune trace du DS choisi + l'extract local n'a pas tourne. Cette regle elimine les 3 problemes d'un coup.
 
 ### Etape 1 — Charger le contexte
 
@@ -147,7 +147,7 @@ Pour chaque conversation active :
 
 ### Etape 6 — Extraction des outputs (OBLIGATOIRE — pas optionnelle)
 
-**Cette etape n'est PAS optionnelle. Une session sans extract = generation invisible cote Florent + impossible de porter dans `widget_qt_test.py` ou autre code prod. Si l'extract foire, retry immediat puis flag explicite "EXTRACT_FAILED" dans le rapport final.**
+**Cette etape n'est PAS optionnelle. Une session sans extract = generation invisible cote l'utilisateur + impossible de porter dans `widget_qt_test.py` ou autre code prod. Si l'extract foire, retry immediat puis flag explicite "EXTRACT_FAILED" dans le rapport final.**
 
 Sequence obligatoire :
 1. Avant l'extract, screenshot chaque onglet projet pour confirmer qu'au moins 1 fichier existe dans Design Files
@@ -259,7 +259,7 @@ Filtrer par pattern (ex : tous les `.jsx` de la direction courante), puis pour c
 | Champ | Valeur |
 |-------|--------|
 | **taskId** | `claude-design-orchestrate-mensuel` |
-| **Fichier** | `C:\Users\Administrateur\.claude\scheduled-tasks\claude-design-orchestrate-mensuel\SKILL.md` |
+| **Fichier** | `%USERPROFILE%\.claude\scheduled-tasks\claude-design-orchestrate-mensuel\SKILL.md` |
 | **Cron** | `0 9 1 * *` (1er du mois, 9h local) |
 | **notifyOnCompletion** | true |
 | **Mode** | local (Chrome MCP requis) |
@@ -295,20 +295,20 @@ mcp__scheduled-tasks__create_scheduled_task({
 
 ## Etape 9 — Decisions produit Antigravity (ancrage 2026-04-22)
 
-Lors des cycles de generation `/agence`, ces decisions produit sont **figees** et doivent guider le skill pour eviter de regenerer un truc que Florent a deja rejete.
+Lors des cycles de generation `/agence`, ces decisions produit sont **figees** et doivent guider le skill pour eviter de regenerer un truc que l'utilisateur a deja rejete.
 
 ### Directions gardees comme reference
 
 | Direction | Style | Decision | Archivage |
 |-----------|-------|----------|-----------|
-| **V1 Technical clarity** | epure, eclaire, pro, typo display, espace blanc, gradient mesh subtil | GARDEE | `Vente et Marketing - ALL Compagnies/hub/references-design/V1-technical-clarity-KEEP.html` |
-| **V4 Warm and human** | serif Fraunces, creme/terracotta, illustrations douces, cards arrondies, style no-code academy | GARDEE | `Vente et Marketing - ALL Compagnies/hub/references-design/V4-warm-human-KEEP.html` |
+| **V1 Technical clarity** | epure, eclaire, pro, typo display, espace blanc, gradient mesh subtil | GARDEE | `<your-project-folder>/hub/references-design/V1-technical-clarity-KEEP.html` |
+| **V4 Warm and human** | serif Fraunces, creme/terracotta, illustrations douces, cards arrondies, style no-code academy | GARDEE | `<your-project-folder>/hub/references-design/V4-warm-human-KEEP.html` |
 
 ### Directions rejetees
 
 | Direction | Style | Raison du rejet |
 |-----------|-------|-----------------|
-| **V2 Ambitious energy** | fond quasi-noir, gradients satures violet/rose/ambre, cards sombres | "Design pas ouf", Florent prefere le design original |
+| **V2 Ambitious energy** | fond quasi-noir, gradients satures violet/rose/ambre, cards sombres | "Design pas ouf", l'utilisateur prefere le design original |
 | **V3 Confident minimalism** | noir et blanc pur, system stack, regles 1px | "Headline naze", "V3 elle est bien nulle" |
 
 ### Regle absolue issue de ces cycles
@@ -317,18 +317,18 @@ Lors des cycles de generation `/agence`, ces decisions produit sont **figees** e
 
 Les directions generees par Claude Design sont des **sources d'inspiration** (patterns visuels precis a piquer de V1 et V4), pas des remplacements du site existant. Toute iteration design doit :
 
-- Partir de `0- Marketplace/1- Marketplace FrontEnd/Marketplace - Antigravity - BLAST/agence-ia/SANDBOX-v4-hero-copy.html` (site live sur antigravity-agence.vercel.app)
+- Partir de `<your-projects>/1- Marketplace FrontEnd/Marketplace - Antigravity - BLAST/agence-ia/SANDBOX-v4-hero-copy.html` (site live sur antigravity-agence.vercel.app)
 - Conserver copy, CTAs Cal.com, branding existants
 - Ajouter des patterns precis piqués de V1 (espace blanc, typo display, gradient subtil) ou V4 (serif, terracotta, cards arrondies)
 - NE JAMAIS creer un nouveau fichier HTML qui ignore le copy existant
 
-Citation Florent 2026-04-22 : "je prefere le design original tant qu'a faire. C'est des completes nouvelles iterations, ca n'a aucun sens par rapport a ce que j'ai fait. Ce n'est pas mon site web."
+Citation l'utilisateur 2026-04-22 : "je prefere le design original tant qu'a faire. C'est des completes nouvelles iterations, ca n'a aucun sens par rapport a ce que j'ai fait. Ce n'est pas mon site web."
 
 ### Fichier memoire de reference
 
 Source de verite complete des decisions + workflow 2 phases (copywriting puis design iteration) :
 
-`C:\Users\Administrateur\.claude\projects\C--Users-Administrateur-PROJECTS-Vente-et-Marketing---ALL-Compagnies\memory\claude_design_decisions_2026-04-22.md`
+`%USERPROFILE%\.claude\projects\<project-path>-PROJECTS-Vente-et-Marketing---ALL-Compagnies\memory\claude_design_decisions_2026-04-22.md`
 
 ## Etape 10 — Pistes d'amelioration issues de la video Jack Roberts (2026-04-21)
 

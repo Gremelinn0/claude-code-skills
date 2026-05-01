@@ -1,6 +1,6 @@
 ---
 name: recap
-description: Recap instantane de la session en cours, en langage humain pour Florent (qui n'est pas dev). Invoquer quand Florent dit "/recap", "fais-moi un recap", "resume ce qu'on a fait", "fais le point", "bilan", "on fait le point". Pas de commit, pas de push, pas de KB — juste le recap propre de ce qui a ete fait dans la session en cours.
+description: Recap instantane de la session en cours, en langage humain pour l'utilisateur (qui n'est pas dev). Invoquer quand l'utilisateur dit "/recap", "fais-moi un recap", "resume ce qu'on a fait", "fais le point", "bilan", "on fait le point". Pas de commit, pas de push, pas de KB — juste le recap propre de ce qui a ete fait dans la session en cours.
 trigger: user-invocable — /recap
 scope: global — tout projet
 ---
@@ -15,9 +15,9 @@ Ce skill ne fait QUE le recap. Il ne commite pas, ne push pas, ne touche pas la 
 
 ## Regle absolue — perimetre = LA session active
 
-Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de roadmap, pas de backlog, pas de chantier evoque en aparte. Si Florent dit "/recap" a 5 min du demarrage, le recap est tres court — c'est normal.
+Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de roadmap, pas de backlog, pas de chantier evoque en aparte. Si l'utilisateur dit "/recap" a 5 min du demarrage, le recap est tres court — c'est normal.
 
-**Applique aussi a la section "Ce qu'il reste a faire"** : elle contient UNIQUEMENT ce qui decoule directement de la session en cours pour boucler ce qu'on a commence (tester ce qu'on vient de coder, commiter/pousser, mettre a jour les docs qu'on a touchees). EXCLURE : chantiers ouverts du projet en general, questions produit legacy d'anciennes sessions, roadmap globale, features futures evoquees en passant. Si ca ne vient pas de CETTE conversation, ca ne va pas dans le recap. Florent perd le fil si "ce qu'il reste" melange session + app.
+**Applique aussi a la section "Ce qu'il reste a faire"** : elle contient UNIQUEMENT ce qui decoule directement de la session en cours pour boucler ce qu'on a commence (tester ce qu'on vient de coder, commiter/pousser, mettre a jour les docs qu'on a touchees). EXCLURE : chantiers ouverts du projet en general, questions produit legacy d'anciennes sessions, roadmap globale, features futures evoquees en passant. Si ca ne vient pas de CETTE conversation, ca ne va pas dans le recap. l'utilisateur perd le fil si "ce qu'il reste" melange session + app.
 
 ---
 
@@ -26,7 +26,7 @@ Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de
 ### Phase 1 — Relire la session entiere
 
 **Pas juste les 5 derniers messages.** Relire tout ce qui a ete fait/dit depuis le debut de la conversation et identifier :
-- Qu'est-ce que Florent avait demande au depart (son/ses intentions initiales)
+- Qu'est-ce que l'utilisateur avait demande au depart (son/ses intentions initiales)
 - Quels sujets ont ete abordes (fusions, bugs, decisions, features)
 - Pour chaque sujet : ce qui est FAIT / a moitie / pas fait
 - Quelles decisions non-triviales ont ete prises seul par Claude
@@ -85,7 +85,7 @@ Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de
 
 4. **Expliquer les choix non-triviaux**
    - Chaque decision tranchee seule = 1 phrase sur le choix + 1 phrase sur **pourquoi**
-   - Florent doit pouvoir dire "ok j'aurais fait pareil" ou "non, reviens en arriere"
+   - l'utilisateur doit pouvoir dire "ok j'aurais fait pareil" ou "non, reviens en arriere"
 
 5. **Longueur = ce qu'il faut pour etre clair**
    - Pas de plafond artificiel a 100 mots
@@ -93,7 +93,7 @@ Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de
    - Mais pas de blabla : chaque phrase apporte quelque chose
 
 6. **Structure narrative**
-   - Introduction : ce que Florent avait demande
+   - Introduction : ce que l'utilisateur avait demande
    - Developpement : un paragraphe par item
    - Conclusion : ce qui reste (si quelque chose reste)
 
@@ -109,7 +109,7 @@ Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de
 
 Relire le recap et se poser la question :
 
-> "Si Florent relit ce recap dans 2 semaines sans avoir le contexte de la session, comprend-il :
+> "Si l'utilisateur relit ce recap dans 2 semaines sans avoir le contexte de la session, comprend-il :
 > (a) ce qui a change dans son projet ?
 > (b) pourquoi Claude a choisi X plutot que Y sur les decisions importantes ?
 > (c) ce qu'il reste a faire ?"
@@ -122,15 +122,15 @@ Relire le recap et se poser la question :
 
 | Interdit | Pourquoi | A la place |
 |----------|----------|------------|
-| Liste a puces seche "Fait : X, Y, Z" | Florent ne comprend pas le contexte | Vraies phrases avec la raison |
-| Chemins de fichiers dans le corps | Florent n'est pas dev, s'en fiche | Parler des effets, annexe technique a la fin |
+| Liste a puces seche "Fait : X, Y, Z" | l'utilisateur ne comprend pas le contexte | Vraies phrases avec la raison |
+| Chemins de fichiers dans le corps | l'utilisateur n'est pas dev, s'en fiche | Parler des effets, annexe technique a la fin |
 | Commits hash en premiere lecture | Bruit, illisible | Annexe technique si necessaire |
-| Decisions listees sans "pourquoi" | Florent ne peut pas juger a posteriori | 1 phrase raison a chaque choix |
+| Decisions listees sans "pourquoi" | l'utilisateur ne peut pas juger a posteriori | 1 phrase raison a chaque choix |
 | Plafond artificiel 100 mots | Force la compression illisible | Aussi long que necessaire, pas plus |
 | Recap du dernier item seul | 3 autres sujets ont ete evoques aussi | Scanner TOUTE la session |
 | Blabla "j'ai fait plein de trucs" | Vide | Concret, item par item |
-| "Voici un resume technique detaille..." | Florent n'est pas dev | Langage humain |
-| "Ce qu'il reste" qui melange session + chantiers projet | Florent perd le fil | Scoper strict session ; chantiers projet → roadmap, pas recap |
+| "Voici un resume technique detaille..." | l'utilisateur n'est pas dev | Langage humain |
+| "Ce qu'il reste" qui melange session + chantiers projet | l'utilisateur perd le fil | Scoper strict session ; chantiers projet → roadmap, pas recap |
 
 ---
 
@@ -181,7 +181,7 @@ Session d'exploration — rien n'a ete code/modifie, mais on a clarifie :
 - ❌ Pas de memoires sauvees (c'est `/wrapup`)
 - ❌ Pas d'action sur les fichiers du projet
 
-`/recap` = **uniquement un message dans le chat**. Si Florent veut finaliser/sauvegarder, il invoquera `/drive` ou `/wrapup` separement.
+`/recap` = **uniquement un message dans le chat**. Si l'utilisateur veut finaliser/sauvegarder, il invoquera `/drive` ou `/wrapup` separement.
 
 ---
 
@@ -194,6 +194,6 @@ Session d'exploration — rien n'a ete code/modifie, mais on a clarifie :
 | `/wrapup` | Fin de session longue avec sauvegarde KB | Memoires + NotebookLM + recap |
 | `/autopilot` | Lancer un nouvel objectif en background | Tache parallele |
 
-Si Florent dit "fais le point", "bilan", "recap", "resume" → `/recap`.
-Si Florent dit "finis", "boucle", "va au bout" → `/drive`.
-Si Florent dit "sauvegarde la session", "end of session" → `/wrapup`.
+Si l'utilisateur dit "fais le point", "bilan", "recap", "resume" → `/recap`.
+Si l'utilisateur dit "finis", "boucle", "va au bout" → `/drive`.
+Si l'utilisateur dit "sauvegarde la session", "end of session" → `/wrapup`.

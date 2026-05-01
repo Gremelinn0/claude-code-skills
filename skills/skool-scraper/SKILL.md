@@ -14,7 +14,7 @@ Déclenché quand l'utilisateur veut :
 Skool est une app Next.js. Toutes les données de la page sont dans `window.__NEXT_DATA__` côté client.
 
 **Deux communautés déjà scrapées dans le Marketplace :**
-- `aiautomationsbyjack` — 514 leçons, terminé (`C:\Users\Administrateur\PROJECTS\0- Marketplace\1- Agence & Content\Skool Scraper\data\aiautomationsbyjack\`)
+- `<skool-community-slug>` — 514 leçons, terminé (`%USERPROFILE%\PROJECTS\<your-projects>\1- Agence & Content\Skool Scraper\data\<skool-community-slug>\`)
 - `ai-automation-society-plus` (Nate Herk) — 480 leçons, partiellement terminé
 
 **Stack :**
@@ -166,7 +166,7 @@ data/
 
 ## Outils disponibles dans le Marketplace
 
-Dossier : `C:\Users\Administrateur\PROJECTS\0- Marketplace\1- Agence & Content\Skool Scraper\`
+Dossier : `%USERPROFILE%\PROJECTS\<your-projects>\1- Agence & Content\Skool Scraper\`
 
 | Fichier | Rôle |
 |---------|------|

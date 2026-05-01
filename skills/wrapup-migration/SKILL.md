@@ -52,7 +52,7 @@ C'est le **contrat principal** du switch de compte. Sans entree Plan vivant a jo
 1. **Identifier le slug** de la session courante (kebab-case explicite, descriptif, stable). Exemples : `bp034-redispatch`, `uia-name-migration`, `ag-multi-window-fix`. PAS `session-25`, PAS `wip-1`, PAS la date.
    - Si la session a ete demarree avec un slug deja existant dans le Plan vivant → reutiliser (MAJ l'entree)
    - Si nouveau chantier → nouveau slug
-   - Si tu ne sais pas → demander explicitement a Florent : "Quel slug pour cette session ? (suggestion : `<X>`)"
+   - Si tu ne sais pas → demander explicitement a l'utilisateur : "Quel slug pour cette session ? (suggestion : `<X>`)"
 
 2. **Determiner la section cible** selon l'etat :
    - **🔧 En cours** : prochain pas dans les 7 jours, encore actif
@@ -179,7 +179,7 @@ Si push KO (non-fast-forward) → `git fetch origin && git rebase origin/dev` pu
 
 ## Step 7 : Confirm (6 lignes max)
 
-Dire a Florent :
+Dire a l'utilisateur :
 
 ```
 ✅ Entree Plan vivant `[<slug>]` ajoutee/maj dans memory/features/<feature>.md (section <En cours/En pause/Livre>)
@@ -202,7 +202,7 @@ Pas de blabla, pas de recap session.
 4. Soit `/migration-pickup <feature> <slug>` → version explicite avec git pull
 5. Executer "Prochaine action" de l'entree Plan vivant `[<slug>]`
 
-**Plus besoin** d'ouvrir Notion pour reprendre — Notion ne sert qu'a Florent pour visualiser ce qui est en cours, le contenu vit dans le repo git + Plan vivant.
+**Plus besoin** d'ouvrir Notion pour reprendre — Notion ne sert qu'a l'utilisateur pour visualiser ce qui est en cours, le contenu vit dans le repo git + Plan vivant.
 
 ---
 
@@ -211,7 +211,7 @@ Pas de blabla, pas de recap session.
 - **Plan vivant absent dans le feature doc touche** → l'ajouter MAINTENANT (stub minimal TL;DR + Plan vivant) avant de continuer. Sinon le pickup ne pourra pas reprendre.
 - **Notion MCP KO** → skill continue, push Notion skip, confirm affiche "⚠️ Notion KO" + URL pour retry manuel
 - **Git push KO** (non-fast-forward) → rebase + retry, puis continuer
-- **Conflit de merge** pendant rebase → stop le skill, demander a Florent de resoudre manuellement avant de relancer
+- **Conflit de merge** pendant rebase → stop le skill, demander a l'utilisateur de resoudre manuellement avant de relancer
 
 ---
 
@@ -225,8 +225,8 @@ Pas de blabla, pas de recap session.
 
 ## Rationale
 
-Refondu 2026-04-25 sur demande Florent — la version precedente dumpait le contexte session entier dans Notion, ce qui bouffait les tokens au pickup et creait un systeme parallele aux feature docs. Avec le Plan vivant integre aux feature docs (CLAUDE.md §3), Notion devient un simple index navigable et le contenu vit dans le repo git.
+Refondu 2026-04-25 sur demande l'utilisateur — la version precedente dumpait le contexte session entier dans Notion, ce qui bouffait les tokens au pickup et creait un systeme parallele aux feature docs. Avec le Plan vivant integre aux feature docs (CLAUDE.md §3), Notion devient un simple index navigable et le contenu vit dans le repo git.
 
-**Affinement multi-session 2026-04-25 (2eme passe)** : Florent a souleve qu'une session != une fonctionnalite — on peut avoir N sessions paralleles sur la meme feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration` + `ag-edge-case`). Solution : Plan vivant gere N entrees `[slug]` par feature, sections En cours / En pause / Recemment livre. `/wrapup-migration` ajoute ou maj une entree `[slug]` (au lieu de remplacer le Plan vivant entier).
+**Affinement multi-session 2026-04-25 (2eme passe)** : l'utilisateur a souleve qu'une session != une fonctionnalite — on peut avoir N sessions paralleles sur la meme feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration` + `ag-edge-case`). Solution : Plan vivant gere N entrees `[slug]` par feature, sections En cours / En pause / Recemment livre. `/wrapup-migration` ajoute ou maj une entree `[slug]` (au lieu de remplacer le Plan vivant entier).
 
-Quote Florent (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. Chaque session, chaque plan pour moi, ils appartiennent a une fonctionnalite. On peut en avoir plusieurs par fonctionnalite, sans que ca pose probleme. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."
+Quote l'utilisateur (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. Chaque session, chaque plan pour moi, ils appartiennent a une fonctionnalite. On peut en avoir plusieurs par fonctionnalite, sans que ca pose probleme. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."

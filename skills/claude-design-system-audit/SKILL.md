@@ -164,7 +164,7 @@ Sauvegarder dans `memory/claude_design_audit_<YYYY-MM-DD>.md` du projet courant.
 
 4. **Deplacer le ZIP** depuis `Downloads/` vers le dossier cible et l'extraire :
    ```bash
-   mv "/c/Users/Administrateur/Downloads/claude-design-project-<ID>.zip" "/c/tmp/claude-design-exports/<date>/"
+   mv "~/Downloads/claude-design-project-<ID>.zip" "/c/tmp/claude-design-exports/<date>/"
    cd "/c/tmp/claude-design-exports/<date>/" && unzip -o claude-design-project-<ID>.zip
    ```
 
@@ -180,7 +180,7 @@ Sauvegarder dans `memory/claude_design_audit_<YYYY-MM-DD>.md` du projet courant.
    ```
    Resultat : `https://antigravity-design-preview.vercel.app` pointe toujours vers le snapshot le plus recent.
 
-   **Ouvrir dans le navigateur de Florent pour verification visuelle :**
+   **Ouvrir dans le navigateur de l'utilisateur pour verification visuelle :**
    ```bash
    start "" "https://antigravity-design-preview.vercel.app"
    ```
@@ -206,7 +206,7 @@ Sauvegarder dans `memory/claude_design_audit_<YYYY-MM-DD>.md` du projet courant.
 | Champ | Valeur |
 |-------|--------|
 | **taskId** | `claude-design-export-hebdo` |
-| **Fichier** | `C:\Users\Administrateur\.claude\scheduled-tasks\claude-design-export-hebdo\SKILL.md` |
+| **Fichier** | `%USERPROFILE%\.claude\scheduled-tasks\claude-design-export-hebdo\SKILL.md` |
 | **Cron** | `0 8 * * 1` (lundi 8h local) |
 | **notifyOnCompletion** | true |
 | **Mode** | local (Chrome MCP requis pour cookies claude.ai) |
@@ -271,7 +271,7 @@ document.querySelectorAll('button[class*="looks-good"], button:has(span:contains
 
 - **Jamais de delete sans confirmation** — meme en mode aggressive
 - **Jamais de changement de "Default" toggle** — decision produit
-- **Zero em-dash** dans les feedbacks "Needs work" (regle Florent)
+- **Zero em-dash** dans les feedbacks "Needs work" (regle l'utilisateur)
 - **Feedback en francais**, "je" pas "on"
 - Si un brand ref est controverse (forces ET faiblesses equivalentes), le laisser en pending et le flagger dans le rapport — pas de decision automatique
 

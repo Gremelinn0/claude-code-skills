@@ -46,7 +46,7 @@ Criteres detailles pour scorer un Design System. Adapter selon le contexte du pr
 - [ ] Zero doublon entre refs (meme hero x2, meme pricing x3) — 3 pts
 - [ ] Nomenclature claire et distinctive (pas "Design 1", "Design 2") — 2 pts
 - [ ] Ton et voix coherents entre refs (pas melange "je" / "on" / "vous") — 3 pts
-- [ ] Respect des regles absolues du projet (ex : zero em-dash pour Florent) — 2 pts
+- [ ] Respect des regles absolues du projet (ex : zero em-dash pour l'utilisateur) — 2 pts
 
 ## 6. Accessibility (10 pts)
 
@@ -65,7 +65,7 @@ Criteres detailles pour scorer un Design System. Adapter selon le contexte du pr
 
 ## 8. Reussite extrinseque (10 pts)
 
-- [ ] Les refs sont implementables dans la stack cible (ex : React + Tailwind + shadcn pour Florent) — 3 pts
+- [ ] Les refs sont implementables dans la stack cible (ex : React + Tailwind + shadcn pour l'utilisateur) — 3 pts
 - [ ] Un dev peut coder a partir du ref sans ambiguite — 3 pts
 - [ ] Le handoff est propre (screenshots desktop + mobile + annotations) — 2 pts
 - [ ] Les tokens sont extractibles en CSS vars / JSON — 2 pts

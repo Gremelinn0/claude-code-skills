@@ -76,13 +76,13 @@ Pourquoi : je ne vois pas les connecteurs MCP du compte claude.ai comme mes MCP 
 
 Processus pour un connecteur neuf :
 
-1. **Florent crée 1 routine manuellement** dans https://claude.ai/code/scheduled, en attachant le connecteur voulu (n'importe quel prompt/cron bidon).
+1. **l'utilisateur crée 1 routine manuellement** dans https://claude.ai/code/scheduled, en attachant le connecteur voulu (n'importe quel prompt/cron bidon).
 2. Je fais `RemoteTrigger get <trigger_id>` sur cette routine.
 3. Je lis `mcp_connections[].connector_uuid` + `url` + `name` dans la réponse.
 4. Je sauvegarde dans `memory/reference_mcp_connector_uuids.md`.
 5. Dès lors, toutes les routines suivantes peuvent utiliser ce connecteur via API sans repasser par la web UI.
 
-Les 3 UUIDs de Florent sont déjà captés (Gmail, Google-Drive, Notion) — voir section suivante. Pour tout nouveau connecteur, cette procédure reste la seule voie.
+Les 3 UUIDs de l'utilisateur sont déjà captés (Gmail, Google-Drive, Notion) — voir section suivante. Pour tout nouveau connecteur, cette procédure reste la seule voie.
 
 ## Phase 1 — Pour une routine CLOUD
 
@@ -96,7 +96,7 @@ Les 3 UUIDs de Florent sont déjà captés (Gmail, Google-Drive, Notion) — voi
 
 ### 2. Récupérer les UUIDs des connecteurs
 
-Lire `memory/reference_mcp_connector_uuids.md` du projet. Les 3 UUIDs déjà captés pour Florent (account `396ceaa2-9b3c-40e5-9e12-14b05f4692ba`) :
+Lire `memory/reference_mcp_connector_uuids.md` du projet. Les 3 UUIDs déjà captés pour l'utilisateur (account `396ceaa2-9b3c-40e5-9e12-14b05f4692ba`) :
 
 - **Gmail** : `4ea3ada1-92a3-4085-84c1-cf184fdd5fd1` — `https://gmailmcp.googleapis.com/mcp/v1` — name: `Gmail`
 - **Google-Drive** (inclut Calendar) : `ab2affa6-e372-4a20-bcd4-46d76a9b4193` — `https://drivemcp.googleapis.com/mcp/v1` — name: `Google-Drive`
@@ -113,7 +113,7 @@ mcp__Claude_in_Chrome__get_page_text
 
 Lecture du texte :
 - Si "Désinstaller" visible → connecteur installé ✅
-- Si "Installer" / "Connecter" visible → connecteur absent → demander à Florent de faire le OAuth, ou naviguer vers la page et guider le clic si tier autorise
+- Si "Installer" / "Connecter" visible → connecteur absent → demander à l'utilisateur de faire le OAuth, ou naviguer vers la page et guider le clic si tier autorise
 - Repérer les permissions "Toujours autoriser" (vert) vs "Demander" (main) vs "Ne jamais autoriser" (barré) — idéalement tout en vert pour les routines sans friction
 
 Le champ `name` d'un connecteur MCP est contraint à `[a-zA-Z0-9_-]` uniquement. Utiliser `Google-Drive`, jamais `Google Drive`.
@@ -121,7 +121,7 @@ Le champ `name` d'un connecteur MCP est contraint à `[a-zA-Z0-9_-]` uniquement.
 Si un connecteur nécessaire n'est PAS dans cette liste :
 
 - **Option 1 (rapide)** : `RemoteTrigger get <trigger_id>` sur une routine existante qui l'utilise déjà, lire `mcp_connections[].connector_uuid`, ajouter au fichier de référence, puis utiliser.
-- **Option 2 (connecteur neuf)** : demander à Florent de créer 1 routine manuellement via https://claude.ai/code/scheduled avec ce connecteur attaché, puis appliquer Option 1. C'est l'astuce qui débloque tout connecteur jamais utilisé auparavant.
+- **Option 2 (connecteur neuf)** : demander à l'utilisateur de créer 1 routine manuellement via https://claude.ai/code/scheduled avec ce connecteur attaché, puis appliquer Option 1. C'est l'astuce qui débloque tout connecteur jamais utilisé auparavant.
 
 ### 3. Construire le body et appeler l'API
 
@@ -169,7 +169,7 @@ Si un point est KO : retourner à l'API pour corriger via `RemoteTrigger` action
 
 **Bug vécu en prod le 2026-04-22. À ne JAMAIS reproduire.**
 
-Lors d'un `RemoteTrigger update`, si le body envoyé ne contient PAS le champ `events` (ex: on voulait juste ajouter un repo et on a envoyé seulement `session_context.sources`), **`events` est écrasé à vide**. Résultat : le prompt de la routine disparaît, aucun warning de l'API, mais Florent voit une "tâche vide" dans son app et son web.
+Lors d'un `RemoteTrigger update`, si le body envoyé ne contient PAS le champ `events` (ex: on voulait juste ajouter un repo et on a envoyé seulement `session_context.sources`), **`events` est écrasé à vide**. Résultat : le prompt de la routine disparaît, aucun warning de l'API, mais l'utilisateur voit une "tâche vide" dans son app et son web.
 
 ### Règle absolue pour tout `update`
 
@@ -209,7 +209,7 @@ Oublier `events` → prompt silencieusement effacé. Testé, confirmé, douloure
 2. Retrouver le prompt original :
    - D'abord chercher dans l'historique de la session Claude Code qui a créé/modifié la routine
    - Sinon chercher dans le registre `memory/active-routines.md` ou équivalent
-   - Sinon demander à Florent — c'est le pire cas, on a cassé sa routine
+   - Sinon demander à l'utilisateur — c'est le pire cas, on a cassé sa routine
 3. Update complet avec events + session_context restaurés
 4. Vérification visuelle dans https://claude.ai/code/scheduled
 
@@ -227,7 +227,7 @@ Vérification post-création : la tâche apparaît dans la sidebar "Scheduled" d
 
 ## Phase 2.5 — Audit systématique des routines existantes
 
-**À déclencher dès qu'on entre dans une session où des routines cloud existent, ou que Florent mentionne un comportement bizarre ("une routine est vide", "ça tourne pas", "pas le bon modèle").**
+**À déclencher dès qu'on entre dans une session où des routines cloud existent, ou que l'utilisateur mentionne un comportement bizarre ("une routine est vide", "ça tourne pas", "pas le bon modèle").**
 
 ### Checklist d'audit par routine
 
@@ -255,7 +255,7 @@ Après l'audit, produire 1 ligne par routine auditée :
 trig_<id> — <nom> — <model> — repo: <yes/no> — connecteurs: <liste> — prompt: <OK/VIDE> — statut: <OK / FIXED / À FIXER>
 ```
 
-C'est le recap honnête à donner à Florent. Pas "tout est bon" si ce n'est pas le cas.
+C'est le recap honnête à donner à l'utilisateur. Pas "tout est bon" si ce n'est pas le cas.
 
 ## Phase 3 — Enregistrement et watchdog
 
@@ -329,10 +329,10 @@ Voir Phase 1.5 "Protocole de récupération si j'ai effacé un prompt par erreur
 
 Passer par l'UI web : https://claude.ai/code/scheduled → cliquer la routine → modifier les champs manuellement → sauver. La version app desktop et web sont synchronisées, donc la modif apparaîtra aux deux endroits.
 
-### Florent voit une routine bizarre que je ne vois pas en list
+### l'utilisateur voit une routine bizarre que je ne vois pas en list
 
 Faire un `RemoteTrigger list` depuis la session courante. Si elle n'apparaît pas, elle peut être :
-- Sur un autre compte claude.ai (rare — Florent n'a qu'un compte)
+- Sur un autre compte claude.ai (rare — l'utilisateur n'a qu'un compte)
 - Désactivée (`enabled: false`) : ajouter `--include-disabled` si l'action le permet
 - Orpheline (trigger_id connu mais config corrompue) : passer par l'UI web pour vérifier et éventuellement supprimer
 

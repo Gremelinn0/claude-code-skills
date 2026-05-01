@@ -132,7 +132,7 @@ If there are multiple sessions in the same day, append a counter: `/tmp/session-
 
 **3b — Persistent handoff file** (UNIQUEMENT si demande explicite OU si session PARTIAL_DONE / BLOCKED / WIP):
 
-**NE PAS CREER de handoff par defaut.** Florent 2026-04-19 : "ça ne sert absolument à rien" de creer un handoff quand la session est close proprement et que tout est pushe. Les vrais documents (roadmap, feature docs, bug-patterns, matrices) suffisent.
+**NE PAS CREER de handoff par defaut.** l'utilisateur 2026-04-19 : "ça ne sert absolument à rien" de creer un handoff quand la session est close proprement et que tout est pushe. Les vrais documents (roadmap, feature docs, bug-patterns, matrices) suffisent.
 
 **Creer un handoff UNIQUEMENT si :**
 - L'user a explicitement demande "cree un handoff" / "je switch de compte"
@@ -312,15 +312,15 @@ Objectif : pour CHAQUE livraison de la session (`fix`/`feat`/`docs`/`refactor`/`
 
 Si la session a déposé au moins 1 nouveau YAML dans `memory/pending-verifications/`, s'assurer que le pipeline quotidien les verra :
 
-1. **Confirmer** que les YAMLs sont bien dans `memory/pending-verifications/` (pas dans `_confirmed/` ni `_archive/`) — la tâche `speakapp-verify-fixes` (9h00 quotidien) scanne ce dossier automatiquement, rien à faire de plus.
-2. **Si c'est la 1ère fois qu'on touche à ce pipeline dans la session** → vérifier que le workspace dans `~/.claude/scheduled-tasks/speakapp-verify-fixes/SKILL.md` contient bien `C:\Users\Administrateur\PROJECTS\3- Wisper\speak-app-dev` (et non `Utilisateur`).
-3. **Résumé à donner à Florent** : "X nouveaux YAMLs déposés. `/verify-fixes` invoqué (tour 1). Pipeline quotidien `speakapp-verify-fixes` les scannera à 9h00."
+1. **Confirmer** que les YAMLs sont bien dans `memory/pending-verifications/` (pas dans `_confirmed/` ni `_archive/`) — la tâche `<project>-verify-fixes` (9h00 quotidien) scanne ce dossier automatiquement, rien à faire de plus.
+2. **Si c'est la 1ère fois qu'on touche à ce pipeline dans la session** → vérifier que le workspace dans `~/.claude/scheduled-tasks/<project>-verify-fixes/SKILL.md` contient bien `%USERPROFILE%\PROJECTS\<your-project-folder>\<project-folder>` (et non `Utilisateur`).
+3. **Résumé à donner à l'utilisateur** : "X nouveaux YAMLs déposés. `/verify-fixes` invoqué (tour 1). Pipeline quotidien `<project>-verify-fixes` les scannera à 9h00."
 
 **Note** : les YAMLs archivés dans `_confirmed/` (fixes déjà validés live) ne sont PAS rescannés — ils servent uniquement de preuve de non-régression consultable manuellement.
 
 ## Step 4: Push to NotebookLM Brain
 
-**Méthode : Chrome MCP** (le CLI Playwright ne fonctionne pas quand Chrome est ouvert sur le PC de Florent).
+**Méthode : Chrome MCP** (le CLI Playwright ne fonctionne pas quand Chrome est ouvert sur le PC de l'utilisateur).
 
 Notebook : `https://notebooklm.google.com/notebook/662af98a-984c-4a8d-9a3d-1bf3d4a7f23c`
 ID de référence : `memory/reference_brain_notebook.md`
@@ -352,6 +352,6 @@ Keep it brief. No need to read back the full summary — just confirm it's done.
 
 ## Prerequisites
 
-- Chrome MCP connecté (extension Claude in Chrome active dans le navigateur de Florent)
+- Chrome MCP connecté (extension Claude in Chrome active dans le navigateur de l'utilisateur)
 - Brain notebook ID dans `memory/reference_brain_notebook.md`
 3. The skill handles everything else automatically on first run

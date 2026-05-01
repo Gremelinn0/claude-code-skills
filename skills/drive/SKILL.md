@@ -1,6 +1,6 @@
 ---
 name: drive
-description: Dérouler la session active en autonomie — prendre les décisions techniques sans s'arrêter, finaliser proprement ou passer un handoff tracé à /autopilot. Invoquer quand Florent dit "drive", "finis ça", "déroule", "enchaîne", "va jusqu'au bout", "finalise".
+description: Dérouler la session active en autonomie — prendre les décisions techniques sans s'arrêter, finaliser proprement ou passer un handoff tracé à /autopilot. Invoquer quand l'utilisateur dit "drive", "finis ça", "déroule", "enchaîne", "va jusqu'au bout", "finalise".
 trigger: user-invocable — /drive [note optionnelle]
 scope: global — tout projet
 ---
@@ -15,7 +15,7 @@ Ce skill est le complement de `/autopilot`. `/autopilot` tourne en background su
 
 ## Regle absolue — perimetre = LA session active, rien d'autre
 
-`/drive` finit la mission sur laquelle Florent et Claude travaillent **dans cette conversation**. 
+`/drive` finit la mission sur laquelle l'utilisateur et Claude travaillent **dans cette conversation**. 
 
 **INTERDIT** d'ouvrir `roadmap.md`, `BACKLOG.md`, `handoff.md`, un feature doc ou tout autre fichier de backlog pour y piocher une tache a faire. `/drive` ne prend JAMAIS du travail en dehors de ce qui a ete discute dans la session. 
 
@@ -38,7 +38,7 @@ Si un sujet aborde dans la session reste "a moitie" → c'est dans le perimetre 
 
 ### Mecanique de boucle automatique — "le hook /drive" (pattern 2-3 sujets typique)
 
-`/drive` est un skill **auto-bouclant** : il itere sur les sujets de la session SANS attendre que Florent relance manuellement entre chaque. C'est le "hook" qui automatise — pas de hook config externe necessaire, la boucle est dans le skill lui-meme.
+`/drive` est un skill **auto-bouclant** : il itere sur les sujets de la session SANS attendre que l'utilisateur relance manuellement entre chaque. C'est le "hook" qui automatise — pas de hook config externe necessaire, la boucle est dans le skill lui-meme.
 
 **Apres chaque sujet boucle en Phase 3 :**
 
@@ -46,7 +46,7 @@ Si un sujet aborde dans la session reste "a moitie" → c'est dans le perimetre 
 2. **Decision automatique :**
    - **Sujets restants ≥ 1** → annoncer en 1 ligne : "Sujet X DONE (commit `<hash>`). Sujet suivant : Y" → **retour Phase 3 sur Y**, sans pause
    - **Sujets restants = 0** → **Phase 4** (etat DONE final → `/wrapup` → `/recap`)
-3. **Pas de pause utilisateur entre sujets** — c'est l'avantage de `/drive` vs N sessions separees. Florent voit le defilement des sujets termines en temps reel mais n'a pas a relancer.
+3. **Pas de pause utilisateur entre sujets** — c'est l'avantage de `/drive` vs N sessions separees. l'utilisateur voit le defilement des sujets termines en temps reel mais n'a pas a relancer.
 
 **Anti-pattern interdit** : sortir en DONE / invoquer `/wrapup` avant que TOUS les sujets de Phase 1 soient coches `[x]`. Si 1 sujet reste a moitie → forcement retour Phase 3 sur ce sujet, pas finalisation.
 
@@ -62,7 +62,7 @@ Phase 3 sujet C → DONE commit ccc
 Phase 4 : DONE final → /wrapup auto → /recap auto
 ```
 
-**Exception** : si un sujet rencontre un cas d'escalade des 5 (cf Phase 3) → BLOCKED + handoff + question Florent. Les autres sujets DONE deja restent acquis.
+**Exception** : si un sujet rencontre un cas d'escalade des 5 (cf Phase 3) → BLOCKED + handoff + question l'utilisateur. Les autres sujets DONE deja restent acquis.
 
 ---
 
@@ -101,15 +101,15 @@ Decomposer en 3 a 7 etapes concretes. Criteres :
 
 **Si 2-8 etapes sont des micro-taches additives independantes** (ajout selecteur, mapping, prefixe, sur fichiers differents) → ne pas les executer une par une.
 
-**Pattern correct : STOP + handoff Florent pour switch modele** (PAS de chaining auto vers /dispatch) :
+**Pattern correct : STOP + handoff l'utilisateur pour switch modele** (PAS de chaining auto vers /dispatch) :
 
 1. Finaliser le plan (audit Phase 0 fait, tâches marquées GO)
-2. **STOP** — annoncer à Florent : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
-3. **Attendre** — Florent gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Pas de chaining auto qui priverait Florent de ce contrôle.
+2. **STOP** — annoncer à l'utilisateur : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
+3. **Attendre** — l'utilisateur gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Pas de chaining auto qui priverait l'utilisateur de ce contrôle.
 
-**Exception** : si Florent dit explicitement "lance le dispatch direct" ou "enchaîne" → ok chainer sans stopper.
+**Exception** : si l'utilisateur dit explicitement "lance le dispatch direct" ou "enchaîne" → ok chainer sans stopper.
 
-`/drive` reste responsable du plan ; `/dispatch` est juste l'executeur quand Florent decide de le lancer.
+`/drive` reste responsable du plan ; `/dispatch` est juste l'executeur quand l'utilisateur decide de le lancer.
 
 **Ecrire le plan en debut de reponse, puis attaquer.**
 
@@ -147,7 +147,7 @@ Liste stricte — seuls ces cas justifient une pause :
 ### Interdits formels
 
 - Dire "je propose X, valide ?" pour un choix technique → decide et fais
-- Dire "il faudrait que tu ouvres X" pour une app IA → automatiser (regle SpeakApp) ou route vers `/automation-first`
+- Dire "il faudrait que tu ouvres X" pour une app IA → automatiser (regle <your-project>) ou route vers `/automation-first`
 - S'arreter a la premiere friction → diagnostiquer, pivoter, finir ou handoff explicite
 - Laisser une etape "a moitie" sans la cocher ou la handoff
 
@@ -155,7 +155,7 @@ Liste stricte — seuls ces cas justifient une pause :
 
 ## Phase 3.5 — Doc-routing gate (OBLIGATOIRE avant commit/fin de phase)
 
-**Probleme historique (2026-04-18)** : session `/drive` a modifie 4 fichiers de code (clipboard gate, CDP gate, warm-up gate, dev_mode flag) + matrice + roadmap + handoff, mais a oublie 5 docs downstream (`chat-reader.md`, `cc-expand.md`, `cd-auto-permissions.md`, `control-center.md`, `platforms/claude-desktop.md`). Florent a detecte : "tres grave" — une session `/drive` sans doc-routing complet cree de la dette invisible.
+**Probleme historique (2026-04-18)** : session `/drive` a modifie 4 fichiers de code (clipboard gate, CDP gate, warm-up gate, dev_mode flag) + matrice + roadmap + handoff, mais a oublie 5 docs downstream (`chat-reader.md`, `cc-expand.md`, `cd-auto-permissions.md`, `control-center.md`, `platforms/claude-desktop.md`). l'utilisateur a detecte : "tres grave" — une session `/drive` sans doc-routing complet cree de la dette invisible.
 
 **Regle : a la fin de chaque PHASE** (pas juste en fin de session), poser les 3 questions du doc-routing gate (CLAUDE.md projet §5) AVANT de committer :
 
@@ -312,7 +312,7 @@ Quand un des 5 cas d'escalade est rencontre **ET** ne peut pas etre contourne :
 ## Regles absolues
 
 1. **Zero question technique** — si la reponse est deductible du contexte/docs/code, je decide. Je n'empile pas les "tu veux que je fasse X ou Y ?" pour des details.
-2. **Lire avant de coder** — si le projet a un `CLAUDE.md` + `memory/`, les regles projet s'appliquent (preflight pour SpeakApp, doc-routing-gate, anti-boucle, TTS chunking, etc.)
+2. **Lire avant de coder** — si le projet a un `CLAUDE.md` + `memory/`, les regles projet s'appliquent (preflight pour <your-project>, doc-routing-gate, anti-boucle, TTS chunking, etc.)
 3. **Mode Autonome Etendu 95%** — confirmer le 5% restant, pas plus
 4. **Toute action utilisateur sur plateforme IA = a automatiser** — ne jamais dire "clique ici", integrer dans le code
 5. **Finaliser obligatoirement** — DONE, PARTIAL_DONE avec handoff, ou BLOCKED avec handoff + question. Jamais rien d'autre
@@ -329,7 +329,7 @@ Quand un des 5 cas d'escalade est rencontre **ET** ne peut pas etre contourne :
 **Pourquoi la separation :**
 - `/drive` agit : execute, commit, push, journal/handoff/roadmap
 - `/wrapup` capitalise : memories, NotebookLM Brain, `session-handoff.md` cross-compte
-- `/recap` parle : message humain final lisible par Florent
+- `/recap` parle : message humain final lisible par l'utilisateur
 
 **Workflow en DONE — ordre obligatoire :**
 1. `/drive` finalise techniquement (commit + push + journal + roadmap)
@@ -339,11 +339,11 @@ Quand un des 5 cas d'escalade est rencontre **ET** ne peut pas etre contourne :
 **Workflow en PARTIAL_DONE ou BLOCKED :**
 1. `/drive` ecrit `.autopilot/handoff.md` + journal + roadmap
 2. `/drive` invoque `/recap` directement (**PAS `/wrapup`** — la session n'est pas finie, capture KB prematuree)
-3. Florent reprendra avec `/autopilot` ou nouvelle session `/drive`
+3. l'utilisateur reprendra avec `/autopilot` ou nouvelle session `/drive`
 
 **Pourquoi `/wrapup` uniquement en DONE :** une session coupee a moitie ne doit pas polluer le NotebookLM Brain avec un summary partiel. Quand la session reprendra (via `/autopilot` ou nouvelle session), un nouveau `/drive` DONE declenchera alors le `/wrapup` complet.
 
-**Florent peut toujours invoquer `/recap` seul a tout moment** (en cours de session) pour un point d'etape sans finaliser.
+**l'utilisateur peut toujours invoquer `/recap` seul a tout moment** (en cours de session) pour un point d'etape sans finaliser.
 
 ---
 

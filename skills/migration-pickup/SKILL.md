@@ -1,6 +1,6 @@
 ---
 name: migration-pickup
-description: Compagnon ultra-light de /wrapup-migration. À lancer dans la session DESTINATION pour récupérer le contexte de la dernière session sur une feature donnée — git pull + lecture Plan vivant. Invoquer quand Florent dit "/migration-pickup", "récupère ma session", "rapatrie depuis migration".
+description: Compagnon ultra-light de /wrapup-migration. À lancer dans la session DESTINATION pour récupérer le contexte de la dernière session sur une feature donnée — git pull + lecture Plan vivant. Invoquer quand l'utilisateur dit "/migration-pickup", "récupère ma session", "rapatrie depuis migration".
 ---
 
 # Migration Pickup — version 2026-04-25 (ultra-light)
@@ -23,7 +23,7 @@ git fetch origin && git pull --rebase origin dev
 
 Recuperer toute modif faite par la session source (handoff, Plan vivant a jour, commits).
 
-**Si conflit** → stop, demander a Florent de resoudre manuellement.
+**Si conflit** → stop, demander a l'utilisateur de resoudre manuellement.
 
 ---
 
@@ -38,7 +38,7 @@ Recuperer toute modif faite par la session source (handoff, Plan vivant a jour, 
 **Cas B — Feature seule** (`/migration-pickup auto-permission`) :
 - Lire `memory/features/auto-permission.md`
 - Lister TOUTES les entrees `[slug]` de la section "🔧 En cours"
-- Demander a Florent : "Tu veux reprendre laquelle ? `[bp034-redispatch]` `[uia-name-migration]` ?"
+- Demander a l'utilisateur : "Tu veux reprendre laquelle ? `[bp034-redispatch]` `[uia-name-migration]` ?"
 - Si une seule entree En cours → la prendre directement sans demander
 
 **Cas C — Pas d'argument** :
@@ -54,9 +54,9 @@ Du feature doc, extraire UNIQUEMENT :
 - **§0 TL;DR** (~15 lignes) — etat V1, mecanismes, BPs critiques
 - **## 📌 Plan vivant entree `[<slug>]`** (~10 lignes) — statut, prochain pas, bloqueurs, derniere session
 
-**Ne pas lire le reste du feature doc** sauf si Florent demande explicitement. TL;DR + entree Plan vivant = ~30 lignes = contexte minimal pour reprendre.
+**Ne pas lire le reste du feature doc** sauf si l'utilisateur demande explicitement. TL;DR + entree Plan vivant = ~30 lignes = contexte minimal pour reprendre.
 
-**Si Florent veut voir TOUTES les sessions actives sur la feature** → lire toute la section `## 📌 Plan vivant` (En cours + En pause + Recemment livre).
+**Si l'utilisateur veut voir TOUTES les sessions actives sur la feature** → lire toute la section `## 📌 Plan vivant` (En cours + En pause + Recemment livre).
 
 ---
 
@@ -82,7 +82,7 @@ Pas de blabla. Pas de recap exhaustif. Juste l'essentiel actionnable.
 ## Cas particuliers
 
 ### Aucun handoff recent (Cas C sans argument)
-Si `memory/handoffs/INDEX.md` est vide ou la 1ere entree est > 7 jours → demander a Florent : "Aucune session recente. Sur quelle feature tu veux bosser ?"
+Si `memory/handoffs/INDEX.md` est vide ou la 1ere entree est > 7 jours → demander a l'utilisateur : "Aucune session recente. Sur quelle feature tu veux bosser ?"
 
 ### Feature inconnue (Cas A/B avec feature errone)
 Si `memory/features/<arg>.md` n'existe pas → lister les features disponibles (`ls memory/features/*.md`) + demander correction.
@@ -91,7 +91,7 @@ Si `memory/features/<arg>.md` n'existe pas → lister les features disponibles (
 Si le handoff cite 2-3 features (cas rare, refacto transversal) → lire les 2-3 Plan vivant + annoncer en table 6-colonnes (1 ligne par couple feature × slug).
 
 ### Vue d'ensemble multi-features (commande implicite)
-Si Florent demande "liste-moi mes sessions actives" / "qu'est-ce que j'ai en cours" / "vue d'ensemble" → grep tous les feature docs `memory/features/*.md` pour extraire les sections "🔧 En cours" → annoncer en table :
+Si l'utilisateur demande "liste-moi mes sessions actives" / "qu'est-ce que j'ai en cours" / "vue d'ensemble" → grep tous les feature docs `memory/features/*.md` pour extraire les sections "🔧 En cours" → annoncer en table :
 ```
 Feature        | Slug                | Prochain pas              | Derniere session
 ---------------+---------------------+---------------------------+-----------------
@@ -107,12 +107,12 @@ Pas de skill dedie — c'est juste un grep + extraction.
 
 **Plus besoin de fetcher Notion** — la page Notion "migration" est devenue un simple index humain (1 ligne par session vers GitHub). Le contenu vit dans le repo git via le Plan vivant.
 
-Si Florent demande explicitement de fetcher Notion (cas tres rare) :
+Si l'utilisateur demande explicitement de fetcher Notion (cas tres rare) :
 - Utiliser `mcp__notion__API-get-block-children` sur la page migration
 - Lister les sous-pages `Migration YYYY-MM-DD` recentes
 - Pour chaque, lister les sous-sous-pages session
 
-Mais 99% du temps, git pull + lecture Plan vivant suffit. Notion = backup visuel pour Florent humain, pas pour le pickup automatique.
+Mais 99% du temps, git pull + lecture Plan vivant suffit. Notion = backup visuel pour l'utilisateur humain, pas pour le pickup automatique.
 
 ---
 
@@ -133,10 +133,10 @@ Mais 99% du temps, git pull + lecture Plan vivant suffit. Notion = backup visuel
 
 ## Rationale
 
-Refondu 2026-04-25 sur demande Florent — la version precedente fetchait Notion + parsait des blocs + filtrait par mots-cles, ce qui bouffait les tokens et creait un systeme parallele aux feature docs.
+Refondu 2026-04-25 sur demande l'utilisateur — la version precedente fetchait Notion + parsait des blocs + filtrait par mots-cles, ce qui bouffait les tokens et creait un systeme parallele aux feature docs.
 
 Avec le Plan vivant integre aux feature docs (CLAUDE.md §3 "Plan vivant a jour en continu"), 90% du temps le hook UserPromptSubmit fait le job en amont. Ce skill garde sa place comme filet de securite explicite.
 
-**Affinement multi-session 2026-04-25 (2eme passe)** : Florent a souleve qu'on peut avoir N sessions actives par feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration`). Solution : `/migration-pickup` accepte 2 arguments (`feature` + `slug`). Si slug fourni → cible direct. Si feature seule → liste les sessions En cours et demande. Cela rend le skill **vraiment utile** (vs ancienne version 90% redondante avec hook).
+**Affinement multi-session 2026-04-25 (2eme passe)** : l'utilisateur a souleve qu'on peut avoir N sessions actives par feature (ex: auto-perm avec `bp034-redispatch` + `uia-name-migration`). Solution : `/migration-pickup` accepte 2 arguments (`feature` + `slug`). Si slug fourni → cible direct. Si feature seule → liste les sessions En cours et demande. Cela rend le skill **vraiment utile** (vs ancienne version 90% redondante avec hook).
 
-Quote Florent (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. On peut en avoir plusieurs par fonctionnalite. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."
+Quote l'utilisateur (2026-04-25) : "Une session c'est pas meme niveau qu'une fonctionnalite. On peut en avoir plusieurs par fonctionnalite. On les nomme bien, on leur donne des noms explicites pour bien les retrouver."

@@ -17,22 +17,22 @@ scope: global — tout projet
 
 | Situation | Chemin |
 |-----------|--------|
-| Florent dit explicitement "dispatch ce batch" / "lance les agents sur ces tâches" | `/dispatch` direct |
-| `/drive` arrive sur une session avec 5+ petits items indépendants | `/drive` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
-| `/dev-orchestrator` a fait son bilan et identifié 3-8 GAPs additifs prêts | `/dev-orchestrator` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
+| l'utilisateur dit explicitement "dispatch ce batch" / "lance les agents sur ces tâches" | `/dispatch` direct |
+| `/drive` arrive sur une session avec 5+ petits items indépendants | `/drive` STOP, propose à l'utilisateur d'invoquer `/dispatch` (cf règle ci-dessous) |
+| `/dev-orchestrator` a fait son bilan et identifié 3-8 GAPs additifs prêts | `/dev-orchestrator` STOP, propose à l'utilisateur d'invoquer `/dispatch` (cf règle ci-dessous) |
 | Main session après audit explicite (Phase 0 faite, GO/PENDING/SKIP déterminés) | Invoquer `/dispatch` avec la liste des GO |
 
-### Règle non-négociable — STOP + handoff Florent avant `/dispatch` (jamais de chaining auto)
+### Règle non-négociable — STOP + handoff l'utilisateur avant `/dispatch` (jamais de chaining auto)
 
 Quand `/drive` ou `/dev-orchestrator` arrive au point d'invoquer `/dispatch`, il **NE LE FAIT PAS LUI-MÊME**. Il doit :
 
 1. **STOP** — finir son audit + plan, ne pas chainer automatiquement vers `/dispatch`
-2. **Présenter à Florent** : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
-3. **Attendre** — c'est Florent qui décide quand lancer le dispatch (et avec quel modèle).
+2. **Présenter à l'utilisateur** : "Plan prêt — N tâches GO : [liste 1 ligne par tâche]. Change de modèle (Sonnet conseillé) puis invoque `/dispatch`."
+3. **Attendre** — c'est l'utilisateur qui décide quand lancer le dispatch (et avec quel modèle).
 
-**Pourquoi** : Florent gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Le chaining auto `/drive → /dispatch` priverait Florent de ce contrôle. Le pattern correct est **STOP + handoff explicite**, pas auto-chaining.
+**Pourquoi** : l'utilisateur gère manuellement les transitions de modèle (Opus pour réfléchir/auditer, Sonnet pour exécuter en batch). Le chaining auto `/drive → /dispatch` priverait l'utilisateur de ce contrôle. Le pattern correct est **STOP + handoff explicite**, pas auto-chaining.
 
-**Exception** : si Florent dit explicitement "lance le dispatch direct" ou "enchaîne", alors le skill peut chainer sans stopper.
+**Exception** : si l'utilisateur dit explicitement "lance le dispatch direct" ou "enchaîne", alors le skill peut chainer sans stopper.
 
 ✅ **Conditions pour lancer `/dispatch` (toutes obligatoires)** :
 - 2-8 micro-tâches **indépendantes** (≤30 min chacune)
@@ -59,7 +59,7 @@ Quand `/drive` ou `/dev-orchestrator` arrive au point d'invoquer `/dispatch`, il
 │                    les sujets, fait l'audit Phase 0          │
 │  /dev-orchestrator → bilan macro projet, priorise les GAPs  │
 │                      candidats, fait l'audit Phase 0         │
-│  Main session    → Florent ou Claude détermine les tâches   │
+│  Main session    → l'utilisateur ou Claude détermine les tâches   │
 │                    GO après Read/Grep/scan explicite         │
 └─────────────────────────────────────────────────────────────┘
                               ↓
@@ -79,7 +79,7 @@ Quand `/drive` ou `/dev-orchestrator` arrive au point d'invoquer `/dispatch`, il
               Retour à l'invocateur (drive / orchestrator)
                               ↓
        Checklist 7 étapes BLOQUANTE produit-ready
-       (cf CLAUDE.md SpeakApp § Délégation tactique)
+       (cf CLAUDE.md <your-project> § Délégation tactique)
 ```
 
 **Différence avec `/drive`** : `/drive` finit UN sujet de la session courante en autonomie inline (1 sujet, dans la conv). `/dispatch` exécute N tâches isolées en parallèle dans des sub-agents (N tâches, sub-agents séparés).
@@ -208,8 +208,8 @@ R5. DOUTE = STOP. Si pas sûr à 100% → écris ton doute, ne code pas.
 
 ## Documents compagnons
 
-- **`examples.md`** — 3 exemples concrets de tâches SpeakApp + anti-exemples
-- **`prompt-relance.md`** — prompt long pour le cas rare où Florent invoque `/dispatch` directement avec un brief macro (Phase 0 audit incluse à titre exceptionnel)
+- **`examples.md`** — 3 exemples concrets de tâches <your-project> + anti-exemples
+- **`prompt-relance.md`** — prompt long pour le cas rare où l'utilisateur invoque `/dispatch` directement avec un brief macro (Phase 0 audit incluse à titre exceptionnel)
 - **`review-opus.md`** — détail de l'étape review finale (format batch doc + prompt reviewer)
 
 ---

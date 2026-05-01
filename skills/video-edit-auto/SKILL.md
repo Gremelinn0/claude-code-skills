@@ -2,7 +2,7 @@
 
 ## Quand utiliser ce skill
 
-Déclencher quand Florent veut :
+Déclencher quand l'utilisateur veut :
 - Nettoyer automatiquement une vidéo de formation brute (screencast + webcam)
 - Supprimer les silences, les "je coupe", les hésitations d'une vidéo MP4
 - Enrichir une vidéo propre avec des animations / motion graphics
@@ -97,7 +97,7 @@ Basculer de modèle en cours de session : `/model claude-sonnet-4-6` ou `/model 
 
 ---
 
-## CAS 1 — Nettoyage screencast brut (besoin principal de Florent)
+## CAS 1 — Nettoyage screencast brut (besoin principal de l'utilisateur)
 
 ### Étape 0 : Enregistrement
 
@@ -172,7 +172,7 @@ Approche testée et abandonnée par Nate Herk et Sandy Lee (confirmé par les 2 
 4. Preview en local → feedback précis avec timestamps → itérer
 5. Render final : ffmpeg → MP4
 
-**Point clé :** chaque itération améliore le "studio". Au bout de 10 vidéos, Claude connaît le style de Florent.
+**Point clé :** chaque itération améliore le "studio". Au bout de 10 vidéos, Claude connaît le style de l'utilisateur.
 **Coût :** ~10% du plan $200/mois par projet vidéo (beaucoup de tokens pour générer le HTML).
 **Repo officiel :** https://github.com/heygen-com/hyperframes (HeyGen, sorti avril 2026, Apache 2.0)
 **Installation :** 1 commande dans Claude Code → skills `/hyperframes`, `/hyperframes-cli`, `/gsap` disponibles
@@ -191,7 +191,7 @@ Approche testée et abandonnée par Nate Herk et Sandy Lee (confirmé par les 2 
 
 ### Ce qui N'EST PAS fait (backlog)
 
-- ⏳ Le kit cloné localement → en cours dans `PROJECTS/Vente et Marketing - ALL Compagnies/tools/hyperframes-student-kit/`
+- ⏳ Le kit cloné localement → en cours dans `PROJECTS/<your-project-folder>/tools/hyperframes-student-kit/`
 - ⏳ Les 7 slash commands Claude Code fournis dans le kit (à activer après clone)
 - ⏳ Tester un des 12 projets finis (starter recommandé : `claude-edit-intro`)
 
@@ -221,7 +221,7 @@ Approche testée et abandonnée par Nate Herk et Sandy Lee (confirmé par les 2 
 
 ### Plan d'implémentation (en cours)
 
-1. **Cloner le kit** dans `PROJECTS/Vente et Marketing - ALL Compagnies/tools/hyperframes-student-kit/` (outil projet, pas global)
+1. **Cloner le kit** dans `PROJECTS/<your-project-folder>/tools/hyperframes-student-kit/` (outil projet, pas global)
 2. **Lire** `CLAUDE.md` + `MOTION_PHILOSOPHY.md` du repo (docs principales de Nate)
 3. **Tester** sur `claude-edit-intro` (projet le plus léger, brand minimal — bon starter)
 4. **Ajouter** une section "Comment utiliser le kit" dans ce SKILL.md avec les commandes concrètes
@@ -236,7 +236,7 @@ Approche testée et abandonnée par Nate Herk et Sandy Lee (confirmé par les 2 
 
 ### Installation — déjà fait
 
-**Kit cloné** : `C:\Users\Administrateur\PROJECTS\Vente et Marketing - ALL Compagnies\tools\hyperframes-student-kit\` (560 MB, shallow clone).
+**Kit cloné** : `%USERPROFILE%\PROJECTS\<your-project-folder>\tools\hyperframes-student-kit\` (560 MB, shallow clone).
 
 **Skills Claude Code auto-chargés** — ils apparaissent dans la liste des skills disponibles dès qu'on ouvre une session dans ce dossier :
 - `/hyperframes` · `/hyperframes-cli` · `/gsap`
@@ -246,7 +246,7 @@ Approche testée et abandonnée par Nate Herk et Sandy Lee (confirmé par les 2 
 ### Premier test — starter `claude-edit-intro`
 
 ```bash
-cd "C:/Users/Administrateur/PROJECTS/Vente et Marketing - ALL Compagnies/tools/hyperframes-student-kit"
+cd "~/PROJECTS/<your-project-folder>/tools/hyperframes-student-kit"
 npm install                                    # 1 seule fois, à la racine du kit
 cd video-projects/claude-edit-intro            # projet starter, brand minimal
 npx hyperframes doctor                         # vérifie Node, FFmpeg, Chrome
@@ -506,9 +506,9 @@ L'UI Hyperframes Studio permet de shorten / delete / move / réordonner les beat
 
 **Workflow gagnant :**
 1. Claude génère la V1 motion graphics
-2. Florent ouvre `npx hyperframes preview` et ajuste les timings à la souris (drag des beats)
-3. Florent repasse dans Claude Code avec du texte : "now add a subtitle at beat 3"
-4. Claude lit le HTML modifié et applique par-dessus les modifs manuelles de Florent
+2. l'utilisateur ouvre `npx hyperframes preview` et ajuste les timings à la souris (drag des beats)
+3. l'utilisateur repasse dans Claude Code avec du texte : "now add a subtitle at beat 3"
+4. Claude lit le HTML modifié et applique par-dessus les modifs manuelles de l'utilisateur
 
 Raccourci massif pour les ajustements de timing. La UI remplace "à 5.2s le texte part trop vite" par un drag.
 
@@ -697,7 +697,7 @@ Pour les sous-titres cohérents sur les clips LinkedIn :
 
 1. [x] Récupérer le Breakdown Sheet de Brendan Jowett — ✅ 2026-04-21 via `/skool-scraper` → `data/brendanjowett/brendan-jowett-breakdown-sheet.md`
 2. [x] Guide d'enregistrement — ✅ 2026-04-21 → ajouté dans ce skill + page Notion
-3. [ ] Tester Descript sur une vraie vidéo de formation de Florent (5-10 min)
+3. [ ] Tester Descript sur une vraie vidéo de formation de l'utilisateur (5-10 min)
 4. [ ] Vérifier si Descript recorder suffit ou si Tella reste nécessaire
 5. [ ] Setup Remotion dans Claude Desktop App (demander "install Remotion" — setup automatique)
 6. [ ] Créer le skill `/video-edit` réutilisable (utiliser le MEGA PROMPT de Ben AI après premier montage réussi)

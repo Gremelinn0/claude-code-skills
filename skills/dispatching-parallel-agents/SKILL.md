@@ -11,11 +11,11 @@ Before using this skill, check if a more specialized one fits better:
 
 | Cas | Skill à préférer | Pourquoi |
 |-----|------------------|----------|
-| Florent dit "lance un agent sur X" / "fais avancer ça tout seul" sur le sujet en cours | **`/drive`** | Claude finit en autonomie inline dans la conv courante. Couvre 90% des cas de délégation tactique. |
+| l'utilisateur dit "lance un agent sur X" / "fais avancer ça tout seul" sur le sujet en cours | **`/drive`** | Claude finit en autonomie inline dans la conv courante. Couvre 90% des cas de délégation tactique. |
 | Batch de 2-8 micro-tâches additives (ajout sélecteur, mapping, préfixe) | `/dispatch` | Audit Phase 0 GO/PENDING/SKIP + 5 règles ultra-conservatrices + review Opus finale |
 | Objectif séparé / nouveau projet, agent qui boucle en background | `/autopilot <objectif>` | Goal-driven, multi-itérations avec state.md |
 | Plan complet à exécuter avec review 2 étages (spec puis qualité) | `/subagent-driven-development` | Workflow plan + implémenteur + reviewer spec + reviewer qualité |
-| Diagnostic projet macro / routage stratégique | `/dev-orchestrator` (SpeakApp) | Phase 0-6 (scan multi-sources, priorisation, prompts session) |
+| Diagnostic projet macro / routage stratégique | `/dev-orchestrator` (<your-project>) | Phase 0-6 (scan multi-sources, priorisation, prompts session) |
 
 **Ce skill reste pertinent pour :** debug de tests / sous-systèmes indépendants où chaque investigation est cadrée et parallélisable, sans besoin de cadre additif strict ni de review structurée.
 

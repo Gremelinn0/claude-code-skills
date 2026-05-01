@@ -10,7 +10,7 @@ description: Verifie la coherence entre les fichiers memoire et le code. Detecte
 | # | Source | Quoi verifier |
 |---|--------|--------------|
 | 1 | **Docs MD** (`memory/*.md`) | Valeurs, features, status, counts |
-| 2 | **Code Python** (`speak-app-dev/`) | Constantes, commandes, config, plans Stripe |
+| 2 | **Code Python** (`<project-folder>/`) | Constantes, commandes, config, plans Stripe |
 | 3 | **Settings/Config** (`config.json`, `settings_window.py`) | Plans affiches, prix, options, flags |
 | 4 | **Site web** (`speakapp.work`) | Plans, prix, features affichees, CTA |
 
@@ -67,12 +67,12 @@ Signaler les liens morts.
 
 ### 4. Check Settings/Config (source 3)
 
-Lire `speak-app-dev/settings_window.py` et tout fichier `config.json` :
+Lire `<project-folder>/settings_window.py` et tout fichier `config.json` :
 - Plans affiches dans l'interface : noms, prix, descriptions
 - Comparer avec `pricing.md` et `deployment.md`
 - Signaler tout ecart (ex: "settings dit 3 plans, pricing.md dit 1 plan")
 
-Lire aussi `speak-app-dev/config.json` si existant :
+Lire aussi `<project-folder>/config.json` si existant :
 - Valeurs de seuils, timeouts, flags features
 - Comparer avec les constantes documentees dans `memory/`
 

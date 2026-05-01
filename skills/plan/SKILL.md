@@ -2,17 +2,17 @@
 
 ## Ce que fait ce skill
 
-Quand Florent tape `/plan` :
+Quand l'utilisateur tape `/plan` :
 1. Lire le fichier PLAN_XXX.md du projet courant
 2. Identifier ce qui reste à faire (pas encore ✅)
 3. Réécrire la section "ce qui reste" de façon ultra-synthétique — tableau court, une ligne par tâche, zéro blabla
 4. Sauvegarder dans le fichier
-5. **Push Notion** — pour chaque tâche manuelle (Qui = Florent), créer ou mettre à jour une tâche dans la DB Tâches Notion (`collection://26501e69-443c-8116-b237-000bdc32b867`), liée au projet concerné. Statut = "À faire". Comme ça Florent les voit dans son dashboard sans ouvrir le fichier.
+5. **Push Notion** — pour chaque tâche manuelle (Qui = l'utilisateur), créer ou mettre à jour une tâche dans la DB Tâches Notion (`collection://26501e69-443c-8116-b237-000bdc32b867`), liée au projet concerné. Statut = "À faire". Comme ça l'utilisateur les voit dans son dashboard sans ouvrir le fichier.
 
 ## Règles
 
 - **Ultra-synthétique** : une ligne par tâche, pas de colonne "Notes" longue
-- **Indiquer qui fait quoi** : Florent / Claude / Bug bloquant
+- **Indiquer qui fait quoi** : l'utilisateur / Claude / Bug bloquant
 
 ### Règle de validation — NE PAS SE TROMPER
 
@@ -38,7 +38,7 @@ Quand Florent tape `/plan` :
 
 | # | Tâche | Qui | Notes |
 |---|-------|-----|-------|
-| 1 | ... | Florent | ... |
+| 1 | ... | l'utilisateur | ... |
 | 2 | ... | Claude sur go | ... |
 ```
 

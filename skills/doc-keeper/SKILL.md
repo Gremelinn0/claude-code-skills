@@ -23,7 +23,7 @@ Every code change MUST propagate to BOTH the project's reference docs AND the sk
 - Bug fix that changes documented behavior
 - New BP allocated (`tools/allocate_bp.py`)
 - Restructuring docs (new canonical source, section moved, file renamed)
-- Florent verbatim graving a rule
+- l'utilisateur verbatim graving a rule
 
 ## Routing — WHERE.md is the entry point
 
@@ -48,12 +48,12 @@ Ne pas dupliquer ici — le skill pointe, WHERE.md décrit. Si WHERE.md ne répo
 | Roadmap task done | `memory/roadmap/roadmap.md` (item livré) + Plan vivant feature (déplacer "🔧 En cours" → "✅ Récemment livré") |
 | Architecture change transversale | Feature docs concernés + CLAUDE.md §3 si nouvelle règle émerge |
 | Validation N4 identifiée | `memory/validation-pending-n4.md` — ajouter ligne tableau Suivi |
-| Validation N4 complétée par Florent | `memory/validation-pending-n4.md` (cocher) + feature doc critère |
+| Validation N4 complétée par l'utilisateur | `memory/validation-pending-n4.md` (cocher) + feature doc critère |
 | Mécanisme d'interaction change (UIA/CDP/DevTools/Win32/OCR/WS Bridge/hooks) | **Skill `/update-interaction-matrix` OBLIGATOIRE** : matrice §2bis + `memory/platforms/<p>.md` + journal §9 |
 | Reader / méthode lecture chat change | **Skill `/update-interaction-matrix` OBLIGATOIRE** : §2bis feature "Lecture chat" + journal §9 |
 | Nouveau sélecteur / widget / état découvert | Axe A: `memory/platforms/<plateforme>.md` · Axe B: matrice §2bis si change statut feature |
 | Status lifecycle transition (V1 livré → V2 pending → V2 livré) | **Capitalisation parallèle OBLIGATOIRE** sur tous docs référençant module/feature (voir section "Status lifecycle capitalization") |
-| Nouvelle règle gravée par Florent | CLAUDE.md §3 (verbatim source + règle compressée) |
+| Nouvelle règle gravée par l'utilisateur | CLAUDE.md §3 (verbatim source + règle compressée) |
 
 ## Map — Code change → Skills to update (NEW 2026-04-30)
 
@@ -137,9 +137,9 @@ Changer uniquement ce qui est nécessaire. Préserver structure existante.
 
 1. **Pattern réutilisable découvert ?** → ancrer dans skill transversal concerné (section "Pièges" ou "Patterns"), PAS dans feature doc du jour
 2. **Insight outil/API externe ?** → Memory `feedback_*.md` cross-projet OU skill `working-on-X` plateforme
-3. **Règle ou convention émergente ?** → Proposition règle CLAUDE.md (attendre validation Florent) OU feedback memory si local
+3. **Règle ou convention émergente ?** → Proposition règle CLAUDE.md (attendre validation l'utilisateur) OU feedback memory si local
 
-**Trigger manuel** : Florent dit "garde cet insight" / "enregistre ça quelque part" → activer Step 4 même sans code change.
+**Trigger manuel** : l'utilisateur dit "garde cet insight" / "enregistre ça quelque part" → activer Step 4 même sans code change.
 
 **Différence Step 1-3 vs Step 4** :
 - Step 1-3 = changement de **code** → docs feature/skill-test-X + skills affectés

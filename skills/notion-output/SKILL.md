@@ -1,13 +1,13 @@
 ---
 name: notion-output
-description: Skill global LIGHT — sortie info / Notion pages / Table Projets pour TOUS projets PROJECTS/ SAUF SpeakApp (qui utilise sa propre mémoire `memory/`). Invoquer dès qu'on collecte/synthétise des infos (URLs, vidéos, conclusions, livrables) destinées Notion. Triggers — "notion", "page notion", "ajoute notion", "table projets", "notebooklm", "ressources collectées", "livrable projet".
+description: Skill global LIGHT — sortie info / Notion pages / Table Projets pour TOUS projets PROJECTS/ SAUF <your-project> (qui utilise sa propre mémoire `memory/`). Invoquer dès qu'on collecte/synthétise des infos (URLs, vidéos, conclusions, livrables) destinées Notion. Triggers — "notion", "page notion", "ajoute notion", "table projets", "notebooklm", "ressources collectées", "livrable projet".
 ---
 
 # notion-output
 
-Skill global LIGHT pour Notion = mémoire persistante partagée cross-projet (sauf SpeakApp).
+Skill global LIGHT pour Notion = mémoire persistante partagée cross-projet (sauf <your-project>).
 
-**Skip ce skill si projet courant = `3- Wisper/speak-app-dev/`** (SpeakApp utilise `memory/` interne).
+**Skip ce skill si projet courant = `<your-project-folder>/<project-folder>/`** (<your-project> utilise `memory/` interne).
 
 ## §1 Sortie info = Notion
 

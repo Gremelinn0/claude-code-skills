@@ -130,7 +130,7 @@ From 24 failure memories:
 - Implications of success
 - ANY communication suggesting completion/correctness
 
-## Documentation Gate (SpeakApp / tout projet avec memory/)
+## Documentation Gate (<your-project> / tout projet avec memory/)
 
 **Déclenché automatiquement par hook après chaque `git push` (`.claude/settings.json`).**
 **Source unique — remplace le pipeline post-dev de CLAUDE.md §5.**

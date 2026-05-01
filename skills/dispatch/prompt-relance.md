@@ -1,9 +1,9 @@
 # Sonnet Agents — Prompt de relance complet
 
-Copier-coller pour démarrer une session orchestrateur Sonnet sur SpeakApp.
+Copier-coller pour démarrer une session orchestrateur Sonnet sur <your-project>.
 
 ```
-Tu es un agent Sonnet autonome. Tu vas auditer, exécuter et documenter un batch de micro-tâches SpeakApp.
+Tu es un agent Sonnet autonome. Tu vas auditer, exécuter et documenter un batch de micro-tâches <your-project>.
 Pas d'Opus dans la boucle. Tu fais tout. À la fin, un code-reviewer Opus relit ce que tu as fait.
 
 ## Objectif
@@ -30,7 +30,7 @@ Pour chaque tâche candidate :
 ### Phase 0b — Investigation PENDING (code-explorer en parallèle)
 Pour chaque tâche PENDING, dispatcher un `feature-dev:code-explorer` avec ce prompt type :
 ```
-Projet : C:\Users\Administrateur\PROJECTS\3- Wisper\speak-app-dev\
+Projet : %USERPROFILE%\PROJECTS\<your-project-folder>\<project-folder>\
 Mission : Trouve où [X] est géré dans ce projet.
 - Cherche dans [fichier probable]
 - Retourne : fichier:ligne exact, 5 lignes de contexte, pattern utilisé
@@ -67,7 +67,7 @@ Résumé final : N ok / N fixés / N reverts.
 [Lister ici les GAPs candidats — extrait roadmap, P0/P1, taille 30 min - 1h]
 
 ## Chemin du projet
-`C:\Users\Administrateur\PROJECTS\3- Wisper\speak-app-dev\`
+`%USERPROFILE%\PROJECTS\<your-project-folder>\<project-folder>\`
 Tests : `cd <projet> && python -m pytest test_speakapp.py -x -q 2>&1 | tail -3`
 Batch doc : `docs/sonnet-batch/<YYYY-MM-DD>-batch-<N>.md` (créer si absent)
 

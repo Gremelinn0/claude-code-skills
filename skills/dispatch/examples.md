@@ -1,6 +1,6 @@
 # Sonnet Agents — Exemples concrets
 
-3 tâches SpeakApp dispatcheées en parallèle. Référence pour rédiger un prompt sub-agent.
+3 tâches <your-project> dispatcheées en parallèle. Référence pour rédiger un prompt sub-agent.
 
 ## Tâche 1 : `GAP-CLCHAT-03` — Dismiss popup Routines sur claude.ai/chat
 

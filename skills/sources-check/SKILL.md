@@ -9,7 +9,7 @@ description: Use when the user requests any content deliverable (LinkedIn post, 
 
 **Principe : zero production de contenu sans inventaire sources préalable.**
 
-Florent a beaucoup de matière déjà existante (Notion, NotebookLM, dossiers locaux, dashboards, posts antérieurs, mémoire agent). Écrire un post sans les consulter = repartir de zéro + contredire soi-même + perdre le travail accumulé.
+l'utilisateur a beaucoup de matière déjà existante (Notion, NotebookLM, dossiers locaux, dashboards, posts antérieurs, mémoire agent). Écrire un post sans les consulter = repartir de zéro + contredire soi-même + perdre le travail accumulé.
 
 Ce skill fait le scan, agrège, restitue un inventaire structuré, et **demande validation avant de rédiger**.
 
@@ -51,14 +51,14 @@ Si topic ambigu → 1 question courte, sinon continuer.
 
 Lancer les 5 axes en parallèle dans un seul message (tool calls concurrents) :
 
-### Axe 1 — Notion (source prioritaire de Florent)
+### Axe 1 — Notion (source prioritaire de l'utilisateur)
 - `notion-search` avec le topic principal (page_size: 15)
 - `notion-search` avec les synonymes si < 5 résultats (1 query supplémentaire)
 - Si un résultat est un "Hub de contenus" existant → `notion-fetch` dessus en priorité
 
 ### Axe 2 — NotebookLM (si applicable)
 - Lire `~/.claude/projects/<project>/memory/notebooklm_urls.md` si existe
-- Si un notebook est pertinent au topic → noter l'URL (pas de ask auto, coûteux — proposer à Florent)
+- Si un notebook est pertinent au topic → noter l'URL (pas de ask auto, coûteux — proposer à l'utilisateur)
 - Règle CLAUDE.md : "NotebookLM-first pour gros corpus"
 
 ### Axe 3 — Dossier local du projet
@@ -123,7 +123,7 @@ Hypothèse d'angle : [formulation 1 phrase].
 
 **Règles de restitution :**
 - **Langage simple** (règle CLAUDE.md) — pas de jargon sans traduction
-- **Pas de conclusion prématurée** — on liste, on propose, Florent tranche
+- **Pas de conclusion prématurée** — on liste, on propose, l'utilisateur tranche
 - **Limite : 40 lignes max** dans la restitution initiale — détails on-demand
 - **Chiffres concrets** (N pages, N fichiers) — pas "plusieurs sources"
 
@@ -131,7 +131,7 @@ Hypothèse d'angle : [formulation 1 phrase].
 
 ## Phase 4 — Sauvegarde systématique de l'inventaire
 
-Dès que Florent valide l'inventaire, **créer immédiatement une page Notion "Sources — [topic]"** sous la database Mon contenu (collection `a8d9fa9e-3614-4f19-be94-7e3c4ad163c1`) OU sous le parent logique (Hub Claude, etc.).
+Dès que l'utilisateur valide l'inventaire, **créer immédiatement une page Notion "Sources — [topic]"** sous la database Mon contenu (collection `a8d9fa9e-3614-4f19-be94-7e3c4ad163c1`) OU sous le parent logique (Hub Claude, etc.).
 
 Règle CLAUDE.md applicable : "Sortie d'information = Notion". Ne pas livrer juste dans le chat.
 
@@ -147,7 +147,7 @@ Cette page sert de hub durable pour le topic. Elle contient :
 
 - ❌ **Écrire un post avant d'avoir scanné les 5 axes** — c'est le bug qu'évite ce skill
 - ❌ **Restituer en vrac sans structure** — l'inventaire doit être scannable
-- ❌ **"Je connais le sujet, pas besoin de scanner"** — Florent a toujours plus de matière que ce dont tu te souviens
+- ❌ **"Je connais le sujet, pas besoin de scanner"** — l'utilisateur a toujours plus de matière que ce dont tu te souviens
 - ❌ **Ignorer un brouillon existant** — si BACKLOG mentionne un brouillon, on l'enrichit, on ne recrée pas à côté
 - ❌ **Ne pas pousser l'inventaire dans Notion** — règle "sortie = Notion" s'applique
 - ❌ **Scanner seulement Notion** — les 5 axes sont obligatoires, même si certains renvoient vide
@@ -168,7 +168,7 @@ Si la même session a déjà scanné ce topic il y a < 30 min :
 **Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
 
 Apres chaque execution, avant de conclure :
-1. **Friction detectee ?** (axe oublié, restitution pas claire, Florent a dû re-demander des sources) → corriger ce skill immediatement
+1. **Friction detectee ?** (axe oublié, restitution pas claire, l'utilisateur a dû re-demander des sources) → corriger ce skill immediatement
 2. **Source-type découvert** non couvert par les 5 axes (ex: Google Drive, Linear, canaux Slack) → ajouter un axe
 3. **Approche validee ?** → l'ancrer comme pattern reference dans ce skill
 4. **Gain applicable a d'autres skills ?** → propager vers `linkedin-post-creator` / `content-intel` (ils doivent appeler ce skill en prérequis)
@@ -182,7 +182,7 @@ Apres chaque execution, avant de conclure :
 | Pensée | Réalité |
 |---|---|
 | "Le topic est simple, scan inutile" | 5 axes en parallèle = 30s. Pas d'excuse. |
-| "Florent a dit d'aller vite" | Vite ≠ repartir de zéro. L'inventaire fait gagner du temps. |
+| "l'utilisateur a dit d'aller vite" | Vite ≠ repartir de zéro. L'inventaire fait gagner du temps. |
 | "Je me souviens de 2-3 pages Notion" | Mémoire trompeuse. Scan officiel obligatoire. |
 | "On scannera si besoin" | Le besoin est là dès la demande de contenu. |
 | "J'ai déjà des idées d'angle" | Angle après inventaire, pas avant. |

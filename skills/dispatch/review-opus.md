@@ -54,7 +54,7 @@ Agent({
 ## Le prompt de review
 
 ```
-Tu es un reviewer senior. Des agents Sonnet ont effectué des micro-modifications sur la codebase SpeakApp.
+Tu es un reviewer senior. Des agents Sonnet ont effectué des micro-modifications sur la codebase <your-project>.
 Chaque modification est documentée dans `docs/sonnet-batch/<fichier>.md`.
 
 Lis ce fichier, puis pour CHAQUE modification :
