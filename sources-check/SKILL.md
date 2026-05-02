@@ -1,6 +1,6 @@
 ---
 name: sources-check
-description: Use when the user requests any content deliverable (LinkedIn post, carousel, lead magnet, newsletter, "état des lieux", "fais le point sur", "pré-brief", "rassemble les sources", "hub de contenus") before writing a single line. Also triggers before dashboards/docs synthesizing a topic, and before claims like "je connais déjà le sujet". Signals: content/post request + topic keyword, or explicit mention of "sources", "ce qu'on a déjà", "ne pas partir de zéro".
+description: Inventaire sources existantes (Notion/NotebookLM/dashboards/posts/mémoire) AVANT production contenu (post LinkedIn, carousel, lead magnet, newsletter, hub, dashboard). Triggers "fais le point sur", "rassemble sources", "pré-brief", "état des lieux", "ne pas partir de zéro".
 ---
 
 # /sources-check — Inventaire automatique des sources AVANT rédaction

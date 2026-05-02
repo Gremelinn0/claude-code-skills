@@ -1,6 +1,6 @@
 ---
 name: dashboards-hub-master
-description: Skill global LIGHT — workflow déploiement Vercel + Master Hub central pour TOUS les projets PROJECTS/. Invoquer dès qu'un dashboard HTML / hub / page web est créé ou modifié dans un projet (Marketplace, Vente et Marketing, Vote app, SpeakApp, etc.). Triggers — "dashboard", "html", "vercel deploy", "master hub", "hub projet", "redéploie".
+description: Workflow déploiement Vercel + Master Hub central tous projets PROJECTS/. Invoquer dès création/modif dashboard HTML/hub/page web. Triggers "dashboard", "vercel deploy", "master hub", "hub projet", "redéploie".
 ---
 
 # dashboards-hub-master
