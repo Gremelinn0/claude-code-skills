@@ -1,198 +1,189 @@
 ---
 name: doc-keeper
-description: Systematically updates all project reference documents after any code change. Use after implementing features, fixing bugs, modifying configs, adding commands, or changing architecture. Triggers on any code modification that affects documented behavior.
+description: Systematically updates project docs AND skills after any code change. Use after implementing features, fixing bugs, modifying configs, adding commands, or changing architecture. Triggers on any code modification that affects documented behavior or skill procedures.
 ---
 
-# Doc Keeper — Systematic Documentation Sync
+# Doc Keeper — Docs + Skills Sync
 
 ## Overview
 
-Every code change MUST be reflected in the project's reference documents. Documentation drift causes repeated context loss, wasted conversations, and user frustration.
+Every code change MUST propagate to BOTH the project's reference docs AND the skills that reference them. Doc drift = repeated context loss. Skill drift = broken links + re-grep ad-hoc + tokens wasted.
 
-**Core principle:** Code changed = docs updated = QA updated. Same message. No exceptions.
+**Core principle:** Code changed = docs updated = skills updated. Same commit. No exceptions.
+
+**Règle parente (CLAUDE.md §3, 2026-04-30)** : *Skills = porte d'entrée unique. Code path change → MAJ skill MEME commit. Skills listent en tête les docs/fichiers fondamentaux. Pas grep CLAUDE.md à part.*
 
 ## When To Apply
 
 **ALWAYS after:**
-- Implementing a new feature or modifying an existing one
+- New feature / modified feature
 - Adding/removing/changing config keys, hotkeys, voice commands
-- Modifying UI elements (voyants, indicators, buttons, tooltips)
-- Changing architecture (new files, renamed files, moved functions)
-- Fixing bugs that change documented behavior
-- Adding/removing dependencies
-- Deploiement / auth / SaaS changes
+- UI elements changed (voyants, indicators, buttons, tooltips)
+- Architecture change (new files, renamed files, moved functions, code path moved >50 lines)
+- Bug fix that changes documented behavior
+- New BP allocated (`tools/allocate_bp.py`)
+- Restructuring docs (new canonical source, section moved, file renamed)
+- Florent verbatim graving a rule
 
-## Document Registry
+## Routing — WHERE.md is the entry point
 
-**Chaque projet a sa propre structure docs.** Consulter le CLAUDE.md du projet pour la liste exacte.
+**Lire `memory/WHERE.md` AVANT toute édition de doc.** Decision tree + table universelle "type d'info → fichier unique".
 
-**Structure type SpeakApp (speak-app-dev) :**
+Ne pas dupliquer ici — le skill pointe, WHERE.md décrit. Si WHERE.md ne répond pas → MAJ WHERE.md d'abord, jamais inventer un dossier.
 
-| Couche | Fichiers | Role | Skill |
-|--------|----------|------|-------|
-| C1 — Hub HTML | `dashboards/*.html` | Fonctionnel (utilisateur) | `/define-feature` |
-| C2 — Feature doc MD | `memory/features/*.md` | Technique (Claude) | `/doc-keeper` (ce skill) |
-| C3 — Skill test-X | `.claude/skills/test-*/SKILL.md` | Dev+test (Claude) | `/create-feature-skill` |
-| C4 — Program.md | `docs/autoresearch/*/program.md` | Autoresearch (optionnel) | `/autoresearch` |
+**Règle hub HTML** : déprécié depuis 2026-04-27 (CLAUDE.md §3). NE PAS consulter pour comprendre l'état d'une feature. NE PAS aligner doc interne dessus. Désynchro hub vs feature doc = intentionnel.
 
-**Autres docs projet :** `CLAUDE.md` (regles), `FEATURES.md` (source de verite features), `MEMORY.md` (index sous-fichiers), `memory/platforms/*.md` (par plateforme).
-
-**Regle 4 couches :** zero duplication entre couches. Hub = arbitre en cas de divergence hub <-> doc.
-
-## Map Changes → Documents
+## Map — Code change → Docs to update
 
 | Change Type | Documents to Update |
 |-------------|-------------------|
-| New feature implemented | Feature doc (`memory/features/`) + FEATURES.md + roadmap |
-| Modified feature | Feature doc (section concernee) |
-| Bug fix | Feature doc (tableau "Bugs resolus" — 1 ligne : cause + fix + date + commit) |
-| Bug fix on a feature with skill | **Skill test-X** (classifier + acquis) + feature doc (bugs resolus) |
-| New config key / constante | Feature doc (section "Constantes" avec rationale) |
-| New hotkey | Feature doc + FEATURES.md (raccourcis) |
+| Code feature modifié (app.py, wisper-bridge/, cdp_*, devtools_*, cc_ui/, etc.) | **Plan vivant §0bis** du feature doc — sujet/statut/prochain pas/derniere session (commit hash) |
+| New feature implemented | Feature doc (`memory/features/<feature>.md`) — section §1bis PRD + Plan vivant + roadmap |
+| Bug fix classé BP | `memory/references/bug-patterns.md` (BP-XXX entry) + YAML `pending-verifications/fix-bpXXX-<slug>-<date>.yaml` + feature doc (Bugs connus) |
+| New config key / constante | Feature doc § "Constantes" avec rationale (comment le nombre a été dérivé) |
+| New hotkey | Feature doc + `memory/core/voice-commands.md` si voix équivalente |
 | New voice command | Feature doc + `memory/core/voice-commands.md` |
-| UI change | Feature doc + hub HTML si visible utilisateur |
-| New file created | Feature doc (section "Architecture — fichiers cles") |
-| Roadmap task done | `v1-roadmap.html` (skill update-roadmap) |
-| Architecture change | Feature doc + CLAUDE.md si transversal |
-| Nouvelle validation N4 identifiee (action physique/micro/subjective, Florent requis) | `memory/validation-pending-n4.md` — ajouter ligne dans tableau Suivi + section detaillee |
-| Validation N4 completee par Florent | `memory/validation-pending-n4.md` — cocher dans tableau Suivi (date + "Par: Florent") + feature doc critere correspondant |
-| Mecanisme d'interaction change (UIA/CDP/DevTools/Win32/OCR/WS Bridge/hooks) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** MAJ atomique : matrice §2bis (Axe B feature×plateforme) + `memory/platforms/<p>.md` (Axe A selecteurs) + journal §9 (≤60 mots). Matrice gagne sur tout autre doc en cas de conflit. |
-| Reader / methode lecture chat change (statut, limitation, nouveau reader, plateforme) | **Skill `/update-interaction-matrix` — OBLIGATOIRE.** Meme procedure (reader-solutions fusionne dans la matrice unique depuis 2026-04-15). MAJ §2bis feature "Lecture chat" ou "Artifact/Doc attache" + journal §9. |
-| Nouveau selecteur / widget / etat decouvert (scan DOM, snapshot, debug) | **Axe A** : `memory/platforms/<plateforme>.md` (catalogue selecteurs). **Axe B** : matrice §2bis si ca change le statut d'une feature. Skill `/update-interaction-matrix` pour la procedure. |
-| **Status lifecycle transition** (module/feature passe "a creer" → "V1 livre" → "V2 pending" → "V2 livre") | **Capitalisation parallele OBLIGATOIRE** sur TOUS les docs qui referencent ce module/feature. Voir section "Status lifecycle capitalization" ci-dessous. Zero doc ne doit rester avec l'ancien statut. |
-| **Code feature modifie** (app.py, wisper-bridge/, cdp_*, devtools_*, cc_ui/, etc.) | **Section `## 📌 Plan vivant` du feature doc** — MAJ avec : sujet/statut/prochain pas/bloqueurs/derniere session (commit hash). Regle CLAUDE.md §3 "Plan vivant a jour en continu" (2026-04-25). Verification post-commit OBLIGATOIRE. |
+| UI change visible utilisateur | Feature doc (hub HTML laissé mourir, pas de MAJ) |
+| New file created | Feature doc § "Architecture — fichiers clés" |
+| Roadmap task done | `memory/roadmap/roadmap.md` (item livré) + Plan vivant feature (déplacer "🔧 En cours" → "✅ Récemment livré") |
+| Architecture change transversale | Feature docs concernés + CLAUDE.md §3 si nouvelle règle émerge |
+| Validation N4 identifiée | `memory/validation-pending-n4.md` — ajouter ligne tableau Suivi |
+| Validation N4 complétée par Florent | `memory/validation-pending-n4.md` (cocher) + feature doc critère |
+| Mécanisme d'interaction change (UIA/CDP/DevTools/Win32/OCR/WS Bridge/hooks) | **Skill `/update-interaction-matrix` OBLIGATOIRE** : matrice §2bis + `memory/platforms/<p>.md` + journal §9 |
+| Reader / méthode lecture chat change | **Skill `/update-interaction-matrix` OBLIGATOIRE** : §2bis feature "Lecture chat" + journal §9 |
+| Nouveau sélecteur / widget / état découvert | Axe A: `memory/platforms/<plateforme>.md` · Axe B: matrice §2bis si change statut feature |
+| Status lifecycle transition (V1 livré → V2 pending → V2 livré) | **Capitalisation parallèle OBLIGATOIRE** sur tous docs référençant module/feature (voir section "Status lifecycle capitalization") |
+| Nouvelle règle gravée par Florent | CLAUDE.md §3 (verbatim source + règle compressée) |
+
+## Map — Code change → Skills to update (NEW 2026-04-30)
+
+**Quand un code change, demander : quels skills couvrent ce domaine ? Lister leurs liens/procédures et MAJ même commit.**
+
+| Change Type | Skills to update |
+|-------------|------------------|
+| Procédure de test change (sélecteur, étape, timing, plateforme cible) | `test-<feature>/SKILL.md` |
+| Code path renommé / déplacé >50 lignes | TOUT skill qui cite `app.py:NNNN` ou `<file>:NNNN` du chemin déplacé — grep `grep -rn "<filename>:" .claude/skills/` |
+| Nouveau hook ou pre-flight pattern | `preflight/SKILL.md` |
+| Nouveau pattern debug cross-feature | `systematic-debugging` ou `iterative-debug` ou `gil-thread-debug` |
+| Nouveau mécanisme d'interaction plateforme | `update-interaction-matrix/SKILL.md` (procédure MAJ matrice) |
+| Nouveau pattern routing doc | `doc-routing-gate/SKILL.md` |
+| Nouvelle commande vocale ou pattern Vosk | `vosk-monitor/SKILL.md` |
+| Plateforme working-on-X change comportement | `working-on-claude-desktop/SKILL.md` ou équivalent |
+| Nouveau BP alloué touchant domaine couvert par skill | Skill concerné — ajouter entry "Bugs connus" / "Pièges" |
+| Restructuration docs (fichier renommé, section déplacée, source canonique nouvelle) | TOUT skill qui pointe vers l'ancien chemin — grep le chemin ancien |
+| Règle CLAUDE.md §3 ajoutée/modifiée | Skill concerné par le domaine — mirror court (ne pas dupliquer verbatim, pointer vers CLAUDE.md §3) |
+| Nouveau skill créé | Skill `test-<feature>` → routine quotidienne `speakapp-<feature>-daily` MEME session (CLAUDE.md §3 "Tout skill test-X = routine quotidienne") |
+
+**Trigger logic** : après MAJ docs, doc-keeper demande : *"ce changement affecte-t-il une procédure ou un lien dans un skill ?"* Si oui → Edit skill dans le même batch.
+
+**Skills audit minimal à chaque MAJ** :
+1. **Liens cassés** — chemins `memory/<x>.md` cités existent toujours ?
+2. **Code refs périmées** — `app.py:NNNN` toujours valide ? Fonction toujours nommée pareil ?
+3. **BPs périmés** — BP cité encore actuel (pas écarté) ?
+4. **Procédures obsolètes** — étapes test mentionnent toujours l'API/UI actuelle ?
 
 ## Status lifecycle capitalization — parallel cross-doc sync (2026-04-24)
 
-**Contexte** : quand un module ou une feature change de statut lifecycle (ex : `devtools_stealth_reader.py` passe de "a creer" a "primitives V1 livrees, wiring V2 pending"), **toutes les references a ce module dans TOUS les docs doivent etre mises a jour dans la meme session**, avec les memes commits et la meme formule.
+**Quand module/feature change de statut lifecycle (ex: `devtools_stealth_reader.py` "à créer" → "primitives V1 livrées, wiring V2 pending"), TOUTES les références dans TOUS les docs ET skills doivent être mises à jour dans la même session.**
 
-**Pourquoi c'est critique** :
-- Un doc qui reste a "a creer" pendant qu'un autre dit "V1 livre" = desinformation + re-decouverte future "mais c'etait livre ou pas ?"
-- Meme dans le meme commit, oublier 1 doc sur 5 = drift immediat
-- Le user pose la question "c'est fait ?" et recoit une reponse contradictoire selon le doc consulte
+**Procédure (4 steps)** :
 
-**Procedure systematique (4 steps)** :
-
-### Step A — Inventaire "tous les docs qui mentionnent ce module"
-
-Avant toute edition, grep explicitement :
+### Step A — Inventaire exhaustif
 ```bash
-grep -rln "devtools_stealth_reader" memory/ .claude/ dashboards/ CLAUDE.md
+grep -rln "<module_or_feature>" memory/ .claude/skills/ dashboards/ CLAUDE.md
 ```
-**Toujours** etendre a tous les lieux : `memory/features/`, `memory/references/`, `memory/platforms/`, `memory/validation-pending-*.md`, `memory/roadmap/`, feature-capabilities-matrix.md, interaction-mechanisms-matrix.md, skills, CLAUDE.md, dashboards. Un lieu oublie = drift garanti.
+Étendre à TOUS les lieux : `memory/features/`, `memory/references/`, `memory/platforms/`, `memory/validation-pending-*.md`, `memory/roadmap/`, skills, CLAUDE.md. Un lieu oublié = drift garanti.
 
-### Step B — Formule canonique partagee
+### Step B — Formule canonique partagée
+Définir UNE SEULE formule de statut (mot-à-mot) à copier-coller. Exemple :
+> "✅ **PRIMITIVES V1 LIVREES 2026-04-24** (commits `abc123`+`def456`, V1 gate PARTIAL_PASS smoke test). **V2 wiring pending** : ..."
 
-Definir **UNE SEULE** formule de statut (mot-a-mot) a copier-coller dans tous les docs. Exemple :
-> "✅ **PRIMITIVES V1 LIVREES 2026-04-24** (commits `abc123`+`def456`+`ghi789`, N lignes, V1 gate PARTIAL_PASS smoke test). **V2 wiring pending** : ..."
+Zero reformulation par doc. Chaque doc utilise exactement la même chaîne.
 
-**Zero reformulation par doc.** Chaque doc utilise exactement la meme chaine. Si un doc necessite un angle different (ex: matrice = vue capability, feature doc = vue implementation), garder la formule canonique + ajouter contexte specifique au doc, jamais reformuler la formule.
+### Step C — Edits parallèles batch
+Tous les Edit dans UN SEUL message avec tool calls parallèles. Échec partiel = état inconsistant si commit entre-temps.
 
-### Step C — Edits paralleles dans UN SEUL batch
-
-Lancer tous les Edit dans **un seul message** avec tool calls paralleles. Jamais sequentiel. Raison : un echec partiel (3/5 OK, 2/5 KO) laisse le systeme dans etat inconsistant si on commit entre-temps.
-
-### Step D — Verification post-edit
-
-Apres batch :
+### Step D — Vérification post-edit
 ```bash
-grep -rln "a creer.*devtools_stealth_reader\|devtools_stealth_reader.*a creer" memory/
+grep -rln "à créer.*<module>\|<module>.*à créer" memory/ .claude/skills/
 ```
-Doit retourner 0 match. Si > 0 → un doc a ete oublie → ajouter au batch, re-commit.
+Doit retourner 0 match.
 
-**Checklist avant commit `feat(status)` ou `docs(status-propagation)`** :
-- [ ] Grep exhaustif fait (step A) ?
-- [ ] Formule canonique definie (step B) ?
-- [ ] Tous les edits dans un seul batch (step C) ?
-- [ ] Grep "ancien statut" post-edit = 0 match (step D) ?
-- [ ] Commits references coherents partout (meme liste de hashes dans tous les docs) ?
-
-**Anti-pattern** : "je mets a jour le feature doc d'abord, je verrai les autres plus tard" → ne le fera pas. Immediate full propagation ou abandon.
-
-## Qualite du contenu — regles anti-accumulation
-
-**Le doc-keeper ecrit BIEN des le depart pour eviter les audits de nettoyage.**
-
-| Regle | Exemple BON | Exemple MAUVAIS |
-|-------|-------------|-----------------|
-| **Faits, pas narratifs** | `Fix: guard _emit_gate (commit abc123)` | `On a essaye X puis Y puis Z a finalement marche` |
-| **Rationale pour chaque constante** | `45px gap = marge sur 49px mesure, evite faux positifs headings (32px max)` | `_GAP_THRESHOLD = 45` (sans explication) |
-| **Comprimer les checklists terminees** | Tableau resume `33/33` par categorie + commits | 33 lignes `[x]` individuelles |
-| **Jalons, pas journal** | `04-06 \| Boundary guards + DONE-gated E2E \| 5b5aa0b` | 50 lignes de recit de la session du 06 |
-| **Referencer, pas dupliquer** | `Voir mode-auto.md section Auto-permissions` | Copier 24 lignes d'un autre doc |
-
-**Quand mettre a jour un feature doc :**
-- **Bug fixe** → 1 ligne dans le tableau bugs (cause + fix + commit + date). Des faits, pas de prose.
-- **Decision prise** → section "Decisions de design" : choix + alternative rejetee + pourquoi.
-- **Constante ajoutee** → valeur + fichier + rationale (comment le nombre a ete derive).
-- **Checklist 100% cochee** → comprimer en tableau resume avec scores par categorie + commits de reference.
-- **Session terminee** → 1 ligne jalon (date + resultat cle + commit). Pas de recit.
+**Checklist commit `feat(status)` ou `docs(status-propagation)`** :
+- [ ] Grep exhaustif fait (Step A)
+- [ ] Formule canonique définie (Step B)
+- [ ] Tous edits batch unique (Step C)
+- [ ] Grep post-edit = 0 match (Step D)
+- [ ] Skills mis à jour aussi (pas seulement docs)
 
 ## Update Protocol
 
-### Step 1: Read before writing
-Toujours lire le fichier concerne AVANT de le modifier. Ne jamais editer a l'aveugle.
+### Step 1 — Read before writing
+Toujours lire fichier concerné AVANT de le modifier. Jamais éditer à l'aveugle.
 
-### Step 2: Edit surgically
-Changer uniquement ce qui est necessaire. Preserver la structure existante.
+### Step 2 — Edit surgically
+Changer uniquement ce qui est nécessaire. Préserver structure existante.
 
-### Step 3: Cross-check consistency
-- Feature doc coherent avec le hub HTML (`speakapp-hub.html` = arbitre)
-- Constantes dans le doc = valeurs dans le code (fichier:ligne)
-- Commandes vocales dans le doc = commandes dans `voice-commands.md` + code
-- Si divergence hub <-> doc → corriger le doc, JAMAIS le hub
-- **Plan vivant coherent avec le commit** (CLAUDE.md §3) : sujet refletant la session, statut refletant le changement (WIP→V1 si livre, etc.), prochain pas = etape suivante reelle, derniere session = commit hash courant. Si Plan vivant obsolete → MAJ avant de conclure le doc-keeper.
+### Step 3 — Cross-check consistency
+- Constantes dans doc = valeurs dans code (`fichier:ligne`)
+- Commandes vocales doc = commandes `voice-commands.md` + code
+- Plan vivant cohérent avec commit (sujet, statut, prochain pas, dernière session = commit hash courant)
+- Skills cohérents avec docs : liens valides, procédures à jour, BPs cités encore actuels
+- Hub HTML désynchro = intentionnel, NE PAS aligner doc dessus
 
-### Step 4: Capture des enseignements transversaux (nouveau 2026-04-14)
+### Step 4 — Capture des enseignements transversaux
 
-**Apres chaque session de debug/fix, se poser 3 questions avant de conclure :**
+**Après chaque session debug/fix, 3 questions avant de conclure :**
 
-1. **Pattern reutilisable decouvert ?** (ex: "UIA Invoke flaky sur Electron", "toujours set cooldown apres succes fast-path")
-   → Ancrer dans le skill transversal concerne (`working-on-claude-desktop`, `cd-auto-permissions`, etc.)
-   → Section "Pieges" ou "Patterns" du skill, PAS dans la feature doc du jour
+1. **Pattern réutilisable découvert ?** → ancrer dans skill transversal concerné (section "Pièges" ou "Patterns"), PAS dans feature doc du jour
+2. **Insight outil/API externe ?** → Memory `feedback_*.md` cross-projet OU skill `working-on-X` plateforme
+3. **Règle ou convention émergente ?** → Proposition règle CLAUDE.md (attendre validation Florent) OU feedback memory si local
 
-2. **Insight sur un outil/API externe ?** (ex: "CDP ne marche pas sur CD MSIX", "InvokePattern != clic reel")
-   → Memory `feedback_*.md` si valable cross-projet
-   → Skill `working-on-X` si specifique a une plateforme
+**Trigger manuel** : Florent dit "garde cet insight" / "enregistre ça quelque part" → activer Step 4 même sans code change.
 
-3. **Regle ou convention emergente ?** (ex: "toute boucle DOIT avoir backoff", "après succes → cooldown obligatoire")
-   → Proposition de regle dans CLAUDE.md (attendre validation utilisateur)
-   → OU feedback memory si locale a un pattern
+**Différence Step 1-3 vs Step 4** :
+- Step 1-3 = changement de **code** → docs feature/skill-test-X + skills affectés
+- Step 4 = changement d'**understanding** (pattern, piège, insight) → skill transversal / memory / règle
 
-**Trigger manuel** : si l'utilisateur dit "je sens qu'on a fait quelque chose d'important" / "garde cet insight" / "enregistre ca quelque part" → activer ce Step 4 en priorite, meme sans code change.
+**Anti-roman** : 1 ligne dans la bonne section. Cause racine + fix + date. Pas de récit.
 
-**Difference cle avec les feature docs (Step 1-3) :**
-- Step 1-3 = changement de code → doc feature/hub/skill-test-X
-- Step 4 = changement d'**understanding** (pattern, piege, insight) → skill transversal / memory / regle
+## Qualité du contenu — règles anti-accumulation
 
-**Regle anti-roman** : 1 ligne dans la bonne section. Cause racine + fix + date. Pas de recit de session.
+| Règle | BON | MAUVAIS |
+|-------|-----|---------|
+| Faits, pas narratifs | `Fix: guard _emit_gate (commit abc123)` | `On a essayé X puis Y puis Z a finalement marché` |
+| Rationale pour chaque constante | `45px gap = marge sur 49px mesure, évite faux positifs headings (32px max)` | `_GAP_THRESHOLD = 45` (sans explication) |
+| Comprimer checklists terminées | Tableau résumé `33/33` par catégorie + commits | 33 lignes `[x]` individuelles |
+| Jalons, pas journal | `04-06 \| Boundary guards + DONE-gated E2E \| 5b5aa0b` | 50 lignes de récit |
+| Référencer, pas dupliquer | `Voir mode-auto.md section Auto-permissions` | Copier 24 lignes d'un autre doc |
 
 ## Anti-Patterns
 
 | Anti-Pattern | Pourquoi c'est mal |
 |-------------|-------------------|
-| "Je mettrai a jour plus tard" | Tu ne le feras pas. Maintenant. |
-| Mettre a jour un seul fichier | Cree des incoherences |
-| Sauter les petits changements | S'accumulent en drift majeur |
-| Editer sans lire d'abord | Doublons et contradictions |
-| Laisser MEMORY.md depasser 200 lignes | Tronque au chargement, info perdue |
-| Ne pas mettre a jour le QA | Les nouveaux bugs ne seront pas detectes |
+| "Je mettrai à jour plus tard" | Tu ne le feras pas. Maintenant. |
+| MAJ doc sans MAJ skill correspondant | Skill devient menteur, re-grep ad-hoc, tokens gaspillés |
+| MAJ skill sans MAJ doc référencé | Lien cassé silencieux |
+| Sauter petits changements | S'accumulent en drift majeur |
+| Éditer sans lire d'abord | Doublons et contradictions |
+| Aligner doc interne sur hub HTML | Hub désynchro intentionnel depuis 2026-04-27 |
+| Mentionner `FEATURES.md` ou C1-C4 layers | Architecture obsolète |
+| MEMORY.md > 200 lignes | Tronqué au chargement, info perdue |
 
 ## The Bottom Line
 
-**Every code change = immediate doc update. Faits + rationale. Zero narratif. Hub = arbitre.**
-
+**Every code change = immediate update of BOTH docs AND skills covering the domain. Faits + rationale. Zero narratif. WHERE.md = routing entry point. Hub HTML laissé mourir.**
 
 ---
 
-## Auto-amelioration
+## Auto-amélioration
 
-**Ce skill s'ameliore a chaque usage.** C'est une responsabilite, pas un bonus.
+**Ce skill s'améliore à chaque usage.** Responsabilité, pas bonus.
 
-Apres chaque execution, avant de conclure :
-1. **Friction detectee ?** (etape confuse, ordre sous-optimal, info manquante) → corriger ce skill immediatement
-2. **Bug resolu ou pattern decouvert ?** → l'ajouter dans la section pieges/patterns de ce skill
-3. **Approche validee ?** → l'ancrer comme pattern reference dans ce skill
-4. **Gain applicable a d'autres skills ?** → propager (ou PROPOSITION DE REGLE si transversal)
+Avant de conclure :
+1. **Friction détectée ?** (étape confuse, ordre sous-optimal) → corriger ce skill maintenant
+2. **Bug résolu ou pattern découvert ?** → ajouter section pièges/patterns
+3. **Approche validée ?** → ancrer comme pattern référence
+4. **Gain applicable autres skills ?** → propager (ou PROPOSITION DE RÈGLE si transversal)
 
-**Regle : ne jamais reporter une amelioration a "plus tard". L'appliquer maintenant ou la perdre.**
+**Règle : ne jamais reporter une amélioration à "plus tard". L'appliquer maintenant ou la perdre.**

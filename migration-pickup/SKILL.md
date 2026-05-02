@@ -42,9 +42,10 @@ Recuperer toute modif faite par la session source (handoff, Plan vivant a jour, 
 - Si une seule entree En cours → la prendre directement sans demander
 
 **Cas C — Pas d'argument** :
-- Lire `memory/handoffs/INDEX.md` → prendre la 1ere ligne (plus recente)
-- Suivre le lien handoff → identifier feature + slug session
-- Ouvrir le feature doc + cibler l'entree `[slug]`
+- Lire `memory/PLANS-INDEX.md` → prendre les tickets `🔧 in-progress` triés par `last_session` desc + filtrés `last_account != current_account`
+- Si 1 seul → cible direct
+- Si plusieurs → demander à Florent lequel reprendre
+- Si vide → demander sur quelle feature il veut bosser
 
 ---
 
@@ -81,8 +82,8 @@ Pas de blabla. Pas de recap exhaustif. Juste l'essentiel actionnable.
 
 ## Cas particuliers
 
-### Aucun handoff recent (Cas C sans argument)
-Si `memory/handoffs/INDEX.md` est vide ou la 1ere entree est > 7 jours → demander a Florent : "Aucune session recente. Sur quelle feature tu veux bosser ?"
+### Aucun ticket recent (Cas C sans argument)
+Si `memory/PLANS-INDEX.md` n'a aucun ticket `in-progress` ou tous sont > 7 jours → demander a Florent : "Aucune session recente. Sur quelle feature tu veux bosser ?"
 
 ### Feature inconnue (Cas A/B avec feature errone)
 Si `memory/features/<arg>.md` n'existe pas → lister les features disponibles (`ls memory/features/*.md`) + demander correction.

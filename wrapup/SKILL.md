@@ -69,44 +69,60 @@ Look back through the entire conversation and identify:
 - Convertir les dates relatives en dates absolues
 - Inclure **Why:** et **How to apply:** pour les memories feedback et project
 
-## Step 2.5: Plan vivant à jour (OBLIGATOIRE — regle CLAUDE.md §3)
+## Step 2.5: Plan vivant à jour (OBLIGATOIRE — règle CLAUDE.md §3)
 
-**Avant le commit final, verifier que le `## 📌 Plan vivant` des feature docs touchees cette session reflete l'etat reel.**
+**Source unique session + multi-compte** = Plan vivant dans `memory/features/<feature>.md` § Plan vivant (gravée 2026-05-01). Aucun handoff séparé.
 
-C'est ce que la session suivante (ou l'autre compte) lira pour reprendre. Sans ca, le systeme "Plan vivant" perd son avantage et on retombe dans les dumps lourds.
+Le hook PostToolUse `tools/plan_vivant_update_hook.py` met à jour automatiquement les blocs `<!-- ticket: ... -->` actifs (champs `last_session`, `last_account`, `commits[]`) à chaque `git commit`. Cette étape vérifie que la couche structurelle (statut, prochain pas, bloqueurs) reflète bien la session.
 
-**Procedure** :
+**Procédure** :
 
-1. **Lister les features touchees** dans la session :
+1. **Lister les features touchées** :
    ```bash
    git log --oneline origin/dev..HEAD --name-only | grep -E "memory/features/|app\.py|wisper-bridge/|cdp_|devtools_|cc_ui/" | sort -u | head -20
    ```
 
-2. **Pour chaque feature concernee**, ouvrir `memory/features/<feature>.md` et verifier que la section `## 📌 Plan vivant` contient :
-   - **Sujet courant** a jour (ce qu'on a fait dans la session)
-   - **Statut** a jour (si change : 🔧 WIP → ✅ V1, V1 → V1.1, etc.)
-   - **Prochain pas concret** = action immediate post-session (1-3 bullets)
-   - **Bloqueurs actuels** (ou "aucun")
-   - **Derniere session** : YYYY-MM-DD HH:MM + commit hash + lien handoff (si cree)
+2. **Pour chaque feature concernée**, ouvrir `memory/features/<feature>.md` § Plan vivant et vérifier ses blocs `<!-- ticket: ... -->` :
+   - **status** correct (`in-progress` → `closed` si objectif atteint et tests PASS)
+   - **closed: YYYY-MM-DD** posé si fermeture
+   - **priority** réévaluée si scope a changé
+   - **Prochain pas** dans le corps Markdown (1-3 bullets) cohérent
+   - **Bloqueurs** à jour (ou "aucun")
+   - `last_session` / `last_account` / `commits` → laissés au hook (auto)
 
-3. **Si Plan vivant absent** (feature doc sans cette section) → l'ajouter MAINTENANT en haut, juste apres le TL;DR §0. Format dans CLAUDE.md §3 "Plan vivant a jour en continu".
+3. **Nouveau ticket** dans cette session (slug pas encore présent) → ajouter le bloc complet dans la sous-section `🔧 En cours` AVANT le commit final. Format :
+   ```markdown
+   <!-- ticket: <slug>
+   status: in-progress
+   opened: YYYY-MM-DD
+   priority: P0|P1|P2
+   account: florent.maisoncelle@gmail.com
+   last_session: YYYY-MM-DD HH:MM
+   last_account: florent.maisoncelle@gmail.com
+   commits: []
+   -->
 
-4. **Si Plan vivant obsolete** (refletant l'etat d'avant cette session) → le mettre a jour AVANT le commit final.
+   **[<slug>]** — Titre court
+   - **Statut** : description
+   - **Prochain pas** : 1-3 bullets
+   - **Bloqueurs** : aucun
+   ```
 
-**Regle** : aucun commit `/wrapup` ne sort si une feature touchee n'a pas son Plan vivant a jour. Si feature doc n'existe pas du tout pour la feature touchee → creer un stub minimal (TL;DR + Plan vivant uniquement, pas tout le template).
+4. **Régénération automatique** : le hook `tools/plans_index_hook.py` régénère `memory/PLANS-INDEX.md` à chaque Edit/Write d'une feature doc. Aucune action manuelle. Vérifier que le diff `PLANS-INDEX.md` est cohérent dans le commit final.
+
+**Règle** : aucun commit `/wrapup` ne sort si un ticket touché n'a pas son frontmatter à jour OU si la feature doc concernée n'a pas de section `## 📌 Plan vivant` (créer stub minimal sinon).
 
 **Cas particuliers** :
 - Session 100% docs/memory/config sans code feature → skip ce step
-- Session touche 2-3 features → MAJ les 2-3 Plan vivant (rare mais possible)
-- Refacto transversal qui touche beaucoup de fichiers → identifier la feature dominante, MAJ son Plan vivant, mentionner le scope dans le sujet courant
+- Session touche 2-3 features → MAJ les blocs concernés dans chaque feature doc
+- Refacto transversal → 1 ticket dominant, mentionner le scope dans le corps
 
-## Step 3: Write Session Summary + Handoff File
+## Step 3: Session Summary + Commit
 
-**3a — Session summary** (for NotebookLM Brain):
+**3a — Session summary** (pour NotebookLM Brain):
 
-Create a markdown session summary with today's date. Keep it concise but complete.
+Créer un markdown court de la session avec date du jour. Concis mais complet.
 
-Format:
 ```markdown
 # Session Summary — YYYY-MM-DD
 
@@ -126,90 +142,15 @@ Format:
 - List of tools, repos, services involved
 ```
 
-Save this to a temp file at `/tmp/session-summary-YYYY-MM-DD.md`.
+Sauvegarder dans `/tmp/session-summary-YYYY-MM-DD.md` (counter `-2.md` si plusieurs sessions/jour).
 
-If there are multiple sessions in the same day, append a counter: `/tmp/session-summary-YYYY-MM-DD-2.md`
+**3b — PAS de handoff séparé (gravée 2026-05-01)**
 
-**3b — Persistent handoff file** (UNIQUEMENT si demande explicite OU si session PARTIAL_DONE / BLOCKED / WIP):
+Florent verbatim 2026-05-01 : *"ca sert a rien de créer des handoff si on a deja dans plans vivants"*. Le système handoff a été remplacé par les blocs `<!-- ticket: ... -->` dans le Plan vivant feature (cf. Step 2.5).
 
-**NE PAS CREER de handoff par defaut.** Florent 2026-04-19 : "ça ne sert absolument à rien" de creer un handoff quand la session est close proprement et que tout est pushe. Les vrais documents (roadmap, feature docs, bug-patterns, matrices) suffisent.
+**Switch de compte multi-PC** = `git push` côté A puis `git pull` côté B suffit. Le Plan vivant est versionné, le hook a déjà MAJ `last_session` / `last_account` / `commits`. Pickup : `/migration-pickup <feature>` lit `memory/PLANS-INDEX.md` filtré par `last_account != current_account`.
 
-**Creer un handoff UNIQUEMENT si :**
-- L'user a explicitement demande "cree un handoff" / "je switch de compte"
-- La session est PARTIAL_DONE / BLOCKED (travail interrompu a reprendre precisement)
-- Il y a du WIP non-commite ou un etat mental a transmettre qui n'est pas deductible du git log + roadmap
-
-**Si session DONE + tout pushe + rien en WIP** → skip ce step entierement. Passer direct a 3c.
-
-**Liberation du claim (si cette session avait pose un claim au pickup) :**
-Si cette session a commence par un pickup de handoff (bloc `🔒 IN_PROGRESS` pose en tete), le nouveau fichier handoff genere ci-dessous DOIT refleter l'etat final :
-- Session **DONE** → pas de bloc claim en tete (handoff propre, libre pour reprise future si besoin)
-- Session **PARTIAL_DONE / BLOCKED** → ajouter un bloc `⏸️ PAUSED — YYYY-MM-DD HH:MM — reprendre sur <etape>` en tete
-- Dans tous les cas, le bloc `🔒 IN_PROGRESS` de l'ancien fichier ne doit PAS etre recopie dans le nouveau.
-Ref : CLAUDE.md global section "Claim du handoff au pickup".
-
-**Règle de naming — 1 fichier par session, PAS d'écrasement :**
-
-Chaque `/wrapup` crée un NOUVEAU fichier dans `memory/handoffs/` :
-
-```
-memory/handoffs/YYYY-MM-DD-HHhMM-slug.md
-```
-
-Exemples :
-- `memory/handoffs/2026-04-19-05h08-widget-maquette-html.md`
-- `memory/handoffs/2026-04-19-14h32-chat-reader-ag-fix.md`
-
-**Slug** = 2-4 mots kebab-case qui résument le sujet principal de la session (pas la date, pas "session").
-
-**Contenu (identique à l'ancien format) :**
-
-```markdown
-# Session Handoff — YYYY-MM-DD HH:MM
-
-## Projet / contexte
-<Nom du projet, branche git, dernier commit hash>
-
-## Ce qui a été fait dans cette session
-<3-5 bullets max, actions concrètes>
-
-## PROCHAINE ACTION IMMÉDIATE
-<1 seule action claire, actionnable sans contexte additionnel>
-<Ex: "Tester T18 dans /test-control-center — conditions: onglet Chrome ouvert, AG actif">
-
-## WIP (travail en cours interrompu)
-<Si la session s'est arrêtée au milieu de quelque chose : fichier modifié, où on en est, ce qui restait>
-<Si rien en cours : "RAS — session proprement terminée">
-
-## Bloqueurs actifs
-<Ce qui bloque la prochaine action si applicable>
-
-## Fichiers touchés dans cette session
-<Liste des fichiers modifiés / créés>
-
-## Comment reprendre (pour une nouvelle session / nouveau compte)
-1. Lire ce fichier
-2. Lire `memory/roadmap/roadmap.md` §1 priorité
-3. Lancer `/preflight <feature>` si session coding
-4. Exécuter "PROCHAINE ACTION IMMÉDIATE" ci-dessus
-```
-
-**3b-bis — Pointeur "latest" + index** :
-
-Après avoir créé le fichier daté, mettre à jour 2 fichiers complémentaires :
-
-1. **`memory/session-handoff.md`** — copie du dernier handoff (pour compat outils/skills qui lisent ce path). Ajouter un header au top :
-   ```markdown
-   > **Dernier handoff** — copie de `memory/handoffs/YYYY-MM-DD-HHhMM-slug.md`
-   > Historique complet : [memory/handoffs/INDEX.md](handoffs/INDEX.md)
-   ```
-
-2. **`memory/handoffs/INDEX.md`** — ajouter une ligne EN HAUT (ordre anti-chronologique) :
-   ```markdown
-   - [YYYY-MM-DD HH:MM — slug](YYYY-MM-DD-HHhMM-slug.md) — 1 ligne résumé
-   ```
-
-**Règle :** tous les handoffs sont git-tracké. Chaque session a SON fichier permanent — jamais d'écrasement. `session-handoff.md` est un pointeur "latest" pratique, mais la vérité est dans `memory/handoffs/`.
+**`memory/handoffs/`** : archive historique uniquement (`memory/_archive/handoffs-pre-2026-05-01/`). Pas de nouveau handoff créé. Si session laisse du WIP technique non-évident, le détailler dans le corps Markdown du ticket Plan vivant.
 
 **3c — Mise à jour `roadmap.md`** :
 
@@ -228,25 +169,47 @@ Si des commits code sont présents (`.py`, `.js`, `.html` dans `cc_ui/`, `wisper
 
 Si la session est 100% docs/memory/config sans code → skip cette étape.
 
-**3d — Commit + push du handoff** :
+**3d — Commit + push du wrap-up** :
 
 ```bash
-git add memory/session-handoff.md memory/roadmap/roadmap.md
-git commit -m "chore(wrapup): handoff session YYYY-MM-DD"
+git add memory/features/ memory/PLANS-INDEX.md memory/roadmap/roadmap.md
+git commit -m "chore(wrapup): session YYYY-MM-DD"
 git push origin HEAD:dev
 ```
 
-**3e — Bug-pattern capitalization + YAML post-mortem (OBLIGATOIRE)** :
+Plan vivant déjà MAJ par hook `plan_vivant_update_hook.py` au commit principal de la session. Cette étape pousse le wrap-up final (réorganisation tickets / closures / nouveaux blocs).
 
-Objectif : graver dans le marbre chaque bug resolu dans la session + verifier automatiquement que les fixes marchent via scan logs.
+**3e — Validation tracker (OBLIGATOIRE — etendu 2026-04-26)** :
+
+Objectif : pour CHAQUE livraison de la session (`fix`/`feat`/`docs`/`refactor`/`perf`), poser un mecanisme de verification ulterieure. Sans ca, regression silencieuse.
+
+**Le hook PostToolUse `tools/validation_tracker_hook.py` se declenche AUTO sur chaque `git push` pendant la session** — il propose le mecanisme par type. Cette etape de `/wrapup` est le **filet de securite final** qui garantit que rien n'est passe entre les mailles.
 
 **Workflow :**
 
-1. **Detecter les commits `fix(...)` de la session :**
+1. **Detecter TOUS les commits livres de la session (pas juste fix) :**
    ```bash
-   git log --oneline origin/dev..HEAD | grep -iE "^[a-f0-9]+ fix\("
-   # Fallback si branche deja sync : git log --oneline HEAD~20..HEAD | grep -iE "fix\("
+   git log --oneline origin/dev@{1}..origin/dev | grep -iE "^[a-f0-9]+ (fix|feat|docs|refactor|perf)\("
+   # Fallback : git log --oneline HEAD~20..HEAD | grep -iE "(fix|feat|docs|refactor|perf)\("
    ```
+
+2. **Pour chaque commit, verifier le mecanisme depose** (cf. routing skill `/validation-tracker`) :
+
+   | Type | Mecanisme attendu | Ou |
+   |------|-------------------|-----|
+   | `fix(...)` | YAML pending-verifications/ + BP (si classe) | `memory/pending-verifications/` |
+   | `feat(...)` UI/voix/4 plateformes | Entree `validation-pending-n4.md` | `memory/validation-pending-n4.md` |
+   | `feat(...)` log-able | YAML pending-verifications/ | `memory/pending-verifications/` |
+   | `refactor(...)` significatif | YAML anti-regression | `memory/pending-verifications/` |
+   | `docs(...)` alignement (dashboards/matrices) | post-session-check | `memory/post-session-checks/<date>-<slug>.md` |
+   | `perf(...)` | YAML latence/CPU | `memory/pending-verifications/` |
+   | `chore/test/build/ci/style/wrapup` | SKIP | — |
+
+3. **Si un commit n'a PAS son mecanisme** → invoquer `/validation-tracker` pour le poser MAINTENANT. Refuser de cloturer `/wrapup` si gap detecte.
+
+4. **Detail complet du routing** : skill `/validation-tracker` (point d'entree central, idempotent via cache JSON par session_id).
+
+**Pour les `fix(...)` specifiquement (regle existante 2026-04-19) :**
 
 2. **Pour chaque `fix(...)` commit, 2 actions :**
 
@@ -288,6 +251,16 @@ Objectif : graver dans le marbre chaque bug resolu dans la session + verifier au
 
 **Regle absolue :** ZERO `fix(...)` commit ne sort d'une session sans YAML associe + sans tentative de capitalisation BP. Pas de YAML → pas de `/wrapup` fini. Si aucune classe de bug identifiee → `pattern_ref` vide mais YAML reste obligatoire.
 
+**3f — Mise à jour pipeline de vérification continu (OBLIGATOIRE si nouveaux YAMLs)** :
+
+Si la session a déposé au moins 1 nouveau YAML dans `memory/pending-verifications/`, s'assurer que le pipeline quotidien les verra :
+
+1. **Confirmer** que les YAMLs sont bien dans `memory/pending-verifications/` (pas dans `_confirmed/` ni `_archive/`) — la tâche `speakapp-verify-fixes` (9h00 quotidien) scanne ce dossier automatiquement, rien à faire de plus.
+2. **Si c'est la 1ère fois qu'on touche à ce pipeline dans la session** → vérifier que le workspace dans `~/.claude/scheduled-tasks/speakapp-verify-fixes/SKILL.md` contient bien `C:\Users\Administrateur\PROJECTS\3- Wisper\speak-app-dev` (et non `Utilisateur`).
+3. **Résumé à donner à Florent** : "X nouveaux YAMLs déposés. `/verify-fixes` invoqué (tour 1). Pipeline quotidien `speakapp-verify-fixes` les scannera à 9h00."
+
+**Note** : les YAMLs archivés dans `_confirmed/` (fixes déjà validés live) ne sont PAS rescannés — ils servent uniquement de preuve de non-régression consultable manuellement.
+
 ## Step 4: Push to NotebookLM Brain
 
 **Méthode : Chrome MCP** (le CLI Playwright ne fonctionne pas quand Chrome est ouvert sur le PC de Florent).
@@ -309,7 +282,7 @@ Si Chrome MCP indisponible → skip cette étape, les memories locales sont suff
 Tell the user:
 - How many memories were saved/updated
 - That the session summary was added to the Brain notebook (or skipped)
-- Que le fichier `memory/session-handoff.md` a été commité et pushé (c'est le fichier à lire pour reprendre sur un autre compte)
+- Que les Plan vivants des features touchées sont à jour + `memory/PLANS-INDEX.md` régénéré (lecture côté autre compte = `git pull` + `/migration-pickup <feature>`)
 - La PROCHAINE ACTION IMMÉDIATE en 1 phrase
 
 Keep it brief. No need to read back the full summary — just confirm it's done.

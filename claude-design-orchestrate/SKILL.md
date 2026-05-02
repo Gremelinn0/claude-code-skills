@@ -17,9 +17,21 @@ description: Orchestre de bout en bout la generation de directions de design sur
 ## Prerequis
 
 - Chrome MCP connecte (`mcp__Claude_in_Chrome__*`)
-- Un projet Claude Design existant avec son URL
+- Un projet Claude Design existant avec son URL (OU bien le skill cree un nouveau projet a l'Etape 0)
 - Idealement le Design System dans ce projet est propre (sinon invoque d'abord `claude-design-system-audit`)
 - Brand identity locale connue (`brand-identity` skill dans le projet ou `CLAUDE_DESIGN_PROJECT_INSTRUCTIONS.md`)
+- **Banque de DS de reference** : `Vente et Marketing - ALL Compagnies/awesome-design-md/design-md/<marque>/README.md` (66+ DESIGN.md ready-to-use : stripe, linear, notion, spotify, claude, cohere, elevenlabs, raycast, vercel, framer, etc.). A utiliser comme **inspiration** quand un template demande un style "linear-energetic", "stripe-minimal", etc.
+
+## Comptes claude.ai (Florent en a 2)
+
+**REGLE OBLIGATOIRE : avant tout lancement, verifier sur QUEL compte Chrome est connecte.** Florent alterne entre 2 comptes claude.ai. Generer 3 directions sur le mauvais compte = projets invisibles cote Florent + confusion garantie.
+
+| Compte | Email | Org affichee | Usage |
+|--------|-------|--------------|-------|
+| **Compte principal** | `florent.maisoncelle@gmail.com` | `florent.maisoncelle@gmail.com's Organization` | Defaut SpeakApp + projets perso |
+| **Compte secondaire** | (a documenter) | (a documenter) | A preciser quand identifie |
+
+Si le compte connecte ne correspond pas a l'attendu → **stopper et demander a Florent de switch** avant de creer le projet.
 
 ## Inputs attendus
 
@@ -30,7 +42,58 @@ description: Orchestre de bout en bout la generation de directions de design sur
 5. **Skip audit** : si `--skip-audit`, ne pas invoquer `claude-design-system-audit` en pre-check
 6. **Output dir** : defaut `design_outputs/<YYYY-MM-DD>/<page_name>/`
 
-## Workflow — 7 etapes
+## Workflow — 8 etapes (0 a 7)
+
+### Etape 0 — Pre-flight OBLIGATOIRE (account check + DS announce)
+
+**Avant tout clic dans claude.ai/design, le skill DOIT executer ce pre-flight et afficher un recapitulatif structure a Florent. Aucune conversation n'est lancee tant que le recap n'est pas affiche.**
+
+#### 0.1 — Account check via Chrome MCP
+
+1. `mcp__Claude_in_Chrome__navigate` vers `https://claude.ai/design`
+2. `screenshot` pour identifier le compte connecte (badge en bas-gauche : "florent.maisoncelle@gmail.com's Organization" + nom utilisateur)
+3. **Verifier** : compte attendu = celui specifie dans la commande, OU defaut `florent.maisoncelle@gmail.com`
+4. **Si mismatch** : stopper immediatement, afficher :
+   > "Compte connecte = X. Tu attendais Y. Switch de compte necessaire avant de continuer. Dis-moi 'go' une fois switch."
+5. **Si match** : continuer
+
+#### 0.2 — DS announce (recap obligatoire avant lancement)
+
+Avant de lancer la moindre conversation, AFFICHER ce bloc structure a Florent :
+
+```
+═══════════════════════════════════════════════
+PRE-FLIGHT CLAUDE DESIGN — confirmation avant lancement
+═══════════════════════════════════════════════
+
+Compte Chrome connecte    : <email + org>
+Cible                     : <page ou composant>
+Projet Claude Design      : <nouveau OU URL existant>
+Nombre de directions      : <N>
+
+DESIGN SYSTEM utilise     :
+  - brand-identity local  : <projet> (tokens / voice / tech-stack)
+  - DS Claude Design       : <nom DS dans le projet OU "aucun, on s'inspire des refs"
+  - Refs awesome-design-md : <liste de marques utilisees>
+                             (ex: stripe, linear, notion)
+
+MAQUETTES inspiration     :
+  - <path 1>
+  - <path 2>
+
+REGLES ABSOLUES injectees :
+  - <regle 1>
+  - <regle 2>
+
+OUTPUT prevu              : design_outputs/<date>/<page>/
+```
+
+Puis :
+- Si Florent dit "go" / "ok" → lancer Etape 1+
+- Si Florent dit "stop" / corrige un point → ajuster + re-afficher le recap
+- Si Florent ne repond pas explicitement → ne PAS lancer (par defaut on attend confirmation)
+
+**Pourquoi cette etape existe (incident 2026-04-25)** : un agent a lance 3 directions widget SpeakApp sans annoncer le DS utilise ni verifier le compte. Resultat : Florent ne voyait rien (mauvais compte suspecte) + n'avait aucune trace du DS choisi + l'extract local n'a pas tourne. Cette regle elimine les 3 problemes d'un coup.
 
 ### Etape 1 — Charger le contexte
 
@@ -82,7 +145,17 @@ Pour chaque conversation active :
 - [ ] Si question de clarification → consulter `resources/question_responses.md` pour trouver la reponse adequate. Envoyer via textarea + Send
 - [ ] Si generation > 15 min sans progresser → flagger comme stuck
 
-### Etape 6 — Extraction des outputs (3 voies complementaires)
+### Etape 6 — Extraction des outputs (OBLIGATOIRE — pas optionnelle)
+
+**Cette etape n'est PAS optionnelle. Une session sans extract = generation invisible cote Florent + impossible de porter dans `widget_qt_test.py` ou autre code prod. Si l'extract foire, retry immediat puis flag explicite "EXTRACT_FAILED" dans le rapport final.**
+
+Sequence obligatoire :
+1. Avant l'extract, screenshot chaque onglet projet pour confirmer qu'au moins 1 fichier existe dans Design Files
+2. Si Design Files vide (ex : "Network error" / generation incomplete) → noter "direction X = NOT_GENERATED" et passer
+3. Pour les directions OK, executer Voie A (ZIP API)
+4. Verifier physiquement : `ls design_outputs/<date>/<page>/` doit retourner > 0 fichiers
+5. Si vide → retry Voie A (1 fois) puis fallback Voie C (scraping transcript + screenshot canvas)
+6. Logger dans le rapport final : nb fichiers extraits par direction + path absolu
 
 **Voie A — Export ZIP complet via API** (recommande, fiable) :
 

@@ -1,5 +1,5 @@
 ---
-name: routine
+name: routine-create
 description: Crée proprement une routine Claude Code (cloud ou locale) du premier coup, avec Opus par défaut + connecteurs MCP + repo GitHub + vérification visuelle post-création dans la version web.
 ---
 

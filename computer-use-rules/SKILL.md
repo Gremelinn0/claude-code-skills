@@ -1,6 +1,6 @@
 ---
 name: computer-use-rules
-description: Regles strictes pour l'usage de computer-use — ecran secondaire, fenetres utilisateur, verification avant action. A lire AVANT toute session computer-use.
+description: Regles strictes pour l'usage de computer-use — 1 ecran principal, fenetres utilisateur, verification avant action. A lire AVANT toute session computer-use.
 trigger: Avant d'utiliser computer-use, avant request_access, avant toute interaction avec des fenetres natives.
 scope: global — tous les projets
 ---
@@ -10,74 +10,63 @@ scope: global — tous les projets
 ## Pourquoi ce skill existe
 
 Florent a perdu ~30 min de session parce que Claude :
-- A swiché sur le mauvais écran (principal au lieu du secondaire)
 - A essayé d'ouvrir/fermer des fenêtres de l'utilisateur
 - A cliqué dans le vide sans vérifier ce qui était ouvert
+- A switché vers un display qui n'existe plus (anciennes sessions : spacedesk retiré 2026-04-23)
 
 Ces erreurs se répètent. Ce skill est le garde-fou.
 
 ---
 
-## Règle 1 — Écran secondaire TOUJOURS
+## Règle 1 — 1 seul écran, pas de `switch_display` nécessaire
+
+**Setup actuel (2026-04-23) :** Florent a **1 seul écran principal**. L'écran secondaire spacedesk (`display 3988289358`) a été retiré.
 
 ```
-display secondaire = "display 3988289358"  ← peut changer (spacedesk dynamique)
-display principal  = "PHL 241E1"
+display principal = unique écran disponible
 ```
 
-**AVANT toute première screenshot de la session :**
-```python
-switch_display("display 3988289358")
-screenshot()
-# Si erreur "No monitor named..." → faire screenshot() sans switch pour voir les monitors dispo
-```
+**Conséquence :**
+- `switch_display(...)` n'est **plus nécessaire** et **plus demandé** par défaut.
+- Faire `screenshot()` directement, sans switch préalable.
+- Si on tombe sur une session très ancienne qui parle de "display 3988289358" ou "écran secondaire" → règle obsolète, ignorer.
 
-**Ce qui vit sur le secondaire :**
+**Apps qui vivent sur ce seul écran :**
 - AntiGravity (AG)
-- **Claude Desktop (Electron) + sa DevTools** — les DEUX sur le secondaire, sans exception. Voir Règle 1bis ci-dessous.
+- **Claude Desktop (Electron) + sa DevTools** (voir Règle 1bis ci-dessous — pilotage prioritaire via scripts UIA/Python, pas computer-use)
 - Control Center (pywebview = SpeakApp)
+- Chrome (Claude.ai, ChatGPT, Gemini) → **Chrome MCP préférable** à computer-use (tier "read", clics bloqués)
 - Toutes apps natives Python/GUI du projet
+- **Tout ce que Florent utilise pour bosser** (IDE, terminal, navigateur)
 
-**Ce qui vit sur le principal :**
-- Chrome (Claude.ai, ChatGPT, Gemini)
-- Pour Chrome → utiliser Chrome MCP (`mcp__Claude_in_Chrome__*`), PAS computer-use (tier "read", clics bloqués)
-- **Tout ce que Florent utilise pour bosser** (IDE, terminal, navigateur). Ne jamais remonter une app Claude/CD/AG sur le principal.
+**Cohabitation :** puisqu'il n'y a qu'un seul écran, Claude doit être **le plus discret possible** — pas de flash DevTools, pas de vol de focus. Privilégier les mécanismes qui travaillent en arrière-plan (UIA Invoke, CDP, WS Bridge, hooks JSONL). Computer-use reste le **dernier recours** pour du vrai GUI natif.
 
 ---
 
-## Règle 1bis — Claude Desktop + DevTools = TOUJOURS sur le secondaire (setup "parallel work")
+## Règle 1bis — Claude Desktop = pilotage prioritaire via scripts UIA/Python, pas computer-use
 
-**Setup canonique pour bosser en parallèle pendant que CD tourne :**
+**Ce qu'il faut savoir :** quand Florent bosse sur CD, la **sidebar est souvent repliée** (zone étroite, boutons sessions collapsed).
 
-```
-[Écran secondaire "display 3988289358"]       [Écran principal "PHL 241E1"]
-  ┌─────────────────────────────┐               ┌─────────────────────────────┐
-  │  Claude Desktop (Electron)  │               │                             │
-  │  (plein écran ou maximisée) │               │   Florent bosse ici :       │
-  │                             │               │   IDE, Chrome, terminal,    │
-  │  ┌──────────────────┐       │               │   etc.                      │
-  │  │ DevTools 700x500 │       │               │                             │
-  │  │  top-left        │       │               │                             │
-  │  └──────────────────┘       │               │                             │
-  └─────────────────────────────┘               └─────────────────────────────┘
-```
+**Bonne nouvelle :** les éléments UIA restent présents dans l'arbre même sidebar repliée. `cd_uia_scan.py` voit tout, `cd_nav_to_session.py` peut invoquer la bonne session sans que l'état visuel de la sidebar bouge.
 
-**Règles :**
-1. **CD (l'app Electron)** → maximisée sur écran secondaire. Jamais sur le principal.
-2. **DevTools CD** → ouverte via `Ctrl+Alt+I`, repositionnée en 700x500 top-left **sur le même écran secondaire** qu'CD. Jamais qu'elle atterrisse sur le principal (flash visuel + vole le focus Florent).
-3. **Pourquoi** : CD + DevTools sur le secondaire = Florent peut bosser sur le principal sans être dérangé. Si CD ou DevTools apparaît sur le principal → vol de focus, vol de clipboard, interruption.
-4. **Avant tout `switch_display` vers le principal** : vérifier que CD et DevTools ne viennent pas d'être repositionnés sur le principal par erreur. Les ramener sur le secondaire via `tools/cd_show_devtools.py` si besoin.
-5. **Prérequis pour lancer CD en journée** : Florent doit dire explicitement "OK, CD peut tourner pendant que je bosse" OU on est en session overnight. Par défaut : ne pas lancer CD live sans son go.
+**Conséquence :** pour observer/piloter CD, **utiliser les scripts Python UIA/DevTools** en priorité :
 
-**Check au début de toute session CD live** :
-```python
-switch_display("display 3988289358")
-screenshot()
-# Vérifier : CD visible sur le secondaire ? DevTools visible sur le secondaire ?
-# Si non → demander à Florent OU repositionner via tools/cd_show_devtools.py
-```
+| Scénario | Outil prioritaire |
+|----------|-------------------|
+| Lister les sessions CD | `python tools/cd_uia_scan.py` |
+| Naviguer vers une session | `python tools/cd_nav_to_session.py <nom>` |
+| Injecter un script DOM | `python tools/cd_inject_*.py` (libre à toute heure depuis 2026-04-23) |
+| Cliquer un bouton de permission | UIA Invoke via `app.py` (auto-perm prod) |
+| Bench / scan discovery | `python tools/cd_uia_invoke_bench.py` |
 
-**Corollaire** : la règle historique "CD overnight only" s'assouplit — CD peut tourner en journée **si et seulement si** ce setup parallel-work est respecté + Florent a dit OK.
+**Ces scripts fonctionnent indépendamment de :**
+- la visibilité de la fenêtre (CD peut être minimisée, cachée, derrière une autre app)
+- l'état de la sidebar (repliée ou étendue)
+- ce que Florent est en train de faire ailleurs
+
+**Computer-use sur CD = fallback exotique uniquement** (cas où UIA ne voit pas un élément, ou validation visuelle d'un pixel). Sinon → scripts Python.
+
+**Règle DevTools CD inject (2026-04-23) :** libre à toute heure, jour comme nuit. Florent : "Tu ne me perturberas jamais, le PC est complètement disponible. Pour faire les scans DOM, il ne faut vraiment pas que tu hésites."
 
 ---
 
@@ -92,7 +81,6 @@ screenshot()
 
 **AUTORISÉ :**
 - `open_application(...)` — pour ouvrir une app nécessaire
-- `switch_display(...)` — switcher l'écran capturé
 - `screenshot()` — observer
 - `zoom(...)` — agrandir une zone
 
@@ -102,12 +90,11 @@ screenshot()
 
 **Séquence obligatoire au début de chaque session computer-use :**
 
-1. `switch_display("display 3988289358")`
-2. `screenshot()` — observer ce qui est ouvert
-3. Analyser : est-ce que tout ce dont j'ai besoin est visible ?
-4. Si oui → `request_access(apps=[...])` avec seulement ce qui est nécessaire → agir
-5. Si non → **STOP**, dire à Florent : _"J'ai besoin que [X] soit ouvert sur l'écran secondaire. Tu peux l'ouvrir ?"_
-6. Attendre "ok" explicite avant de continuer
+1. `screenshot()` — observer ce qui est ouvert
+2. Analyser : est-ce que tout ce dont j'ai besoin est visible ?
+3. Si oui → `request_access(apps=[...])` avec seulement ce qui est nécessaire → agir
+4. Si non → **STOP**, dire à Florent : _"J'ai besoin que [X] soit ouvert. Tu peux l'ouvrir ?"_
+5. Attendre "ok" explicite avant de continuer
 
 **Jamais :**
 - Clique "au cas où"
@@ -170,24 +157,24 @@ Quand `mcp__Claude_in_Chrome__tabs_context_mcp` retourne "not connected" :
 
 ---
 
-## Règle 7 (ancienne 6) — Pas de question si les logs peuvent répondre
+## Règle 7 — Pas de question si les logs peuvent répondre
 
 Avant de demander à Florent ce qui se passe dans l'app :
 1. Lire les logs via Bash : `tail -50 debug.log | grep -E "\[CC|lecture|TTS"`
 2. Lire `cc_state.json` via Python
 3. Vérifier le screenshot
 
-Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = logs, code, screenshots, Chrome MCP.
+Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = logs, code, screenshots, Chrome MCP, scripts Python UIA.
 
 ---
 
 ## Checklist rapide avant d'utiliser computer-use
 
 ```
-[ ] Je suis sur l'écran secondaire ? (switch_display + screenshot)
+[ ] La cible est Claude Desktop ? → privilégier scripts UIA/Python (cd_uia_scan, cd_nav_to_session)
+[ ] La cible est Chrome/pywebview ? → Chrome MCP à la place
 [ ] J'ai vérifié ce qui est ouvert avant request_access ?
 [ ] Je vais fermer/minimiser une fenêtre de Florent ? → STOP, interdit
-[ ] La cible est Chrome/pywebview ? → Utiliser Chrome MCP à la place
 [ ] request_access = uniquement les apps nécessaires ?
 ```
 
@@ -196,3 +183,4 @@ Florent = validation visuelle + actions physiques (micro, fenêtre). Claude = lo
 ## Historique
 
 - **2026-04-14** — Créé suite à erreurs répétées d'écran + fenêtres. Validé par Florent.
+- **2026-04-23** — Écran secondaire spacedesk retiré par Florent. Règles 1 + 1bis réécrites : 1 seul écran, pas de `switch_display`, pilotage CD via scripts UIA/Python en priorité (sidebar repliée = pas bloquant car UIA voit tout). Computer-use = fallback exotique.
