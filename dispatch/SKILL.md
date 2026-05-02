@@ -1,6 +1,6 @@
 ---
 name: dispatch
-description: Exécuter en parallèle un BATCH de micro-tâches additives déjà auditées. OUTIL invocable par /drive, /dev-orchestrator ou main session APRÈS qu'un plan clair a été validé. Mode ultra-conservateur — pas de régression, pas de refactor, additif uniquement. Trigger sur "dispatch ce batch", "lance les agents en parallèle sur ces N tâches", "exécute le plan en parallèle".
+description: Exécute en parallèle batch 2-8 micro-tâches additives (sub-agents Sonnet) après plan validé en amont. Mode strict — additif uniquement, pas de refactor. Couvre aussi cas debug parallèle indep (3+ tests fail causes différentes). Triggers "dispatch ce batch", "lance agents parallèle", "exécute plan parallèle".
 trigger: user-invocable OR invoqué par /drive, /dev-orchestrator quand le plan contient 2-8 tâches indépendantes
 scope: global — tout projet
 ---
