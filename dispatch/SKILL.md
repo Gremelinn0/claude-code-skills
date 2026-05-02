@@ -21,6 +21,9 @@ scope: global — tout projet
 | `/drive` arrive sur une session avec 5+ petits items indépendants | `/drive` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
 | `/dev-orchestrator` a fait son bilan et identifié 3-8 GAPs additifs prêts | `/dev-orchestrator` STOP, propose à Florent d'invoquer `/dispatch` (cf règle ci-dessous) |
 | Main session après audit explicite (Phase 0 faite, GO/PENDING/SKIP déterminés) | Invoquer `/dispatch` avec la liste des GO |
+| Debug 3+ test files / sous-systèmes en panne avec causes racines DIFFÉRENTES (pas de shared state) | Invoquer `/dispatch` mode "debug parallèle indep" — 1 agent par bug, R1-R5 relax (investigation = pas additif) |
+
+> **Note fusion 2026-05-02** : skill `/dispatch-parallel-agents` (pattern debug parallèle) absorbé dans cette table. Stocké dans `~/.claude/skills-store/`. Récupérable via `/skill-store` si besoin du contenu détaillé.
 
 ### Règle non-négociable — STOP + handoff Florent avant `/dispatch` (jamais de chaining auto)
 
