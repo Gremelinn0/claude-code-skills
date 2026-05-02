@@ -1,6 +1,6 @@
 ---
-name: wrapup-migration
-description: Wrap-up de session POUR SWITCH DE COMPTE — push Plan vivant des features touchées. Trigger sur "/wrapup-migration", "switch de compte", "je change de compte", "migration de compte".
+name: migration-session-handoff
+description: Handoff session pour switch de compte Claude — push Plan vivant features touchées. Triggers "/migration-session-handoff", "switch de compte", "change de compte", "migration de compte". Alias rétro-compat "/wrapup-migration".
 ---
 
 # Session Wrap-Up — Migration / Switch de compte (version 2026-05-01 v2 — sans Notion)
