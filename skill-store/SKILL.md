@@ -21,14 +21,33 @@ scope: gestion lifecycle skills actifs ↔ stockés (déplacement folder + INDEX
 
 ---
 
-## 2 stores supportés
+## Architecture skills par scope (à connaître AVANT stocker/migrer)
+
+**4 niveaux de scope** — du + universel au + restreint :
+
+| Scope | Path | Quand utiliser |
+|-------|------|----------------|
+| **Global** | `~/.claude/skills/` | Universel cross-projets (legal-*, dispatch, recap, plan, swarm-*, claude-md-skill-cleanup, skill-store, etc.) |
+| **Projet racine** | `<projet>/.claude/skills/` | Spécifique projet entier — chargé partout dans le projet (auto-permission, widget, vosk-monitor pour SpeakApp) |
+| **Sous-projet** | `<projet>/<sous-projet>/.claude/skills/` | Spécifique sous-projet — chargé seulement quand cwd dans sous-projet (claude-design-* → ALL Compagnies/Design/, youtube-* → ALL Compagnies/YouTube Channel/) |
+| **Exception global** | `~/.claude/skills/` malgré spécificité projet | Cas exceptionnel quand utilité cross-PC > économie tokens (ex `speakapp-partners` global pour partage rapide associés) |
+
+**Règle de placement** :
+- Skill utilisé sur **TOUS projets** → global
+- Skill utilisé sur **1 projet entier** → projet racine
+- Skill utilisé sur **1 sous-dossier projet** → sous-projet (scope fin = économie tokens hors cwd)
+- Hésitation projet vs sous-projet → projet racine (plus simple)
+
+**Avantage scope fin** : skills sous-projet PAS chargés quand tu bosses ailleurs dans le projet → économie tokens descriptions.
+
+## 2 niveaux de stores supportés
 
 | Store | Path | Pour |
 |-------|------|------|
-| **Projet** | `.claude/skills-store/` | Skills SpeakApp-spécifiques peu utilisés |
-| **Global** | `~/.claude/skills-store/` | Skills universels rarement utilisés (legal-*, infographic, formation-*, etc.) |
+| **Projet/Sous-projet** | `<scope>/.claude/skills-store/` | Skills dormants spécifiques scope |
+| **Global** | `~/.claude/skills-store/` | Skills universels dormants (legal-*, infographic, etc.) |
 
-**Règle** : skill stocké reste dans son scope d'origine. Skill projet → store projet. Skill global → store global.
+**Règle stock** : skill stocké reste dans son scope d'origine. Skill global → store global. Skill projet/sous-projet → store du même scope.
 
 ---
 
