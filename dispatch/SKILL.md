@@ -114,7 +114,7 @@ Phase 5 : Retour à l'invocateur avec : N commits + verdict
 **Comment ça marche techniquement :**
 - Claude (modèle actif) dispatche des sous-agents via le tool `Agent(...)`
 - Sous-agents exécuteurs : `Agent(model="sonnet")` — UNE modif additive chacun
-- Review finale : `Agent(subagent_type="feature-dev:code-reviewer", model="opus")` — Opus relit, n'orchestre pas
+- Review finale : `Agent(subagent_type="feature-dev:code-reviewer", model="sonnet")` — Sonnet relit, n'orchestre pas
 
 **Principes de légèreté :**
 - Pas de TDD sur micro-tâches

@@ -1,11 +1,11 @@
 ---
-name: claude-md-new-rule
-description: Crée 1 règle CLAUDE.md daily-use — check archive, audit 4Q (déjà couverte/hook/skill/scope), compression ≤2 lignes, placement large→spécifique, validation Florent, écriture atomique. Triggers "ajoute règle", "grave règle", "nouvelle règle". Délègue cleanup/audit/rename à parent /claude-md-skill-cleanup.
+name: rule-creator
+description: Crée 1 règle claire/concise (CLAUDE.md, MEMORY, skill) — check archive, audit 4Q, compression ≤2 lignes, format gagnant Florent (A/B reco · langage humain · 5-10 lignes max), validation gate, écriture atomique. Triggers "ajoute règle", "grave règle", "nouvelle règle", "écris règle". Alias rétro-compat "/claude-md-new-rule". Délègue cleanup/audit/rename à parent /rule-cleaner.
 ---
 
-# claude-md-new-rule
+# rule-creator
 
-Skill enfant léger de `/claude-md-skill-cleanup`. Scope = **1 règle nouvelle**, daily-use. Doctrine + cleanup + audit skills restent dans parent.
+Skill enfant léger de `/rule-cleaner`. Scope = **1 règle nouvelle**, daily-use. Doctrine + cleanup + audit skills restent dans parent.
 
 CLAUDE.md = budget tokens × N sessions × M projets. Ce skill garantit qu'aucune règle n'y entre sans audit + compression.
 
@@ -27,7 +27,7 @@ CLAUDE.md = budget tokens × N sessions × M projets. Ce skill garantit qu'aucun
 | "nettoie CLAUDE.md" / "compresse" / "audit skills" / "rename skill" | **parent** (full-fichier) |
 | ≥ 2 règles à graver d'un coup | **parent** (Workflow A) |
 
-Garde-fou : si scope dépasse 1 règle isolée → switch explicite "Cette demande relève de `/claude-md-skill-cleanup`".
+Garde-fou : si scope dépasse 1 règle isolée → switch explicite "Cette demande relève de `/rule-cleaner`".
 
 ## §2 Workflow 6 phases
 
@@ -167,13 +167,57 @@ Avant Phase 4, vérifier suppression de :
 - ❌ Exemples > 1 (garder 1 max si contre-intuitif)
 - ❌ Verbatim Florent > 1 phrase (reformuler règle 1 ligne + verbatim court entre quotes)
 
+## §4bis Format gagnant Florent (validé 2026-05-03)
+
+Florent n'est pas dev. Une règle écrite "à la dev" (jargon, tableau dense, prose architecturale) ne sera ni comprise ni appliquée. Le format ci-dessous a été validé en session — Florent a explicitement réagi "j'en ai des frissons".
+
+### Template options A/B + reco (proposer un choix à Florent)
+
+```
+**A** — [option en langage quotidien]. [Avantage 1 phrase].
+**B** — [option en langage quotidien]. [Inconvénient 1 phrase].
+
+**Reco A** — [pourquoi en 1 ligne]. Tu confirmes ?
+```
+
+Caractéristiques : 5-6 lignes max · zéro jargon non traduit · reco Claude finale 1 ligne · question fermée à la fin.
+
+### Template raisonnement (expliquer un fix / un plan)
+
+- 5-10 lignes max par bloc, sinon STOP et simplifier
+- Chaque mot dev = 1 mot Florent OU parenthèse explicative immédiate
+- Analogies quotidiennes OK
+- Phrases courtes
+- PAS de tableau dense d'architecture sauf si Florent demande explicitement
+- Structure type : "Le problème" → "Ce qui change" → "Ce que ça veut dire pour toi"
+
+### Test de validation NON-NÉGOCIABLE
+
+> Florent doit pouvoir reprendre le contexte facilement, comme s'il ne savait pas ce qu'on faisait dans cette session.
+
+Si > 2 sec pour comprendre → trop dense, refaire plus court/simple.
+
+### Règle "reprendre les mots Florent quand bien formulés"
+
+Quand Florent formule lui-même une règle clairement → reprendre **ses mots** dans la version finale. Pas reformuler en jargon dev. Pas dump verbatim long entre quotes — intégrer ses formulations dans la règle elle-même.
+
+Exemple : Florent dit "il faut faire tout le temps dès que t'es pas en mode exécution" → règle = "Hors mode exécution → format clair par défaut". Mots gardés (mode exécution, par défaut), pas dump verbatim 3 lignes.
+
+### Anti-patterns format
+
+- ❌ Tableau dense > 8 lignes en raisonnement non demandé
+- ❌ Bloc raisonnement > 10 lignes sans simplification
+- ❌ Jargon technique sans traduction immédiate
+- ❌ Verbatim Florent dump 3-5 lignes entre quotes (au lieu d'intégrer ses mots dans la règle)
+- ❌ Format "robotique" (CAPS, "INVOCATION OBLIGATOIRE", "POURQUOI") — Florent = humain, pas bot CI
+
 ## §5 Anti-patterns
 
 - Sauter Phase 0 (check archive) → recréer règle archivée = drift inverse
 - Sauter Phase 1 Q4 (arbitrage projet/global Florent) → défaut silencieux global = pollution
 - Sauter Phase 4 (validation) → écriture sans go = violation gate
 - Écrire CLAUDE.md sans avoir tenté skill/hook (Phase 1 Q2)
-- Charger parent `/claude-md-skill-cleanup` pour 1 règle (lourd 600 lignes — moi suffis)
+- Charger parent `/rule-cleaner` pour 1 règle (lourd 600 lignes — moi suffis)
 - Dupliquer contenu parent ici (tables, Workflow A/C, store §3quater) — référencer
 - Format final non-respecté (manque source datée OU anti-patterns si non-évident)
 - Placement chronologique au lieu de large→spécifique
@@ -221,4 +265,4 @@ Log parent §7 : `2026-05-02 — new-rule — docs-meta hook check — 0 lignes 
 | Format journal | §7 |
 | Hooks projet où sont-ils définis | §8 |
 
-Switch explicite si scope dépasse 1 règle : "Cette demande relève de `/claude-md-skill-cleanup` (cleanup full / audit skills / rename). Switch parent ?"
+Switch explicite si scope dépasse 1 règle : "Cette demande relève de `/rule-cleaner` (cleanup full / audit skills / rename). Switch parent ?"

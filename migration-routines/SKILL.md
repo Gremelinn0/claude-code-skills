@@ -1,10 +1,10 @@
 ---
-name: migrate-routines-to-docs
-description: Migre les routines locales (~/.claude/scheduled-tasks/) vers des documents contexte GitHub (format guide NoesisAI). Produit docs/routines-migration/ prêt à pousser sur GitHub pour utilisation avec claude.ai/code Routines cloud.
+name: migration-routines
+description: Migration routines (locales `~/.claude/scheduled-tasks/` → docs GitHub format guide NoesisAI). Produit `docs/routines-migration/` prêt à pousser pour usage claude.ai/code Routines cloud. Alias rétro-compat "/migrate-routines-to-docs".
 type: skill
 ---
 
-# Skill — migrate-routines-to-docs
+# Skill — migration-routines (locales → docs GitHub)
 
 ## Usage
 

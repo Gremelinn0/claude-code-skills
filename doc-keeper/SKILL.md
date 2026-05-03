@@ -46,6 +46,7 @@ Ne pas dupliquer ici — le skill pointe, WHERE.md décrit. Si WHERE.md ne répo
 | UI change visible utilisateur | Feature doc (hub HTML laissé mourir, pas de MAJ) |
 | New file created | Feature doc § "Architecture — fichiers clés" |
 | Roadmap task done | `memory/roadmap/roadmap.md` (item livré) + Plan vivant feature (déplacer "🔧 En cours" → "✅ Récemment livré") |
+| **Nouveau ticket FUTUR / V1.1+ / dette technique non-bloquante** | `memory/roadmap/roadmap.md` UNIQUEMENT — JAMAIS Plan vivant feature. Plan vivant = tickets ACTIFS session, pas backlog. Si déjà dans Plan vivant et reporté → cut Plan vivant + ajout roadmap (pas duplication). Erreur fréquente 2026-05-02 : créer ticket V1.1 dans Plan vivant au lieu de roadmap. |
 | Architecture change transversale | Feature docs concernés + CLAUDE.md §3 si nouvelle règle émerge |
 | Validation N4 identifiée | `memory/validation-pending-n4.md` — ajouter ligne tableau Suivi |
 | Validation N4 complétée par Florent | `memory/validation-pending-n4.md` (cocher) + feature doc critère |

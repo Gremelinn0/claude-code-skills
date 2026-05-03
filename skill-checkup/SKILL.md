@@ -110,7 +110,7 @@ Appliquer décisions Florent :
 - `keep` → noter dans state.json, rien d'autre
 - `store` → invoquer skill `/skill-store` (move vers `skills-store/` + MAJ INDEX)
 - `delete` → archive `_archive/skills-archive/<date>/` AVANT rm (jamais delete sec)
-- `fusion-avec-X` → invoquer skill `/claude-md-skill-cleanup` Workflow C Phase 4 (fusion atomique)
+- `fusion-avec-X` → invoquer skill `/rule-cleaner` Workflow C Phase 4 (fusion atomique)
 - `rework` → laisser en place + commentaire dans state, prochain checkup re-pose
 - `rename-to-Y` → `git mv` + MAJ refs grep + alias trigger
 - `ignore-toujours` → push dans `state.ignored`
@@ -148,4 +148,4 @@ Hub permet à Florent de pré-trier visuellement (checkbox + actions per-skill e
 
 ## §6 Journal
 
-- 2026-05-02 — Init skill global. Phase 0 NON-NÉGOCIABLE regen hub avant triage. State persistant `state.json` mémoire decisions. Coordination avec `/skill-store` + `/claude-md-skill-cleanup` Workflow C.
+- 2026-05-02 — Init skill global. Phase 0 NON-NÉGOCIABLE regen hub avant triage. State persistant `state.json` mémoire decisions. Coordination avec `/skill-store` + `/rule-cleaner` Workflow C.

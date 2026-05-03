@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-05-03T04:32:57.708037Z",
+  "last_updated": "2026-05-03T14:00:00Z",
+  "integrations_to_add": ["Florent's", "Make & n8n"],
+  "workspace_pages": [
+    {"id": "27501e69-443c-8015-a4cc-f912ec6286e9", "title": "Pastry Chef", "last_edited": "2026-05-02", "parent_type": "workspace", "status": "done", "completed_at": "2026-05-03T05:43:41Z", "connections_present": ["Make & n8n", "Florent's", "Dust"], "action_taken": "verified - both already present"},
+    {"id": "34b01e69-443c-805b-b045-d1332cce75ea", "title": "migration /wrapup-migration /", "last_edited": "2026-05-02", "parent_type": "workspace", "status": "done", "completed_at": "2026-05-03T12:00:00Z", "connections_present": ["Make & n8n", "Florent's"], "action_taken": "added Florent's (Make & n8n already present)"},
+    {"id": "1b301e69-443c-8077-a796-da3d655d1239", "title": "MON CRM", "last_edited": "2026-05-01", "parent_type": "workspace", "status": "done", "completed_at": "2026-05-03T12:15:00Z", "connections_present": ["Florent's", "Make & n8n", "Dust"], "action_taken": "verified - both already present"}
+  ],
+  "teamspace_agence_pp": [
+    {"id": "21701e69443c80d5a125e8f44fd5d690", "title": "Segmentation Agent - Intitulés de postes", "teamspace": "Agence PP", "status": "done", "completed_at": "2026-05-03T14:10:00Z", "connections_present": ["Dust", "Florent's", "Make & n8n"], "action_taken": "added Florent's + Make & n8n (Dust already present)"},
+    {"id": "620e7db03ed44db6b7cbcb4bb71fbc66", "title": "Prospect Partner", "teamspace": "Agence PP", "status": "done", "completed_at": "2026-05-03T14:25:00Z", "connections_present": ["Florent's", "Dust", "Dust", "Mindmap.so", "Make & n8n"], "action_taken": "added Florent's + Make & n8n"},
+    {"id": "db8e95a2b2b642f3a750f8a3a071267a", "title": "Projets clients", "teamspace": "Agence PP", "status": "done", "completed_at": "2026-05-03T14:30:00Z", "connections_present": ["Dust", "Dust", "Make & n8n", "Florent's"], "action_taken": "added Florent's (Make & n8n + Dust already present)"},
+    {"id": "b9c046ba59e24f4189d02cdd91454ac6", "title": "Espace Client Implementation Pipedrive (impossible dupliquer)", "teamspace": "Agence PP", "status": "done", "completed_at": "2026-05-03T14:35:00Z", "connections_present": ["Florent's", "Dust", "Dust", "Mindmap.so", "Make & n8n"], "action_taken": "added Florent's + Make & n8n"},
+    {"id": "26201e69443c8088a1c0c93f981f5a0a", "title": "Espace Client Implementation Pipedrive (sans table)", "teamspace": "Agence PP", "status": "done", "completed_at": "2026-05-03T23:58:00Z", "connections_present": ["Florent's", "Make & n8n"], "action_taken": "added Florent's + Make & n8n"},
+    {"id": "20801e69443c802d9c47c00073edacb6", "title": "Audit Pipedrive - Prospect Partner", "teamspace": "Agence PP", "status": "pending"},
+    {"id": "2d101e69443c80d08475c77d859e0103", "title": "Leads Malt", "teamspace": "Agence PP", "status": "pending"}
+  ],
+  "teamspace_bibliotheque": [
+    {"id": "12d01e69443c807fbc53e68054153f0c", "title": "Automation Marketplace for Sales & Marketing", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "26501e69443c80bfa0c2c3fefa879b15", "title": "TO-DO Mes projets et tâches", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "2ff01e69443c80a1aa22e58ad2272399", "title": "Benchmarck Concurrents", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "2fd01e69443c80ccaabbf8bd54dff64c", "title": "Site Web", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "2fe01e69443c80e7a7b3e3b9530b4311", "title": "SEO Content Agence IAAA", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "2fe01e69443c802c97afe4d77e57ae64", "title": "Process Lancement de produit onboarding", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "24101e69443c805f8976e61a131ffc06", "title": "Upgrade your B2B offer with o4-mini", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "24101e69443c80d88b77f5e2c3f08f71", "title": "Automatiser son agence", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "41501e69443c82a3bcdf8197cfbacb83", "title": "Workflow Audit", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "30e01e69443c8056a63fe08ee707d5f6", "title": "PRODUCT AGENT Docs", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "31001e69443c80238731cda6240968af", "title": "Projet Usine Contenu YouTube to Training", "teamspace": "Bibliothèque", "status": "pending"},
+    {"id": "32d01e69443c8038a895c6c0d11e1231", "title": "Archive Onglets Chrome Mars 2026", "teamspace": "Bibliothèque", "status": "pending"}
+  ],
+  "teamspace_dust": [
+    {"id": "2dd01e69443c813baf10d1797445e7b9", "title": "Accueil de l'espace d'équipe", "teamspace": "Dust", "status": "pending"},
+    {"id": "98b412f5b7e0463f9b11b929180eb446", "title": "Recettes", "teamspace": "Dust", "status": "pending"},
+    {"id": "2ec01e69443c81aabd8ce49fb0f7cd49", "title": "Base de données (Dust)", "teamspace": "Dust", "status": "pending"}
+  ],
+  "private_pages_done": [
+    {"id": "34d01e69443c80e8aabfe0b88afbf856", "title": "Vosk Vosk", "status": "done"},
+    {"id": "34d01e69443c805a9798e0649b05f366", "title": "Nouvelle page (untitled 2)", "status": "done"},
+    {"id": "34d01e69443c80889d81f2f5ee3b7243", "title": "Nouvelle page (untitled 1)", "status": "done"},
+    {"id": "34d01e69443c8170b40fd4c006fc9d5d", "title": "Plan SpeakApp 2026-04-25", "status": "done"},
+    {"id": "34e01e69443c8099af50d10fad63c4ee", "title": "AutoPerm", "status": "done"},
+    {"id": "35001e69443c80ee8fe3c3a627cb4ea2", "title": "Bug", "status": "done"},
+    {"id": "34e01e69443c8085b4dacc4ba56dc7f3", "title": "Lecture chat", "status": "done"},
+    {"id": "35301e69443c812c870fdd4c20735b01", "title": "Migration 2026-05-01", "status": "done"},
+    {"id": "35301e69443c81dcba91d2856abf1243", "title": "SpeakApp Rapports Auto", "status": "done"},
+    {"id": "35301e69443c80748d07ffebc1d518a3", "title": "3ieme compte", "status": "done"}
+  ]
+}

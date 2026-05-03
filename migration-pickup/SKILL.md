@@ -1,6 +1,6 @@
 ---
 name: migration-pickup
-description: Compagnon ultra-light de /wrapup-migration. À lancer dans la session DESTINATION pour récupérer le contexte de la dernière session sur une feature donnée — git pull + lecture Plan vivant. Invoquer quand Florent dit "/migration-pickup", "récupère ma session", "rapatrie depuis migration".
+description: Migration session destination (récupère contexte session précédente après switch compte — git pull + lecture Plan vivant). Compagnon ultra-light de /migration-session-handoff. Invoquer quand Florent dit "/migration-pickup", "récupère ma session", "rapatrie depuis migration".
 ---
 
 # Migration Pickup — version 2026-04-25 (ultra-light)

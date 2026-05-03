@@ -1,11 +1,11 @@
 ---
-name: sync-claude-home
-description: Synchroniser le dossier ~/.claude/ entre plusieurs PC via un repo git privé. Invoquer quand Florent dit "/sync-claude-home", "sync mon claude home", "push mon claude", "rafraîchir mon claude", "je change de PC", "setup claude sur nouveau PC", "cloner mon claude sur ce PC".
+name: migration-pc
+description: Migration PC (sync `~/.claude/` entre plusieurs PC via repo git privé). Invoquer quand Florent dit "/migration-pc", "je change de PC", "setup claude sur nouveau PC", "cloner mon claude", "sync mon claude home", "push mon claude". Alias rétro-compat "/sync-claude-home".
 trigger: user-invocable
 scope: global
 ---
 
-# sync-claude-home — Sync du dossier `~/.claude/` entre PC
+# migration-pc — Migration PC (sync `~/.claude/` entre PCs)
 
 ## Comportement par défaut quand Florent invoque `/sync-claude-home`
 

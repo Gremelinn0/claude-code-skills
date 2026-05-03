@@ -1,6 +1,6 @@
 ---
 name: migration-session-handoff
-description: Handoff session pour switch de compte Claude — push Plan vivant features touchées. Triggers "/migration-session-handoff", "switch de compte", "change de compte", "migration de compte". Alias rétro-compat "/wrapup-migration".
+description: Migration compte Claude (handoff session — push Plan vivant features touchées avant switch compte). Triggers "/migration-session-handoff", "switch de compte", "change de compte", "migration de compte". Alias rétro-compat "/wrapup-migration".
 ---
 
 # Session Wrap-Up — Migration / Switch de compte (version 2026-05-01 v2 — sans Notion)

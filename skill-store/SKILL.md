@@ -27,7 +27,7 @@ scope: gestion lifecycle skills actifs ↔ stockés (déplacement folder + INDEX
 
 | Scope | Path | Quand utiliser |
 |-------|------|----------------|
-| **Global** | `~/.claude/skills/` | Universel cross-projets (legal-*, dispatch, recap, plan, swarm-*, claude-md-skill-cleanup, skill-store, etc.) |
+| **Global** | `~/.claude/skills/` | Universel cross-projets (legal-*, dispatch, recap, plan, swarm-*, rule-cleaner, skill-store, etc.) |
 | **Projet racine** | `<projet>/.claude/skills/` | Spécifique projet entier — chargé partout dans le projet (auto-permission, widget, vosk-monitor pour SpeakApp) |
 | **Sous-projet** | `<projet>/<sous-projet>/.claude/skills/` | Spécifique sous-projet — chargé seulement quand cwd dans sous-projet (claude-design-* → ALL Compagnies/Design/, youtube-* → ALL Compagnies/YouTube Channel/) |
 | **Exception global** | `~/.claude/skills/` malgré spécificité projet | Cas exceptionnel quand utilité cross-PC > économie tokens (ex `speakapp-partners` global pour partage rapide associés) |
@@ -69,7 +69,7 @@ fi
 # 3. Ajouter ligne INDEX (description résumée 1 ligne)
 # Format : | <skill-name> | <usage 1 phrase> | <quand récupérer> | <date stock> |
 
-# 4. Commit (si projet) — sync (si global via /sync-claude-home)
+# 4. Commit (si projet) — sync (si global via /migration-pc)
 git add .claude/skills-store/ && git commit -m "chore(store): stocker /<skill-name> (peu utilisé)"
 ```
 
@@ -144,8 +144,8 @@ Quand Claude/Florent cherche skill `/X` non trouvé dans `/help` ou skills list 
 | Situation | Skill plutôt |
 |-----------|--------------|
 | Créer skill nouveau | `/skill-builder` |
-| Audit/cleanup skills actifs | `/claude-md-skill-cleanup` Workflow C |
-| Renommer skill (cohérence préfixe) | `/claude-md-skill-cleanup` §3ter |
+| Audit/cleanup skills actifs | `/rule-cleaner` Workflow C |
+| Renommer skill (cohérence préfixe) | `/rule-cleaner` §3ter |
 | Supprimer définitivement skill | NE PAS — toujours stocker (récupérable plus tard) |
 
 ---
