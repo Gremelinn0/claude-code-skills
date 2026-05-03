@@ -382,3 +382,79 @@ Quand Claude collecte/synthétise infos (URLs, vidéos, conclusions, livrables) 
 - ❌ Page flottante root workspace = orpheline, introuvable
 - ❌ Bloc code triple-backtick pour texte humain = parasite copier-coller
 - ❌ Mélanger livrable projet dans table "Mon contenu" (LinkedIn uniquement)
+
+---
+
+## §12 — Consolidation finale (1 sujet = 1 page centrale unique)
+
+**Quand l'utiliser** : Florent veut UNE page centrale propre par sujet (marketplace, sales, formation, etc.). Anciennes versions rangées MAIS accessibles. Important visible en haut.
+
+### Pattern "Page centrale finale"
+
+Structure obligatoire d'une page centrale propre :
+
+```
+# 🎯 [Sujet]
+
+> 1 phrase qui dit ce qu'est ce sujet aujourd'hui (état réel actuel).
+
+## 🔥 ACTUEL (top of mind)
+- [Page la plus active] — état actuel, dernière update
+- [2-3 docs vivants max]
+
+## 📌 Référence (à jour)
+- [Doc ref 1] — rôle
+- [Doc ref 2] — rôle
+- [Doc ref 3] — rôle
+
+## 🗂️ Sous-thèmes
+### Thème A
+- pages liées
+### Thème B
+- pages liées
+
+## 📦 Anciennes versions / archives
+> Conservées pour historique. Pas pour usage quotidien.
+- [Vieux doc] — date archivage + raison
+- [Vieille version] — remplacé par [nouveau]
+
+## ⚠️ À traiter (ménage en cours)
+- [Page X] — décision pending : fusionner/archiver/supprimer ?
+```
+
+### Workflow consolidation finale (sur sujet déjà scanné en passe 1)
+
+1. **Lister tout ce qui existe** (passe 1 déjà faite) → liste plate triée chrono
+2. **Classifier en 5 buckets** :
+   - 🔥 ACTUEL (1-3 pages max, top of mind)
+   - 📌 Référence (docs stables, à jour, consultés régulièrement)
+   - 🗂️ Sous-thèmes (groupe par topic secondaire)
+   - 📦 Archives (vieilles versions à garder accessibles)
+   - ⚠️ À traiter (décisions Florent pending)
+3. **Présenter classification à Florent** bloc par bloc → valider
+4. **Construire page centrale** avec structure ci-dessus
+5. **Déplacer pages** sous bonne section (table rollback obligatoire — voir §2)
+6. **Archives → sous-page "📦 Archives [Sujet]"** sous page centrale
+7. **Lien retour** depuis page centrale vers HUB Florent global
+
+### Règles d'or consolidation finale
+
+- **1 page centrale par sujet, jamais 2** → si 2 pages se disputent ce rôle, fusionner ou supprimer une
+- **🔥 ACTUEL = max 3 items** sinon perd intérêt visuel
+- **Anciennes versions = conservées toujours** (jamais delete) → section 📦 dédiée
+- **Date dernière revue** en bas de page centrale (Claude met à jour à chaque session)
+- **Pas de duplication** : un doc est dans UN bucket. Si actuel + référence → choisir actuel.
+
+### Quand sujet déjà a une "page d'inventaire" (cas marketplace 2026-04-22)
+
+Si Florent a déjà une page d'inventaire (liste plate avec 🟢/🔴/🟡) :
+1. Cette page = **étape intermédiaire** entre passe 1 et page centrale finale
+2. Utiliser ses décisions (🔴 archivés, 🟢 gardés, 🟡 traités) pour alimenter buckets §12
+3. **Remplacer** page inventaire par page centrale finale (ou la promouvoir et la restructurer)
+4. Page inventaire archivée si plus utile
+
+### Pattern Florent verbatim 2026-05-04
+
+> *"tout consolider, tout nettoyer, faire un truc bien propre, où j'ai tout dedans même les anciennes versions, tout absolument tout est bien rangé. Avec les trucs plus importants tout en haut bien visible. À jour."*
+
+→ Page centrale = vitrine du sujet. Si Florent l'ouvre dans 6 mois et comprend immédiatement où il en est = OBJECTIF ATTEINT.
