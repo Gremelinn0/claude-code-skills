@@ -56,11 +56,11 @@ Skill global. Évite à Florent de re-trier les mêmes skills à chaque session.
 
 Toujours partir d'un hub à jour. Sinon Florent voit version stale.
 
-1. Run `python "C:/Users/Administrateur/PROJECTS/dashboards/generate_skills_index.py"` → regen `skills-data.json`
+1. Run `python "C:/Users/Administrateur/PROJECTS/Vente et Marketing - ALL Compagnies/hub/master-hub/generate_skills_index.py"` → regen `skills-data.json`
 2. Diff git pour voir si JSON a changé
-3. Si changé → `cd "C:/Users/Administrateur/PROJECTS/dashboards" && npx vercel deploy --prod --yes`
-4. Commit + push repo `dashboards/`
-5. Récupérer URL prod (ex `https://antigravity-master-hub.vercel.app/skills-perso.html`)
+3. Si changé → `cd "C:/Users/Administrateur/PROJECTS/Vente et Marketing - ALL Compagnies/hub/master-hub" && npx vercel deploy --prod --yes`
+4. Commit + push repo master-hub
+5. Récupérer URL prod : `https://antigravity-master-hub.vercel.app/skills-manager.html`
 
 ⚠️ Si script ou page n'existent pas encore → invoquer skill `dashboards-hub-master` + créer via spawn task (cf. session 2026-05-02).
 
@@ -126,13 +126,11 @@ Commit atomique par batch d'actions (1 commit par catégorie d'action si volumin
 
 ## §4 Hub Master Vercel
 
-- Path local : `C:/Users/Administrateur/PROJECTS/dashboards/`
-- Page skills : `dashboards/skills-perso.html`
-- JSON source : `dashboards/skills-data.json`
-- Script regen : `dashboards/generate_skills_index.py`
-- URL prod : `https://antigravity-master-hub.vercel.app/skills-perso.html`
-
-Si page ou script absents → spawn task pour build (cf. session 2026-05-02 chip "Grille skills perso accordéon + actions").
+- Path local : `C:/Users/Administrateur/PROJECTS/Vente et Marketing - ALL Compagnies/hub/master-hub/`
+- Page skills : `master-hub/skills-manager.html`
+- JSON source : `master-hub/skills-data.json`
+- Script regen : `master-hub/generate_skills_index.py`
+- URL prod : `https://antigravity-master-hub.vercel.app/skills-manager.html`
 
 Hub permet à Florent de pré-trier visuellement (checkbox + actions per-skill exportées en JSON) AVANT le checkup conversationnel. Si Florent a déjà exporté `actions-<ts>.json` depuis le hub → consommer en input Phase 3 (skip présentation, exécuter directement Phase 4).
 
