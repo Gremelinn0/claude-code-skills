@@ -1,5 +1,5 @@
 ---
-name: rule-creator
+name: checkup-rules-create
 description: Crée 1 règle claire/concise (CLAUDE.md, MEMORY, skill) — check archive, audit 4Q, compression ≤2 lignes, format gagnant Florent (A/B reco · langage humain · 5-10 lignes max), validation gate, écriture atomique. Triggers "ajoute règle", "grave règle", "nouvelle règle", "écris règle". Alias rétro-compat "/claude-md-new-rule". Délègue cleanup/audit/rename à parent /rule-cleaner.
 ---
 
@@ -117,24 +117,28 @@ Règle 1-2 phrases. Verbatim daté COURT si gravage marbre.
 
 **Output** : "Insérer après ligne N (voisine = '<titre>'), avant ligne M, justification = cardinale/dérivée/particulier".
 
-### Phase 4 — Présentation Florent + validation (GATE)
+### Phase 4 — Présentation Florent éclair (tâtonnement phrase par phrase)
 
-```
-RÈGLE COMPRESSÉE :
-<bloc final>
+**Règle d'or** : sortir le minimum nécessaire, phrase par phrase. Florent fatigue vite sur les règles — pas de dump bloc complet d'un coup.
 
-PLACEMENT :
-Fichier : <path CLAUDE.md projet|global>
-Position : ligne N, après "<voisine>"
-Thème : <sous-§>
+**Workflow** :
 
-JUSTIF :
-- Audit 4Q : Q1=non, Q2=non, Q3=oui, Q4=<arbitrage>
-- Archive : pas trouvé
-- Compression : -X% vs verbatim brut
-```
+1. **Voisines en 3 lignes max** — citer la phrase qui pose problème (la phrase actuelle qui contredit ou couvre déjà), pas l'audit 4Q verbeux.
+2. **Proposer 1 modif minimale** — 1 phrase qui remplace, supprime ou complète. Verbatim Florent intégré DANS la phrase de règle, pas dump entre quotes.
+3. **Demander validation de cette phrase** — "Tu valides cette phrase ?" point.
+4. **Tâtonner** — si Florent ajuste → 1 nouvelle proposition. Si OK → écrire direct (Phase 5).
+5. **Bloc complet seulement si Florent demande après validation** — anti-patterns/exemples ajoutés ligne par ligne, pas dump.
 
-ATTENDRE GO EXPLICITE. Pas d'écriture sans validation.
+**Anti-patterns interdits** :
+- Dump RÈGLE+PLACEMENT+JUSTIF en bloc
+- Tableau comparatif des voisines
+- Audit 4Q recopié dans la réponse (audit = interne skill, output = phrase)
+- Verbatim Florent en quotes 3 lignes (intégrer ses mots dans la règle)
+- Récap "ce que j'ai fait, ce que je propose" — direct au but
+
+**Cas inaugural 2026-05-04** : règle anti-tableau présentée en bloc audit verbeux. Florent : "j'en ai pas pour une demi-heure, on tâtonne phrase par phrase, et si ça marche pas on améliorera". Phase 4 refactorée éclair.
+
+ATTENDRE GO PAR PHRASE. Pas d'écriture avant validation.
 
 ### Phase 5 — Écriture atomique + log
 

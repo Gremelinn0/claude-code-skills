@@ -204,6 +204,9 @@ Critères → demander Florent obligatoire :
 | Suivi missions Malt | Suivi des missions Malt (DB) | `2b801e69-443c-80f9-977c-e20cba33e9cf` |
 | Projets Growth | Projets Growth Déploiement prospection (DB) | `65204466-4896-4111-a7e1-b15dc5d1c497` |
 
+| Opérations Agence | 🏢 Hub Opérations Agence | `35601e69-443c-810c-b022-d653125ba893` |
+| Site Web & Marketing | 🌐 Hub Site Web & Marketing | `35601e69-443c-8173-9961-e1ef5061760a` |
+
 ### Hubs candidats (en cours validation 2026-05-03)
 
 | Topic | Page candidate | ID | Statut |
@@ -219,6 +222,7 @@ Critères → demander Florent obligatoire :
 3. Notion-first pour Sales (jamais .md locaux)
 4. Auto-push posts LinkedIn → Notion "Mon contenu"
 5. Coordonnées Notion = source vérité infos perso (Dashlane = credentials)
+6. **Galerie sous-pages en haut (gravée 2026-05-06 — Florent verbatim "truc de base")** : tout projet/sous-projet Notion = section "📑 Sommaire" tout en haut, galerie cards des sous-pages via `<columns><column><page url=...>` markdown, suivie d'un Résumé court statut. Anti-pattern interdit : sous-pages perdues en bas du content. Référence : `~/PROJECTS/CLAUDE.md` §2bis.
 
 ### Memory files de référence
 
@@ -259,16 +263,9 @@ ToolSearch query: "select:mcp__notion__API-post-search,mcp__notion__API-retrieve
 
 L'intégration MCP Notion utilisée s'appelle **"Make & n8n"** (id `c9b82f89-afd1-43fb-a4cf-72d45dce90a5`).
 
-**Pages NON accessibles via cette intégration** (404) :
-- HUB Florent (`34c01e69-443c-818e-9982-ea27209eb3c8`) — page non partagée avec intégration
-- Prospect Partner page (`620e7db0-3ed4-4db6-b7cb-cb4bb71fbc66`) — page non partagée
+**Accès confirmé (2026-05-04)** : HUB Florent + Prospect Partner désormais accessibles via intégration "Make & n8n" (chip notion-connect-integrations exécuté).
 
-**Workaround possibles** :
-1. Demander Florent share HUB Florent + Prospect Partner avec intégration "Make & n8n" (ouvrir page Notion → Share → Add connection → "Make & n8n")
-2. Créer hub neuf sous une page parent accessible (chercher pages déjà accessibles via search)
-3. Créer hub neuf avec parent = `workspace` (racine workspace) — ensuite Florent peut déplacer manuellement
-
-**Toujours détecter accès AVANT de tenter create** : `mcp__notion__API-retrieve-a-page` sur ID parent visé. Si 404 → demander Florent share OU choisir autre parent.
+**Règle toujours valide** : vérifier accès AVANT create (`API-retrieve-a-page` sur parent). Si 404 → invoquer skill `notion-connect-integrations`.
 
 ---
 
@@ -300,6 +297,10 @@ Après chaque session, Claude DOIT :
 - **2026-05-03** : verbatim *"on ne touche pas au texte parce qu'on n'a pas une vision complète"*
 - **2026-05-03** : verbatim *"fais attention quand on déplace les trucs, pages perdues à droite à gauche"*
 - **2026-05-03** : pas besoin lire toutes les tables au début — démarrer simple
+- **2026-05-04** : zone archive = juste séparateur + "📦 Archive 2025" en bas de hub (Florent archive lui-même le contenu)
+- **2026-05-04** : hub neuf sous Prospect Partner avec liens cliquables = pattern validé pour topics agence (Opérations, Site Web)
+- **2026-05-04** : `API-post-page` children = passer par `API-patch-block-children` séparément (children param accepte pas strings JSON)
+- **2026-05-04** : HUB Florent + Prospect Partner accessibles depuis que chip notion-connect-integrations a tourné
 
 ### Anti-patterns détectés
 

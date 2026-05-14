@@ -1,5 +1,5 @@
 ---
-name: skill-store
+name: checkup-skills-store
 description: Skill GLOBAL gérant le vivier (store) de skills dormants — stocker / récupérer / lister. Permet d'économiser tokens en sortant skills peu utilisés du chargement automatique sans les supprimer. 2 stores supportés : projet (`.claude/skills-store/`) + global (`~/.claude/skills-store/`). INDEX.md = pointeur consultable on-demand. Trigger : "/skill-store", "stocker skill", "récupérer skill", "skill au store", "ressors skill", "skills dormants", "skill pas trouvé" (auto-lookup INDEX), "vivier skills".
 trigger: "stocker skill", "stock", "récupérer skill", "ressors", "INDEX skills", "skills dormants", "skill pas trouvé", "vivier"
 scope: gestion lifecycle skills actifs ↔ stockés (déplacement folder + INDEX + commit)

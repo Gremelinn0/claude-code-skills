@@ -1,120 +1,83 @@
 ---
 name: recap
-description: Recap instantane de la session en cours, en langage humain pour Florent (qui n'est pas dev). Invoquer quand Florent dit "/recap", "fais-moi un recap", "resume ce qu'on a fait", "fais le point", "bilan", "on fait le point". Pas de commit, pas de push, pas de KB — juste le recap propre de ce qui a ete fait dans la session en cours.
+description: Recap COURT du sujet en cours uniquement (PB + fix/etat en quelques lignes). Pas un bilan de toute la session. Toujours commencer par UNE phrase decrivant le PB qu'on cherche a resoudre. Invoquer quand Florent dit "/recap", "fais-moi un recap", "resume", "fais le point", "bilan", "on fait le point", "ou on en est". Pour bilan COMPLET de toute la session item par item, utiliser /recap-full. Pas de commit, pas de push, pas de KB — juste un message clair dans le chat.
 trigger: user-invocable — /recap
 scope: global — tout projet
 ---
 
-# /recap — Recap propre de la session en cours
+# /recap — Recap court du sujet en cours
 
-**But** : repondre a "fais-moi un recap" en 30 secondes, en langage humain, sans jargon, sans code, sans hash.
+**But** : repondre a "fais-moi un recap" en 30 secondes sur LE SUJET EN COURS uniquement, en langage humain, sans jargon, sans code, sans hash.
 
 Ce skill ne fait QUE le recap. Il ne commite pas, ne push pas, ne touche pas la KB, n'ecrit pas de handoff. **Juste un message clair dans le chat.**
 
 ---
 
-## Regle absolue — perimetre = LA session active
+## Regle 1 — perimetre = sujet(s) en cours, pas toute la session
 
-Le recap couvre **uniquement ce qui a ete fait dans cette conversation**. Pas de roadmap, pas de backlog, pas de chantier evoque en aparte. Si Florent dit "/recap" a 5 min du demarrage, le recap est tres court — c'est normal.
+Le `/recap` couvre **uniquement le ou les sujets encore ouverts au moment de la demande**. Pas un bilan de toute la conversation. Pas un journal des items deja boucles depuis le debut.
 
-**Applique aussi a la section "Ce qu'il reste a faire"** : elle contient UNIQUEMENT ce qui decoule directement de la session en cours pour boucler ce qu'on a commence (tester ce qu'on vient de coder, commiter/pousser, mettre a jour les docs qu'on a touchees). EXCLURE : chantiers ouverts du projet en general, questions produit legacy d'anciennes sessions, roadmap globale, features futures evoquees en passant. Si ca ne vient pas de CETTE conversation, ca ne va pas dans le recap. Florent perd le fil si "ce qu'il reste" melange session + app.
+- Si la session a 5 sujets dont 4 sont fermes et 1 en cours → recap = uniquement le 1 en cours
+- Si 2 sujets sont en cours en parallele → recap les 2 brievement
+- Si tout est ferme → 1 ligne "tout est livre, rien d'ouvert" + sujet le plus recent en rappel
+
+**Pour le bilan complet de toute la session item par item → c'est `/recap-full`.** Si Florent veut explicitement le bilan total, il invoquera `/recap-full`.
 
 ---
 
-## Workflow
+## Regle 2 — TOUJOURS commencer par UNE phrase sur le PB qu'on cherche a resoudre
 
-### Phase 1 — Relire la session entiere
+**Non-negociable.** Premiere ligne du recap = phrase qui dit clairement ce qu'on essaie de resoudre. Comme ca Florent retrouve le contexte instantanement meme s'il revient apres 3 jours.
 
-**Pas juste les 5 derniers messages.** Relire tout ce qui a ete fait/dit depuis le debut de la conversation et identifier :
-- Qu'est-ce que Florent avait demande au depart (son/ses intentions initiales)
-- Quels sujets ont ete abordes (fusions, bugs, decisions, features)
-- Pour chaque sujet : ce qui est FAIT / a moitie / pas fait
-- Quelles decisions non-triviales ont ete prises seul par Claude
-- Ce qui reste a faire pour boucler le sujet
+Format : `**Le problème** : [1 phrase, langage humain, pas jargon]`.
 
-### Phase 2 — Ecrire le recap
+Exemples bons :
+- "Quand l'auto-collage de la dictée échoue, le toast disait 'Texte copié' mais le presse-papier était vide → Ctrl+V collait rien."
+- "Le clic auto sur le bouton 'Allow' d'AntiGravity tournait en boucle même quand le dialog avait disparu, spammant des fausses validations."
+- "Florent voulait un bilan visuel des dictées rapides accessible en 1 clic depuis l'app."
 
-**Format obligatoire** :
+Exemples interdits :
+- "Bug `_copy_to_clipboard` BP-186 fix tkinter clipboard volatile" → jargon, hash, illisible
+- "Refactor de la fonction" → vide, pas le PB
+
+---
+
+## Format obligatoire du recap court
 
 ```markdown
-## Recap — ce qu'on a fait cette session
+## Recap court — [titre du sujet en 4-6 mots]
 
-**Tu m'avais demande [N choses] :**
-1. [demande 1 reformulee en langage simple]
-2. [demande 2 reformulee]
-...
+**Le problème** : [1 phrase sur ce qu'on cherche a resoudre, langage humain]
 
-**Voila ce que j'ai fait pour chaque point.**
+**Le fix (ou l'etat actuel)** : [1-2 paragraphes simples sur ce qu'on a fait pour le resoudre, OU ou on en est si pas fini, en langage humain]
 
-### 1. [Titre humain de l'item 1]
-[1-2 paragraphes qui expliquent ce qui a change et pourquoi, en langage simple.]
-
-**Les choix que j'ai tranches seul :**
-- **[Question en langage humain]** → J'ai choisi **[reponse]**. [Phrase sur la raison : ce que ca evite / ce que ca gagne.]
-
-### 2. [Titre humain de l'item 2]
-...
-
-### Ce qu'il reste a faire
-- [action suivante en 1 phrase simple]
-- [...]
-
----
-**Annexe technique** (ignorable) : commits, fichiers modifies, IDs. Regroupe a la fin si vraiment utile.
+**Statut** : [livre + push / en cours / test pending / bloque sur X]
 ```
+
+Si plusieurs sujets en cours, repeter le bloc pour chaque sujet (max 2-3 sujets ; au-dela proposer `/recap-full`).
 
 ---
 
 ## 7 regles de forme (obligatoires)
 
-1. **Vraies phrases, pas de liste a puces seche**
-   - BON : "J'ai fusionne Chat Reader et Lecture Chat & Docs parce que c'est la meme feature, juste un scope etendu pour les documents attaches."
-   - MAUVAIS : "- Fusion CR+LCD OK / - CLAUDE.md §1 updated / - matrix updated"
-
-2. **Zero jargon technique sans traduction**
-   - "commit" → "sauvegarde"
-   - "cron" → "tache programmee qui tourne a [heure]"
-   - "rebase" → "synchroniser avec la derniere version"
-   - "feature doc" → "le document qui decrit la fonctionnalite"
-   - "matrice" → "le tableau de reference qui..."
-   - "gate" / "pipeline" / "dispatcher" → traduire ou expliquer
-
-3. **Pas de chemin fichier, pas de hash, pas de code dans le corps**
-   - Si necessaire pour tracabilite → bloc "Annexe technique" a la fin, explicitement ignorable
-   - Dans le corps, parler des **effets**, pas des fichiers
-
-4. **Expliquer les choix non-triviaux**
-   - Chaque decision tranchee seule = 1 phrase sur le choix + 1 phrase sur **pourquoi**
-   - Florent doit pouvoir dire "ok j'aurais fait pareil" ou "non, reviens en arriere"
-
-5. **Longueur = ce qu'il faut pour etre clair**
-   - Pas de plafond artificiel a 100 mots
-   - Un recap clair de 500 mots >> un recap compact illisible de 80 mots
-   - Mais pas de blabla : chaque phrase apporte quelque chose
-
-6. **Structure narrative**
-   - Introduction : ce que Florent avait demande
-   - Developpement : un paragraphe par item
-   - Conclusion : ce qui reste (si quelque chose reste)
-
-7. **"Ce qu'il reste a faire" = session seulement, jamais projet**
-   - Inclure : tester ce qu'on vient de coder, commiter/pousser, mettre a jour les docs qu'on a touchees dans la session
-   - Exclure : questions produit legacy d'anciennes sessions, chantiers ouverts du projet, roadmap globale, V2 evoquee en passant
-   - Filtre mental : "est-ce que cette action decoule de CETTE conversation ?" → si non, elle n'a rien a faire dans le recap
-   - Pour les chantiers projet : c'est `memory/roadmap/roadmap.md` ou le backlog qui les suit, pas le recap
+1. **PB = phrase 1 obligatoire** — Florent doit comprendre le contexte sans rien deviner.
+2. **Vraies phrases, pas de liste a puces seche.**
+3. **Zero jargon technique sans traduction** : "commit" → "sauvegarde", "tkinter" → "la lib graphique de l'app", "CF_UNICODETEXT" → "le format texte standard Windows", "rebase" → "synchroniser avec la derniere version", etc.
+4. **Pas de chemin fichier, pas de hash, pas de code dans le corps.**
+5. **Court** — 8-15 lignes max. Si tu vises 30 lignes c'est `/recap-full`.
+6. **Statut explicite a la fin** — Florent sait s'il doit attendre / tester / oublier.
+7. **Une decision tranchee non-triviale = 1 phrase qui explique pourquoi.** Sinon Florent ne peut pas dire "ok" ou "non, reviens".
 
 ---
 
 ## Test de relecture — AVANT d'envoyer
 
-Relire le recap et se poser la question :
+Florent relit ce recap dans 2 jours sans avoir le contexte. Comprend-il :
+(a) **le PB** qu'on cherchait a resoudre ?
+(b) **ce qui a change** dans son projet (ou ou on en est) ?
+(c) **ce qu'il doit faire** (rien / tester / valider / autre) ?
 
-> "Si Florent relit ce recap dans 2 semaines sans avoir le contexte de la session, comprend-il :
-> (a) ce qui a change dans son projet ?
-> (b) pourquoi Claude a choisi X plutot que Y sur les decisions importantes ?
-> (c) ce qu'il reste a faire ?"
-
-**Si non a l'une des 3 questions → reecrire.**
+Si non a l'une des 3 → reecrire.
 
 ---
 
@@ -122,54 +85,57 @@ Relire le recap et se poser la question :
 
 | Interdit | Pourquoi | A la place |
 |----------|----------|------------|
-| Liste a puces seche "Fait : X, Y, Z" | Florent ne comprend pas le contexte | Vraies phrases avec la raison |
-| Chemins de fichiers dans le corps | Florent n'est pas dev, s'en fiche | Parler des effets, annexe technique a la fin |
-| Commits hash en premiere lecture | Bruit, illisible | Annexe technique si necessaire |
-| Decisions listees sans "pourquoi" | Florent ne peut pas juger a posteriori | 1 phrase raison a chaque choix |
-| Plafond artificiel 100 mots | Force la compression illisible | Aussi long que necessaire, pas plus |
-| Recap du dernier item seul | 3 autres sujets ont ete evoques aussi | Scanner TOUTE la session |
-| Blabla "j'ai fait plein de trucs" | Vide | Concret, item par item |
-| "Voici un resume technique detaille..." | Florent n'est pas dev | Langage humain |
-| "Ce qu'il reste" qui melange session + chantiers projet | Florent perd le fil | Scoper strict session ; chantiers projet → roadmap, pas recap |
+| Pas de phrase PB en intro | Florent perd le fil sans contexte | Phrase 1 toujours = "**Le problème** : ..." |
+| Recap de toute la session | C'est le boulot de `/recap-full` | Sujet en cours uniquement |
+| Liste a puces seche | Florent ne comprend pas le pourquoi | Vraies phrases avec raison |
+| Chemins fichiers / hash dans le corps | Bruit, illisible | Annexe technique a la fin si vraiment utile |
+| Jargon technique non traduit | Florent n'est pas dev | Traduction systematique |
+| > 20 lignes | Pas un recap court, c'est `/recap-full` | Compresser ou rediriger vers /recap-full |
+| Pas de statut a la fin | Florent ne sait pas quoi faire ensuite | Statut explicite obligatoire |
 
 ---
 
 ## Cas particuliers
 
-### Session tres courte (< 5 echanges)
+### Aucun sujet en cours (tout est ferme)
 
-Recap tres bref OK, mais garde la structure :
 ```
-## Recap
+## Recap court
 
-**Tu m'avais demande** [1 phrase].
+**Le problème** : tout est livre et boucle pour le moment.
 
-**Voila ce que j'ai fait** : [1-2 paragraphes clairs].
+Dernier chantier ferme : [nom court du sujet] — [statut].
 
-**Ce qui reste** : [rien | 1 ligne].
-```
-
-### Session qui a pivote plusieurs fois
-
-Mentionner les pivots explicitement dans l'intro :
-```
-**Tu m'avais demande X, puis on a pivote vers Y, puis Z.**
-
-Voila ce qu'il reste de cette session...
+**Prochain pas** : aucun en attente. Dis-moi sur quoi tu veux bosser.
 ```
 
-### Rien de concret fait (exploration, brainstorm)
+### Sujet bloque sur Florent (test live, decision produit)
 
-Dire explicitement :
 ```
-## Recap
+## Recap court — [sujet]
 
-Session d'exploration — rien n'a ete code/modifie, mais on a clarifie :
-- [decision 1]
-- [decision 2]
+**Le problème** : [phrase].
 
-**Prochaine etape** : [action concrete qui ressort de l'exploration].
+**Le fix (livre)** : [paragraphe court].
+
+**Statut** : code livre + pousse. **En attente de toi** : [test live a faire / decision a prendre / valider X].
 ```
+
+### Plusieurs sujets en cours
+
+```
+## Recap court — 2 sujets en cours
+
+### 1. [Sujet A]
+**Le problème** : ...
+**Etat** : ...
+
+### 2. [Sujet B]
+**Le problème** : ...
+**Etat** : ...
+```
+
+Si > 3 sujets : proposer `/recap-full` au lieu de tasser dans `/recap`.
 
 ---
 
@@ -177,23 +143,25 @@ Session d'exploration — rien n'a ete code/modifie, mais on a clarifie :
 
 - ❌ Pas de commit, pas de push
 - ❌ Pas d'ecriture dans handoff.md ou roadmap
-- ❌ Pas de push vers NotebookLM (c'est `/wrapup` qui fait ca)
+- ❌ Pas de push vers NotebookLM (c'est `/wrapup`)
 - ❌ Pas de memoires sauvees (c'est `/wrapup`)
 - ❌ Pas d'action sur les fichiers du projet
+- ❌ **Pas de recap de toute la session** (c'est `/recap-full`)
 
-`/recap` = **uniquement un message dans le chat**. Si Florent veut finaliser/sauvegarder, il invoquera `/drive` ou `/wrapup` separement.
+`/recap` = **un message court dans le chat sur le sujet en cours**.
 
 ---
 
 ## Difference avec les skills voisins
 
-| Skill | Objectif | Actions |
-|-------|----------|---------|
-| `/recap` | Recap instantane dans le chat | Juste un message |
-| `/drive` | Finir les sujets de la session a 100% | Code + commit + handoff + recap final |
-| `/wrapup` | Fin de session longue avec sauvegarde KB | Memoires + NotebookLM + recap |
-| `/autopilot` | Lancer un nouvel objectif en background | Tache parallele |
+| Skill | Objectif | Longueur | Quand |
+|-------|----------|----------|-------|
+| `/recap` | Sujet en cours uniquement, PB + fix | 8-15 lignes | "fais-moi un recap", "ou on en est" |
+| `/recap-full` | Toute la session item par item | aussi long que necessaire | "bilan complet", "recap toute la session" |
+| `/drive` | Finir les sujets a 100% | action, pas message | "finis ca", "boucle" |
+| `/wrapup` | Fin de session + sauvegarde KB | action + recap | "wrap up", "end of session" |
 
-Si Florent dit "fais le point", "bilan", "recap", "resume" → `/recap`.
+Si Florent dit "fais le point", "bilan", "recap", "resume", "ou on en est" → `/recap` (court, sujet en cours).
+Si Florent dit "bilan complet", "recap toute la session", "fais-moi le point detaille" → `/recap-full`.
 Si Florent dit "finis", "boucle", "va au bout" → `/drive`.
 Si Florent dit "sauvegarde la session", "end of session" → `/wrapup`.

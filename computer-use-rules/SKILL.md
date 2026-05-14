@@ -18,18 +18,33 @@ Ces erreurs se répètent. Ce skill est le garde-fou.
 
 ---
 
-## Règle 1 — 1 seul écran, pas de `switch_display` nécessaire
+## Règle 1 — Multi-écrans 2026-05-07 : CC sur écran de gauche, Claude bosse à gauche
 
-**Setup actuel (2026-04-23) :** Florent a **1 seul écran principal**. L'écran secondaire spacedesk (`display 3988289358`) a été retiré.
+**MAJ setup 2026-05-07 (verbatim Florent gravage marbre)** : Florent a maintenant **plusieurs écrans**. L'ancien setup "1 seul écran" (2026-04-23) est obsolète.
 
-```
-display principal = unique écran disponible
-```
+Verbatim Florent : *"moi je te mets toujours le Control Center sur l'écran de gauche. Donc toi, tu utilises mon ordinateur tu te mets toujours sur l'écran de gauche, c'est clair."*
 
-**Conséquence :**
-- `switch_display(...)` n'est **plus nécessaire** et **plus demandé** par défaut.
-- Faire `screenshot()` directement, sans switch préalable.
-- Si on tombe sur une session très ancienne qui parle de "display 3988289358" ou "écran secondaire" → règle obsolète, ignorer.
+**Convention permanente** :
+- **Florent met le Control Center (CC) sur l'écran de gauche** (display secondaire) — convention immuable
+- **Claude `switch_display` au début de chaque session computer-use** pour cibler l'écran de gauche
+- L'écran de gauche est le device monitor où Claude doit travailler par défaut
+
+**Identification écran de gauche** : les device IDs varient (`PHL 241E1`, `display 4269329525`, etc.). **JAMAIS demander à Florent — CC est TOUJOURS sur écran de gauche par convention permanente**. Identifier l'écran gauche au démarrage : `screenshot()` chaque monitor, le monitor qui contient la fenêtre Control Center SpeakApp = écran de gauche. Mémoriser le device ID pour la session.
+
+**Si CC pas visible** : Claude ouvre SpeakApp via `/launch-wisper` ou `open_application("SpeakApp")` + `Win+Shift+Left` pour déplacer la fenêtre CC vers gauche. **Pas demander**.
+
+Verbatim Florent 2026-05-07 (renforcement) : *"il est toujours sur l'écran de gauche, t'as pas besoin de me faire perdre mon temps. Si CC pas ouvert tu l'ouvres et tu le mets sur l'écran de gauche. C'est pas compliqué."*
+
+**Cas fenêtre nouvelle qui apparaît sur écran principal (pas gauche)** — typique nouvelle session AG/Chrome lancée par test :
+- **Option A préférée** : Claude déplace via raccourci Windows natif `Win+Shift+Left` (`mcp__computer-use__key text="win+shift+left"`) → déplace fenêtre active vers monitor de gauche
+- **Option B fallback** : Claude met fenêtre au premier plan via `open_application` + texte court Florent *"fenêtre X visible écran principal, déplace-la stp"* → Florent déplace instantanément
+
+Verbatim Florent : *"si tu as besoin d'une fenêtre, tu fais une des 2 trucs, soit tu me le mets au premier plan de mon écran principal, soit tu me la déplaces toi-même. Comme tu vas lancer le truc sur des nouvelles sessions, si la fenêtre est sous l'écran principal, il faudra que tu la mettes à gauche et tu n'auras pas accès."*
+
+**Anti-patterns (interdits)** :
+- ❌ Tenter computer-use sur écran principal sans demander à Florent où est CC
+- ❌ Switch_display sans connaître la position physique gauche/droite des monitors
+- ❌ Lancer un test qui crée une nouvelle fenêtre AG/Chrome sans plan de déplacement vers gauche
 
 **Apps qui vivent sur ce seul écran :**
 - AntiGravity (AG)

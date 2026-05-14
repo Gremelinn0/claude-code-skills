@@ -1,5 +1,5 @@
 ---
-name: doc-audit
+name: checkup-doc-coherence
 description: Verifie la coherence entre les fichiers memoire et le code. Detecte les orphelins (fichier memoire absent de MEMORY.md), les fantomes (reference dans MEMORY.md vers fichier inexistant), et les valeurs driftees (constantes dans le code vs dans les docs). Utiliser apres une session longue, avant un audit, ou quand on suspecte une incoherence.
 ---
 
@@ -15,6 +15,8 @@ description: Verifie la coherence entre les fichiers memoire et le code. Detecte
 | 4 | **Site web** (`speakapp.work`) | Plans, prix, features affichees, CTA |
 
 **Principe : une seule verite par information. Si 2 sources divergent → signaler + corriger.**
+
+> **⚠️ Hors scope** : ce skill audite la **COHÉRENCE** (valeurs, références, drift). Il n'audite PAS la **TOPOLOGIE** du dossier `memory/` (recouvrement entre dossiers, fourre-tout, naming chaotique, doublons Notion). Pour ça → skill `/memory-architect` (SpeakApp local, cron mensuel `0 9 1 * *`). Si pendant cet audit tu détectes ≥5 fichiers orphelins MEMORY.md d'un MÊME dossier → flag « smell archi détecté » et propose à Florent d'invoquer `/memory-architect`.
 
 ---
 

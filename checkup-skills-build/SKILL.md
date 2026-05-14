@@ -1,5 +1,5 @@
 ---
-name: "Skill Builder"
+name: checkup-skills-build
 description: "Create new Claude Code Skills with proper YAML frontmatter, progressive disclosure structure, and complete directory organization. Use when you need to build custom skills for specific workflows, generate skill templates, or understand the Claude Skills specification."
 ---
 
