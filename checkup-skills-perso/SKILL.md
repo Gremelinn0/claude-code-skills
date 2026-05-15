@@ -40,7 +40,7 @@ Skill global. Workflow reproductible et partageable pour auditer tous les skills
 | `master-hub/claude-md-data.json` | **NEW** — Source vérité CLAUDE.md. Structure : `{generated_at, repos:[{slug,path,count}], files:[{repo,scope,path,size,lines,last_modified,full_content,sections:[{level,title,line}]}]}` |
 | `master-hub/skills-triage.html` | Page Vercel **dark** — vue dense skills uniquement. Toggle multi-target + archive/rename/rework + export JSON skills. État localStorage. |
 | `master-hub/monitoring-center.html` | **NEW 2026-05-07** — Page Vercel **light theme** unifiée. Sections par dépôt avec sous-blocs `📁 CLAUDE.md` + `🛠 Skills`. Modal CLAUDE.md = textarea éditable. Modal skill = lecture + actions. Export JSON unifié (`skills_decisions[]` + `claude_md_edits[]`). |
-| `master-hub/skills-marketplace.html` | **NEW 2026-05-15** ⭐ — Page Vercel **light, épurée** : skills UNIQUEMENT (pas de CLAUDE.md). 2 vues commutables (par dépôt / par usage-métier), recherche, modal détail, 3 actions par skill (Garder/Store/Archiver), export JSON simple. C'est la page skills principale demandée par Florent (vitrine simple — `monitoring-center.html` reste pour le travail CLAUDE.md). |
+| `master-hub/skills-marketplace.html` | **NEW 2026-05-15 ; refonte v2 2026-05-15** ⭐ — Page Vercel **light éditoriale chaude** (palette crème/terracotta/ocre/sage, serif Georgia titres), modèle **master-détail** (liste à gauche + panneau détail à droite, pas de modal), pleine page togglable. 2 modes commutables : **Skills** (par dépôt OU par usage-métier) + **CLAUDE.md** (consulter + éditer inline les 19 CLAUDE.md). 5 actions par skill : **Garder · Mettre en réserve · Archiver · Déplacer vers `<dépôt>` · Dupliquer vers `<dépôts>`** (multi-sélection). Doublons cross-dépôt marqués. Recommandations pré-remplies. Filtres multi-sélection avec compteurs. Tiroir de décisions repliable. Contenu complet des SKILL.md déplié par défaut (lazy au clic). Export JSON unifié skills + CLAUDE.md compatible `apply_changes.py`. C'est LA page skills principale. |
 | `master-hub/skills-usage-map.json` | **NEW 2026-05-15** — Mapping `<repo>::<dir_name> → catégorie usage/métier` + `categories_order`. Alimente la vue "Par usage" de `skills-marketplace.html`. Éditable à la main, skills absents → "Non classé". |
 
 **Path local Master Hub** : `C:/Users/Administrateur/PROJECTS/Vente et Marketing - ALL Compagnies/hub/master-hub/`
@@ -50,15 +50,24 @@ Skill global. Workflow reproductible et partageable pour auditer tous les skills
 - Hub unifié skills + CLAUDE.md (light) : `https://antigravity-master-hub.vercel.app/monitoring-center.html` — pour le travail CLAUDE.md
 - Vue dense skills (dark) : `https://antigravity-master-hub.vercel.app/skills-triage.html`
 
-### Export de `skills-marketplace.html` — format simple consommé par Workflow B
+### Export de `skills-marketplace.html` — format unifié compatible `apply_changes.py`
 
-`skills-marketplace.html` exporte `skills-decisions-<ts>.json` au format léger :
+`skills-marketplace.html` v2 exporte `skill-hub-decisions-<ts>.json` au format unifié skills + CLAUDE.md (même structure que `monitoring-changes-<ts>.json` du Monitoring Center) :
 ```json
-{ "source": "skills-marketplace", "exported_at": "...", "decisions": [
-  { "repo": "...", "dir_name": "...", "name": "...", "path": "<chemin SKILL.md>", "action": "store" | "archive" }
-]}
+{ "source": "skills-marketplace", "exported_at": "...", "repos_known": [...],
+  "_note": "...",
+  "skills_decisions": [
+    { "dir_name": "...", "name": "...", "current_repo": "...", "current_path": "...",
+      "target_repos": [...], "archive": bool, "rename": bool, "rework": bool,
+      "action": "archive" | "move" | "duplicate" | "store" | "flag" }
+  ],
+  "claude_md_edits": [
+    { "repo": "...", "path": "...", "new_content": "...", "edited_at": "...",
+      "previous_size": N, "new_size": N }
+  ]
+}
 ```
-Ce fichier se consomme via **Workflow B** (§3bis) — pour chaque décision : `action: archive` → move vers `_archive/skills-archive/<date>/` ; `action: store` → move vers `.claude/skills-store/` + MAJ `INDEX.md`. Le `path` pointe directement le SKILL.md, le dossier skill = son parent. Ne PAS confondre avec le format `monitoring-changes-<ts>.json` (Monitoring Center, consommé par `apply_changes.py`).
+Consommation : `python apply_changes.py <fichier>.json` gère nativement `archive`, `move`, `duplicate`, `flag` (rename/rework) + applique les `claude_md_edits[]` (write avec backup auto). L'`action: store` n'est pas native — consommée par **Workflow B** (§3bis) qui fait `mv <repo>/.claude/skills/<dir>/ → <repo>/.claude/skills-store/<dir>/` + MAJ `INDEX.md`. Avant chaque session de tri : régénérer fresh via Phase 0 (les 2 generate scripts) sinon décisions sur données stales.
 
 ## §3bis Workflow B — Chat topic-by-topic (gravé 2026-05-13)
 
