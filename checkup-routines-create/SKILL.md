@@ -5,62 +5,46 @@ description: Crée, gère, migre **et lance on-demand** les routines Claude Code
 
 # /routine-create — Routines Claude Code (création + audit + migration)
 
-## ⚠️ Phase 0bis — Détection main account routines (NON-NÉGOCIABLE, gravée 2026-05-13)
+## ⚠️ Phase 0bis — Documents-first + question compte seulement à la propagation (NON-NÉGOCIABLE, gravée 2026-05-13, refonte 2026-05-16)
 
-**Règle centrale** : toutes les routines (cloud + locales) sont centralisées sur **UN SEUL compte Claude = main account routines**. Florent verbatim 2026-05-13 : *"toutes les routines je les centralise sur un compte uniquement"*. Création/audit/run routines = uniquement sur main account. Compte secondaire = **mode backlog** (note dans `backlog.md`, jamais exec).
+**Règle centrale** : toutes les routines (cloud + locales) sont **représentées par un document** dans le repo (`~/.claude/scheduled-tasks/<slug>/SKILL.md` pour les locales, ou doc équivalent pour les cloud — cf Phase 1). Les docs sont la **source unique** : ils décrivent la routine (cron, prompt, scope, critères), ils sont consultables et modifiables à tout moment depuis n'importe quel compte. La propagation document → routine vivante (côté Anthropic remote trigger ou MCP local) est centralisée sur **UN SEUL compte Claude = main account routines** (Florent verbatim 2026-05-13 : *"toutes les routines je les centralise sur un compte uniquement"*).
 
 ### MAIN_ACCOUNT_ROUTINES_EMAIL = `florent.maisoncelle@gmail.com`
 
 (constante gravée 2026-05-13. Synced cross-PC via skill `/migration-pc`.)
 
-### Détection au lancement du skill
+### Règle de comportement par défaut (refonte 2026-05-16)
 
-À CHAQUE invocation `/routine-create` (peu importe le mode : create / audit / migrate / run) :
+**Florent verbatim 2026-05-16** :
+> *"Par défaut, quand je te parle de créer une routine, tu me demandes sur quel compte on est. Tu fais pas la vérification toi-même, parce que tu sais pas. Sauf si tu me dis que tu sais. Vu que tu sais pas, par défaut, autant que tu créés directement le document avec le skill. Et moi, j'appelle le skill quand je suis sur le bon compte, fin d'histoire. Toutes les routines passent par des documents, ce qui te permet de consulter directement les routines pour les modifier depuis les documents. Dès que je te parle de routine, tu vas chercher le document de la routine. La question du compte, c'est juste pour la création à proprement parler. Quand on me demande de créer une routine, tu vérifies d'abord les routines existantes et tu modifies la bonne routine. Si elle n'existe pas, tu la crées."*
 
-```bash
-# 1. Email session courante = userEmail du contexte system (visible dans system-reminder)
-CURRENT_EMAIL="<récupéré du contexte session — userEmail field>"
+**Workflow par défaut quand Florent dit "crée routine X" (ordre strict)** :
 
-# 2. Comparer
-if [ "$CURRENT_EMAIL" = "florent.maisoncelle@gmail.com" ]; then
-  MODE="main"  # exec direct + consomme backlog en début de session
-else
-  MODE="secondary"  # backlog only (note la demande, refuse l'exec)
-fi
-```
+1. **Lire d'abord les routines existantes** = scanner `~/.claude/scheduled-tasks/` (locales) + lister docs cloud si tracées dans le repo. Vérifier si une routine couvre déjà le besoin (slug proche, objectif similaire, même feature/scope).
+2. **Si une routine existante matche le besoin** → **modifier le document existant** (cron, prompt, scope, critères). Pas de duplication. Annoncer à Florent : *"Routine `<slug>` existante MAJ — relance le skill sur le bon compte pour propager"*.
+3. **Si aucune routine ne matche** → **créer le document** complet (slug + 5 champs canoniques Phase 0bis ter + procédure). Annoncer : *"Document `<slug>` créé — relance le skill sur le bon compte pour activation"*.
+4. **NE PAS** essayer d'activer/propager côté Anthropic ou MCP. Cette étape (propagation document → routine vivante) est ce qui exige le bon compte, et **c'est Florent qui appelle le skill quand il est sur le main account**, point.
 
-**Si `userEmail` pas accessible dans le contexte système (ex: prompt sans `<env>`)** → demander Florent 1 question courte : *"Tu es sur le main account routines (florent.maisoncelle@gmail.com) ou un compte secondaire ?"* Puis cache la réponse pour le reste de la session.
+**Pour TOUT le reste (consulter, modifier, auditer, comprendre une routine existante)** → libre accès, pas de question, je lis et modifie les documents directement. C'est ça l'intérêt du pattern document-first.
 
-### Mode `secondary` (compte non-main)
+### La question du compte = uniquement à la propagation
 
-1. **REFUSER** toute création/modif/run routine. Output type :
-   ```
-   ⛔ Compte secondaire détecté (<CURRENT_EMAIL>). Routines centralisées sur main account uniquement.
-   → Demande notée dans backlog : `~/.claude/skills/checkup-routines-create/backlog.md`
-   → Sera exécutée au prochain lancement /routine-create depuis main account (florent.maisoncelle@gmail.com).
-   ```
-2. **Appender** la demande dans `~/.claude/skills/checkup-routines-create/backlog.md` (template ci-dessous Phase 0bis bis).
-3. **Sortir**. Pas de Computer Use, pas de MCP scheduled-tasks, pas de RemoteTrigger. Zéro action sur claude.ai/code/scheduled.
+**Quand est-ce que la question du compte se pose ?** Une seule situation : quand on essaie d'activer/propager une routine du document vers la vraie infra (cloud Anthropic ou MCP local). C'est l'étape finale, et c'est Florent qui la déclenche en appelant `/checkup-routines-create` (ou `/schedule create` pour cloud direct) sur le main account.
 
-### Mode `main` (compte florent.maisoncelle@gmail.com)
+**Si Florent me dit explicitement "je suis sur le main account, propage"** → OK je peux exécuter la propagation directement (Phase 1 cloud ou Phase 2 locale ci-dessous).
 
-1. **Au début de chaque session `/routine-create`** : lire `backlog.md`. Si entrées non-traitées présentes → annoncer à Florent :
-   ```
-   📋 Backlog routines (N demandes en attente depuis comptes secondaires) :
-   - <slug-1> — <date> — <résumé>
-   - <slug-2> — <date> — <résumé>
-   → Veux-tu traiter ces demandes maintenant (Phase 0bis ter) ou continuer avec ta demande directe ?
-   ```
-2. Si Florent dit traiter → consommer entrées 1-by-1 (vérif déjà fait OU créer si manquant) → marquer `[✅ traité YYYY-MM-DD commit <hash>]` dans backlog.md.
-3. Si Florent dit après → continuer demande directe, backlog reste intact pour prochain lancement.
-4. Workflow normal Phase 0 → Phase 1/2 → Phase 3 ensuite.
+**Si Florent ne le dit pas et que je dois propager** → je lui pose une question courte : *"Pour propager la routine côté infra, je dois savoir si tu es sur le main account routines (florent.maisoncelle@gmail.com) ou un autre compte. Tu es sur lequel ?"* Je ne devine jamais via `userEmail` ou autre signal silencieux — je demande.
+
+**Si Florent confirme compte secondaire** → je n'active rien, j'appende la demande dans `backlog.md` (Phase 0bis bis) et je préviens : *"Compte secondaire — demande notée dans backlog, sera propagée au prochain appel /checkup-routines-create depuis le main account"*. Le document de la routine reste créé/modifié dans le repo (ça ne demande pas le main account).
 
 ### Anti-patterns interdits
 
-- ❌ Créer routine depuis compte secondaire "parce que c'est trivial" → viole règle centralisation
-- ❌ Ignorer le backlog au lancement main account (drift → demandes orphelines)
-- ❌ Exec ad-hoc routine cloud depuis secondaire via `/schedule run` direct (bypass) → idem
+- ❌ Deviner le compte via `userEmail` silencieux ou autre signal → **JE DEMANDE, point**
+- ❌ Créer un document de routine en double parce que j'ai pas vérifié l'existant d'abord → **je liste avant de créer, toujours**
+- ❌ Refuser de modifier le document d'une routine existante sous prétexte du compte → **le document est modifiable depuis n'importe quel compte**, c'est juste la propagation qui exige le main
+- ❌ Tenter de propager (cloud / MCP) sans vérification explicite du compte par Florent → **demander d'abord**
 - ❌ Stocker backlog ailleurs que `~/.claude/skills/checkup-routines-create/backlog.md` (1 source unique synced /migration-pc)
+- ❌ Affirmer "toutes les routines sont désactivées" comme une généralité — **faux**, sur le main account elles vivent. C'est juste une règle d'isolation par compte, pas une désactivation.
 
 ---
 

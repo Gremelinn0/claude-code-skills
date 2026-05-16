@@ -4,6 +4,8 @@ description: Hub associés SpeakApp — présentation externe produit pour parta
 type: project-skill
 ---
 
+> ⚠️ **MIGRÉ vers `.claude/skills/speakapp-partners/` du projet SpeakApp le 2026-05-17.** Frontmatter `type: project-skill` confirme : ce skill est spécifique au produit SpeakApp, pas transverse. Conservé ici comme historique global. Règle Florent 2026-05-17 : tout skill qui concerne test/dev/produit SpeakApp = skill projet, pas global. Pour invocation : la version projet est chargée en priorité quand on bosse sur SpeakApp.
+
 # speakapp-partners — Hub Associés
 
 Page publique SpeakApp déployée sur Vercel, partageable avec associés et investisseurs.
