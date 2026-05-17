@@ -1,22 +1,22 @@
 ---
 name: verification-before-completion
-description: FUSIONNÉ dans /verify-fixes (SpeakApp project skill). Iron Law + Doc Gate + YAML post-mortem = tout dans verify-fixes. Ce skill redirige.
+description: FUSIONNÃ‰ dans /verify-fixes (SpeakApp project skill). Iron Law + Doc Gate + YAML post-mortem = tout dans verify-fixes. Ce skill redirige.
 ---
 
-# verification-before-completion → /verify-fixes
+# verification-before-completion â†’ /verify-fixes
 
-**Fusionné 2026-05-04** dans le skill projet SpeakApp :
+**FusionnÃ© 2026-05-04** dans le skill projet SpeakApp :
 
 ```
-C:\Users\Administrateur\PROJECTS\3- Wisper\speak-app-dev\.claude\skills\verify-fixes\SKILL.md
+C:\Users\Utilisateur\PROJECTS\3- Wisper\speak-app-dev\.claude\skills\verify-fixes\SKILL.md
 ```
 
-Toute la logique vit là :
-- §1 Iron Law (evidence before claims)
-- §2 Doc Gate post-push (4 questions)
-- §3 Workflow YAML post-mortem
-- §4 Balises BP-XXX traçabilité
-- §7 Auto-amélioration
+Toute la logique vit lÃ  :
+- Â§1 Iron Law (evidence before claims)
+- Â§2 Doc Gate post-push (4 questions)
+- Â§3 Workflow YAML post-mortem
+- Â§4 Balises BP-XXX traÃ§abilitÃ©
+- Â§7 Auto-amÃ©lioration
 
-**Pour SpeakApp** → utiliser `/verify-fixes` directement.
-**Pour autres projets** → les §1 et §2 sont copiables dans le CLAUDE.md projet si besoin.
+**Pour SpeakApp** â†’ utiliser `/verify-fixes` directement.
+**Pour autres projets** â†’ les Â§1 et Â§2 sont copiables dans le CLAUDE.md projet si besoin.
