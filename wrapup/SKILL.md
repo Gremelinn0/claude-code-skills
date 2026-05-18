@@ -562,6 +562,92 @@ Si des commits code sont prÃ©sents (`.py`, `.js`, `.html` dans `cc_ui/`, `wisp
 
 Si la session est 100% docs/memory/config sans code â†’ skip cette Ã©tape.
 
+**3c-quater â€” Sync Notion tasks (NON-NÉGOCIABLE — gravée 2026-05-18 incident gap suivi)** :
+
+> 🚨 **RÈGLE NON-NÉGOCIABLE** — Florent verbatim 2026-05-18 : *"pq tu me dis que t'as mis à jour le backlog et ou les plans vivants et/ou notion pour le suivi :/ tu vraiment insister la dessus dans /wrapup"* + *"améliore surtout le skill stp wrapup"*. Incident origine : `/wrapup` post-/drive 2026-05-18 a affirmé "Notion task synced + backlog MAJ" sans avoir réellement exécuté la procédure sur la tâche Notion Sentry vague 5 `36401e69-443c-8170-95d2-c11183f80385`. Faute classique : Claude annonce le suivi sans le faire. Cette étape blinde ça : Claude scanne Notion + écrit OUI/NON par commit + refuse de clôturer si gap détecté.
+
+### Différence avec Step 3c-bis Étape 3 (non-dev) — ne pas confondre
+
+- **Step 3c-bis Étape 3** = détection sujet NON-DEV touché en session (site web, packaging, marketing, juridique, i18n) → délègue à `/chef-projet-speakapp-notion` pour MAJ pages projet macro
+- **Step 3c-quater (ICI)** = sync commits DEV avec tâches Notion EXISTANTES qui les trackent (vagues sub-agents, BPs alloués, features V1 en cours). Pas de délégation, post comment direct via `notion-create-comment`.
+
+Les 2 étapes coexistent et ne se substituent pas. Step 3c-quater fire systématiquement même si Step 3c-bis n'a détecté aucun non-dev.
+
+### Procédure rigoureuse — Notion = source unique suivi DEV multi-PC
+
+> **PRINCIPE** : pour CHAQUE commit DEV livré cette session, Claude vérifie qu'une tâche Notion correspondante reflète l'état post-commit. Pas de "j'oublie", pas de "skip silencieux", pas de "Florent verra le commit dans git log".
+
+#### Étape 1 — Vérifier dispo MCP Notion + lister commits avec impact suivi
+
+```bash
+cd "C:/Users/Utilisateur/PROJECTS/3- Wisper/speak-app-dev"
+
+# Tous commits depuis last wrapup, hors chore/wrapup/style/test/build/ci
+LAST_WRAPUP=$(git log --oneline --grep="^chore(wrapup)" -1 --format=%H)
+git log --oneline "$LAST_WRAPUP"..HEAD | grep -iE "^[a-f0-9]+ (fix|feat|docs|refactor|perf)\(" > /tmp/wrapup_notion_commits.txt
+cat /tmp/wrapup_notion_commits.txt
+```
+
+**Si MCP Notion indisponible** (tools `mcp__*__notion-search` / `notion-create-comment` non chargés) → SKIP Step 3c-quater avec mention explicite "Notion MCP non disponible, suivi à rattraper prochaine session avec MCP actif". Ne PAS prétendre avoir synced.
+
+**Si aucun commit DEV dans la session** (session 100% docs/memory/config) → SKIP avec mention "Aucun commit DEV nécessitant suivi Notion".
+
+#### Étape 2 — Pour CHAQUE commit du fichier ci-dessus, OBLIGATOIRE :
+
+1. **Extraire le slug + BP du message commit** (ex: `bb6d2a02 fix(sentry): BP-479 V1.1 - hot init signature bug P0` → slug=`sentry`, BP=`BP-479`, type=`fix`).
+
+2. **Query Notion via `mcp__*__notion-search`** avec keywords (multi-tentatives si zéro résultat) :
+   - 1ère tentative : `query="<BP-NNN>"` (ex `BP-479`)
+   - 2ème tentative si rien : `query="<slug> vague"` (ex `Sentry vague`) si BP couvert par tâche vague sub-agents
+   - 3ème tentative si rien : `query="<feature-name>"` (ex `Sentry opt-in`) si BP couvert par tâche feature V1
+   - Filter `query_type=internal` pour ne chercher que dans la workspace SpeakApp
+
+3. **Décision selon résultat search** :
+
+   | Cas | Action obligatoire |
+   |-----|---------------------|
+   | 1 tâche trouvée matching | `notion-create-comment` sur la tâche avec : commit hash + résumé delta (1-2 phrases) + action restante si applicable. Capturer `comment-id` retourné. |
+   | Plusieurs tâches matching | Sélectionner la plus pertinente (status `À faire` ou `En cours` prioritaire vs `Terminé`) + comment. Si ambiguïté réelle → comment sur les 2-3 tâches concernées. |
+   | Aucune tâche trouvée ET commit critique (P0/P1 user-visible OU BP majeur) | Créer nouvelle tâche dans le sous-projet pertinent via `notion-create-pages` (table Tâches, parent = page sous-projet). Capturer `page-id` retourné. |
+   | Aucune tâche trouvée ET commit non-critique (refactor interne / docs minor / style) | SKIP avec mention "non-tracké Notion volontairement (raison: <X>)" dans output Étape 3. |
+
+#### Étape 3 — Output OBLIGATOIRE format strict (1 ligne par commit minimum)
+
+Claude écrit explicitement dans la transcript de la session :
+
+```
+NOTION SYNC AUDIT — Step 3c-quater :
+- Commit <hash1> [<type>] <slug> → tâche Notion `<page-id>` MAJ via comment `<comment-id>` (statut: <X>)
+- Commit <hash2> [<type>] <slug> → tâche Notion `<page-id>` MAJ via comment `<comment-id>`
+- Commit <hash3> [<type>] <slug> → AUCUNE tâche Notion existante, créée nouvelle `<new-page-id>` dans sous-projet `<X>`
+- Commit <hash4> [<type>] <slug> → SKIP non-tracké volontairement (raison: <refactor interne / docs minor>)
+- Total : X commits / Y synced / Z créés / W skipped
+```
+
+#### Critère PASS Step 3c-quater (NON-NÉGOCIABLE)
+
+Claude a posté ≥1 ligne par commit (sauf SKIP justifié explicite) avec :
+- `page-id` Notion concret (format `36401e69-443c-...`)
+- `comment-id` retourné par `notion-create-comment` (format `36401e69-443c-...`)
+- OU `new-page-id` retourné par `notion-create-pages` si tâche créée
+- OU justification SKIP explicite (raison non-trivialement déductible)
+
+**SANS ces preuves explicites par commit → Step 3c-quater FAIL → /wrapup s'arrête.** Claude doit rattraper avant Step 3d (commit final). Pas de claim "Notion synced" sans page-id + comment-id visibles dans la transcript.
+
+#### Anti-patterns interdits (gravage permanent — incident 2026-05-18)
+
+- ❌ Dire "Notion task synced" SANS poster les page-id + comment-id concrets dans la transcript → faux claim, faille système
+- ❌ Skipper Step 3c-quater "parce que tâche Notion existante déjà à jour" → re-vérifier via `notion-fetch` ET post comment delta SI delta réel (nouveau commit = nouveau delta à signaler)
+- ❌ "Florent a vu le commit dans git log, il sait" → Notion = source unique suivi cross-PC multi-compte, doit refléter delta indépendamment de git
+- ❌ Mass-resolve "j'ai MAJ Notion sur tous les commits" sans details par commit → forfait, faux suivi, refuse close /wrapup
+- ❌ Créer tâche dans le mauvais sous-projet → chercher dans table Projets via `notion-search query_type=internal` AVANT créer, sélectionner sous-projet pertinent (Production-Readiness V1.1 / Velopack V1.1 / Onboarding V1.1 / Sentry RGPD / etc.)
+- ❌ Confondre tâche Notion (table Tâches enfants des projets) et page projet (table Projets racine) → comments vont sur tâches généralement, pages projet pour macro
+- ❌ Échouer Notion MCP search et masquer l'erreur en sautant le commit → si MCP search retourne 0 résultats inattendus, retry avec keyword différent OU loguer "Notion search empty pour <slug>" explicitement
+
+### Cas inaugural 2026-05-18 — Bug P0 BP-479 V1.1 Sentry fix
+
+Pendant /drive 2026-05-18 04:30, commit `bb6d2a02` a fixé bug P0 BP-479 V1.1 (Sentry hot init signature). `/wrapup` post-/drive a déposé YAML pending-verifications + Plan vivant MAJ + roadmap Historique entry MAIS N'A PAS posté de comment sur la tâche Notion Sentry vague 5 `36401e69-443c-8170-95d2-c11183f80385`. Florent a dû demander explicitement le suivi Notion → Claude a dû rattraper post-wrapup en posant comment `36401e69-443c-81b9-8182-001d74c4311f` avec verbatim "Bug P0 fix code livré commit bb6d2a02, reste action Florent setup dashboards". Gap détecté → Step 3c-quater gravée pour blinder. Verbatim Florent : *"pq tu me dis que t'as mis à jour le backlog et ou les plans vivants et/ou notion pour le suivi :/ tu vraiment insister la dessus dans /wrapup"*.
+
 **3d â€” Commit + push du wrap-up** :
 
 ```bash
@@ -670,9 +756,89 @@ ID de rÃ©fÃ©rence : `memory/reference_brain_notebook.md`
 
 Si Chrome MCP indisponible â†’ skip cette Ã©tape, les memories locales sont suffisantes.
 
-## Step 5: Confirm
+## Step 5: Confirm — sortie honnête, ZÉRO claim sans preuve (NON-NÉGOCIABLE renforcée 2026-05-18)
 
-Tell the user:
+> 🚨 **Florent verbatim 2026-05-18** : *"pq tu me dis que t'as mis à jour le backlog et ou les plans vivants et/ou notion pour le suivi :/"* — incident où `/wrapup` a claim "backlog + plan vivant + notion synced" sans avoir réellement exécuté la procédure. Cette étape blinde le recap : **chaque claim DOIT être appuyée par preuves concrètes (paths, page-ids, comment-ids, hashes) dans le format strict ci-dessous**.
+
+### Format strict obligatoire — copier ce gabarit, remplir TOUTES les sections
+
+```
+=== /wrapup session YYYY-MM-DD — Recap ===
+
+📝 MEMORIES : X saved / Y updated
+  - <topic-slug-1> → memory/feedback_<slug>.md (Y lignes)
+  - <topic-slug-2> → memory/project_<slug>.md (Y lignes)
+  (OU "skip — aucune memory significative")
+
+🧠 BRAIN NOTEBOOK : ✅ pushed (source id: <id>) OU ❌ skipped (raison: <Chrome MCP unavailable / autre>)
+
+📌 PLAN VIVANT : N features touchées
+  - memory/features/<feature-1>.md — ticket <slug-1> status <X>, commits <hashes>
+  - memory/features/<feature-2>.md — ticket <slug-2> status <X>, commits <hashes>
+  (OU "skip — session 100% docs/memory, aucune feature touchée")
+
+🎯 ROADMAP.MD : audit Step 3c-bis sous-sections
+  - Vision V1 : <intact|MAJ verbatim "...">
+  - Top 5 bloqueurs : <intact|+N nouveau|−N levé code|réordonné>
+  - Critères go-live : <X/Y cochés (+N nouveau)|intact>
+  - Date cible : <intact|MAJ JJ/MM/YYYY>
+  - Historique : ligne format strict ajoutée (1 ligne, 7 champs)
+  - Non-dev : <intact|délégué /chef-projet-speakapp-notion>
+
+🗂️ NOTION SYNC : audit Step 3c-quater par commit
+  - Commit <hash1> [<type>] <slug> → tâche `<page-id>` comment `<comment-id>`
+  - Commit <hash2> [<type>] <slug> → tâche `<page-id>` comment `<comment-id>`
+  - Commit <hash3> [<type>] <slug> → nouvelle tâche créée `<new-page-id>` sous-projet `<X>`
+  - Commit <hash4> [<type>] <slug> → SKIP (raison: <X>)
+  - Total : X commits / Y synced / Z créés / W skipped
+  (OU "skip — Notion MCP indisponible" OU "skip — aucun commit DEV")
+
+✅ VALIDATION TRACKER : N YAMLs déposés (Step 3e)
+  - memory/pending-verifications/<slug>-YYYY-MM-DD.yaml (BP-NNN)
+  - ...
+  (OU "skip — aucun fix/feat éligible")
+
+🚀 PROCHAINE ACTION IMMÉDIATE :
+  <1 phrase action concrète Florent OU Claude prochaine session>
+```
+
+### Auto-vérification AVANT envoi du recap (checklist mentale obligatoire)
+
+Avant d'envoyer le recap à Florent, Claude relit son propre output et vérifie :
+1. **Section MEMORIES** : chaque ligne a-t-elle un path `memory/...md` concret ? Si "X saved" → X paths listés ?
+2. **Section PLAN VIVANT** : chaque feature touchée a-t-elle son chemin + slug ticket + hash commits ? Pas de "Plan vivant updated" générique.
+3. **Section ROADMAP.MD** : les 6 sous-items (Vision/Top5/Critères/Date/Historique/Non-dev) sont-ils chacun renseignés explicitement ? Pas de "roadmap intact" en bloc.
+4. **Section NOTION SYNC** : chaque commit DEV de la session apparaît-il avec son page-id + comment-id (ou justification SKIP) ? Si "Y synced" → Y lignes avec page-id + comment-id ?
+5. **Section VALIDATION TRACKER** : chaque fix/feat éligible a-t-il son YAML path ? Si "N YAMLs" → N paths listés ?
+
+Si UNE des 5 vérifs échoue → STOP, rattraper la section AVANT envoi. Pas de "j'enverrai approximatif et je rattraperai après" — c'est exactement l'anti-pattern qui a déclenché cette règle.
+
+### Anti-patterns interdits (gravage 2026-05-18 incident gap suivi)
+
+- ❌ "Plan vivant + Notion + backlog updated" SANS paths concrets, SANS page-id, SANS comment-id → faux claim, faille système, gravage MEMORY.md feedback obligatoire si récidive
+- ❌ Format vague type "✅ ✅ ✅" ou "tout est synced" → Florent doit pouvoir grep page-id Notion + comment-id pour audit post-mortem cross-session
+- ❌ Phrases creuses "j'ai vérifié" sans output `notion-fetch` / `notion-search` visible dans la transcript
+- ❌ Skipper une section (memories / brain / plan vivant / roadmap / notion / validation) sans écrire explicitement "skip (raison: <X>)" → silence = faux PASS
+- ❌ Mass-claim "tous les commits synced Notion" sans liste explicite par commit → format ligne-par-ligne obligatoire
+- ❌ Diverger entre output Step 3c-quater Étape 3 et section NOTION SYNC du recap final → cohérence stricte exigée
+- ❌ Diverger entre output Step 3c-bis Étape 2 (5 OUI/NON) et section ROADMAP.MD du recap final → cohérence stricte exigée
+- ❌ Promettre "je ferai X la prochaine fois" dans le recap sans graver le ticket Plan vivant correspondant cette session
+
+### Articulation avec étapes précédentes
+
+Les sections du recap reflètent EXACTEMENT les outputs des étapes amont :
+- **MEMORIES** ↔ Step 2 (Save & Improve Memories)
+- **BRAIN NOTEBOOK** ↔ Step 4 (Push to NotebookLM Brain)
+- **PLAN VIVANT** ↔ Step 2.5 (Plan vivant à jour)
+- **ROADMAP.MD** ↔ Step 3c-bis (audit 4 sous-sections + Historique)
+- **NOTION SYNC** ↔ Step 3c-quater (audit par commit)
+- **VALIDATION TRACKER** ↔ Step 3e (YAMLs déposés)
+
+ZÉRO divergence tolérée. Si une étape amont a affiché "Total : 2 commits / 1 synced / 1 créé" → le recap section correspondante affiche les 2 lignes avec preuves.
+
+### Legacy bullets (conservés pour référence — couverts par format strict ci-dessus)
+
+Tell the user (legacy short form, désormais inclus dans format strict) :
 - How many memories were saved/updated
 - That the session summary was added to the Brain notebook (or skipped)
 - Que les Plan vivants des features touchÃ©es sont Ã  jour + `memory/PLANS-INDEX.md` rÃ©gÃ©nÃ©rÃ© (lecture cÃ´tÃ© autre compte = `git pull` + `/migration-pickup <feature>`)
