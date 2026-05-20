@@ -13,6 +13,7 @@ Skill global. Workflow reproductible et partageable pour auditer tous les skills
 - §2 Architecture (8 fichiers + 3 pages Vercel)
 - §3 Workflow A — Monitoring Center Vercel (5 phases)
 - §3bis Workflow B — Chat topic-by-topic (gravé 2026-05-13)
+- §3ter Workflow C — Audit worktree vs dépôt principal (gravé 2026-05-20)
 - §4 Format JSON décisions (input → output)
 - §5 État persistant (state.json)
 - §6 Partage à un autre utilisateur
@@ -223,6 +224,98 @@ Après `apply_changes.py` : commit atomique par dépôt touché. MAJ refs grep s
    - `hub/master-hub/skills-data.json` + `claude-md-data.json`
    - Chaque CLAUDE.md modifié dans son dépôt (commit séparé par repo concerné)
 4. Recap final 5 lignes max : decisions appliquées + URL hub à jour
+
+## §3ter Workflow C — Audit worktree vs dépôt principal (gravé 2026-05-20)
+
+**Quand Florent dit** "audit worktree skills", "check divergence skills worktree", "skills à jour partout ?", `/skill-checkup workflow C` — ou en routine périodique (mensuelle, OU après session avec ≥1 skill édité dans un worktree).
+
+### Pourquoi ce workflow existe (cas inaugural 2026-05-20)
+
+Quand on édite un skill `/X` SKILL.md dans un worktree d'un projet (ex SpeakApp `worktrees/heuristic-liskov-826772/.claude/skills/drive/`), on commit + push origin/dev OK, mais **le dépôt principal `speak-app-dev/` ne voit pas la nouvelle version tant qu'il n'a pas `git pull`**. Risque :
+- Une autre session Claude Code dans `speak-app-dev/` charge l'ancien skill
+- Consommation tokens 2× si Claude charge les 2 versions divergentes
+- Drift silencieux entre worktrees du même repo
+- Comportement skill imprévisible selon où la session est lancée
+
+Florent verbatim 2026-05-20 : *"il faut toujours que le skill soit mis à jour dans la version officielle [dépôt principal ou global], jamais que ça reste dans un worktree non pushé ou non pull"*.
+
+### Phase 0 — Scan multi-repo des worktrees
+
+Pour chaque dépôt Git détecté (auto-discover via Phase 0 Workflow A `generate_skills_index.py` OU listing manuel) :
+
+```bash
+# Exemple SpeakApp
+cd "C:/Users/Utilisateur/PROJECTS/3- Wisper/speak-app-dev"
+git worktree list
+# Output exemple : speak-app-dev (principal dev) + 9 worktrees claude/* + 2 worktrees V2
+```
+
+Étendre à tous les projets de premier niveau Florent (~4 sur ce PC : `0- Marketplace`, `3- Wisper` = SpeakApp, `Vente et Marketing - ALL Compagnies`, `navigateur`).
+
+### Phase 1 — Diff skills entre principal et chaque worktree
+
+Pour chaque skill du dépôt principal (`.claude/skills/<X>/SKILL.md`) :
+1. Calculer hash contenu : `git hash-object <path>`
+2. Pour chaque worktree, calculer hash du même skill
+3. Comparer et classer :
+   - **TOUS IDENTIQUES** → ✅ skill aligné, SKIP
+   - **Worktree à jour, principal en retard** (hash worktree = HEAD d'origin/dev plus récent que hash principal) → 🟡 principal doit pull (recommandation auto-pull si Florent autorise)
+   - **Worktree avec modif locale non-commité** (status worktree dirty sur ce fichier) → 🟠 flag Florent (commit + push attendu côté worktree)
+   - **Worktrees divergents entre eux** (≥2 hashes différents non-principal) → 🔴 critique, multiple sources, gestion 1 par 1 (cas rare, escalade Florent)
+
+### Phase 2 — Rapport synthétique
+
+Tableau par dépôt × skill :
+
+```
+| Dépôt | Skill | Principal hash | Worktrees status | Action recommandée |
+|-------|-------|----------------|------------------|--------------------|
+| speak-app-dev | drive | abc123 (commit ancien) | 1 worktree heuristic-liskov à jour def456 | 🟡 git pull principal |
+| speak-app-dev | recap | xyz789 | 11/11 identique | ✅ aligné |
+| speak-app-dev | wrapup | qrs456 | 1 worktree v2-phase1 avec modif locale non-commitée | 🟠 commit attendu worktree |
+```
+
+### Phase 3 — Auto-fix (si autorisé par Florent)
+
+**Cas 🟡 "principal en retard"** :
+1. Vérifier que principal est sur la bonne branche (`git -C <repo-principal> branch --show-current` doit retourner `dev` pour SpeakApp, sinon flag Florent — pas auto-switch branche)
+2. Vérifier que principal n'a pas de WIP uncommitted (`git -C <repo-principal> status --porcelain` doit être vide ; sinon `/git-safe-push` style auto-stash recommandé)
+3. `cd <repo-principal> && git pull origin <branch>`
+4. Signaler à Florent : "Pull principal `<repo>` effectué, skills synchronisés (commits N1→N2)"
+
+**Cas 🟠 "modif worktree non-commitée"** :
+- Flag à Florent, **NE PAS auto-commit** (pourrait écraser WIP intentionnel)
+- Suggérer commande : `cd <worktree> && git status` puis si Florent veut propager → `/git-safe-push`
+
+**Cas 🔴 "worktrees divergents entre eux"** :
+- Lister les versions divergentes par hash + mtime + auteur du dernier commit
+- Demander Florent quelle version garder (cas escalade Phase 3 `/drive` 5 — décision produit)
+- Backup obligatoire des versions perdantes dans `~/.claude/skills-store/_dedup-worktree-<YYYY-MM-DD>/`
+
+### Phase 4 — Trace + commit
+
+1. **Drive-log local** `<repo>/.autopilot/drive-log.md` : 1 ligne par audit workflow C
+2. **Roadmap entry** `<repo>/memory/roadmap/roadmap.md` section `[DRIVE]` si actions auto-pull effectuées
+3. **Pas de commit Git** dans `/checkup-skills-perso` lui-même (skill global, external repos) — les commits sont dans les repos audités si auto-pull a tiré des nouveaux commits
+
+### Trigger workflow C
+
+- **Manuel** : Florent dit `/skill-checkup workflow C`, "audit worktree", "check divergence skills", "skills à jour partout ?"
+- **Routine mensuelle** : ajouter au cron checkup mensuel (en plus des workflows A + B)
+- **Auto post-push** (V2 backlog, pas encore implémenté) : hook PostToolUse `git push` depuis worktree contenant edit `.claude/skills/*/SKILL.md` → trigger workflow C ciblé sur ce skill uniquement
+
+### Anti-patterns interdits
+
+- ❌ **Auto-pull dépôt principal sans vérifier la branche courante** (peut casser autre session active sur branche différente)
+- ❌ **Auto-commit worktree avec modif non-commitée** (peut écraser WIP utilisateur intentionnel)
+- ❌ **Auto-merge worktrees divergents sans demander Florent** (perte de modifs)
+- ❌ **Skip backup avant suppression d'une version divergente** (procédure §1 anti-doublon CLAUDE.md global = backup obligatoire `~/.claude/skills-store/_dedup-<date>/`)
+
+### Vision auto (V2 idéale, pas encore implémentée)
+
+Si la divergence est détectée DANS LA MÊME SESSION (Claude vient d'éditer un skill dans worktree, vient de push origin/dev) → **auto-pull principal en background** + signaler 1 ligne à Florent ("Skill `/X` propagé : worktree → push → pull principal OK"). Hook PostToolUse `git push` + check si fichier `.claude/skills/*/SKILL.md` dans les commits du push → auto-trigger workflow C ciblé. V2 backlog.
+
+---
 
 ## §4 Format JSON décisions
 
