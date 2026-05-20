@@ -26,6 +26,36 @@ type: user-skill
 | **Clients** | https://www.notion.so/1ad01e69443c80549cf8d98b5de924c1 |
 | **Appartements & Logement** | https://www.notion.so/19e01e69443c80bfbe12e69cea6b7afd |
 
+## 🚨 Anti-yoyo 2026-05-20 — Logins services administratifs (corrections post-domaine cassé)
+
+| Service | Login confirmé 2026-05-20 | Ne PAS utiliser |
+|---------|----------------------------|-----------------|
+| **MonIdenum / Infogreffe** | `florent.maisoncelle@gmail.com` (ID Infogreffe `230827628418`) | ~~florent.maisoncelle@prospectpartner.fr~~ (domaine NXDOMAIN) |
+| **INPI** | `florent.maisoncelle@gmail.com` | — |
+| **Impôts Pro** | À vérifier (probablement Gmail aussi vu domaine cassé) | ~~florent.maisoncelle@prospectpartner.fr~~ |
+| **Qonto** | `florent.maisoncelle@gmail.com` | — |
+| **Google Workspace admin** | `florent.maisoncelle@speakapp.work` (auth index /u/3/) | — |
+| **Gmail perso** (Workspace alias 0) | `florent.maisoncelle@gmail.com` (auth index /u/0/) | — |
+
+**Détail identité personnelle + tél + 2FA pour KYC** : Notion privé page EI Infos administratives + Codes 2FA dédiée (URLs ci-dessus).
+
+**Tél pro/perso unique Florent** : `+33 6 48 28 48 94` — utilisable comme tél pro EI dans tous KYC + contrats.
+
+## 🚨 Anti-yoyo 2026-05-20 — EI micro-entreprise = INSEE-SIRENE, PAS Infogreffe
+
+Florent = **EI micro-entreprise classique** (pas EIRL, pas SASU, pas SARL). Les registres Infogreffe (RCS / RSAC / RSEIRL) ne le couvrent PAS.
+
+**Si KYC ou service externe demande infos légales EI** :
+- ❌ **NE PAS aller sur** `monidenum.fr` / Infogreffe → refusera "Votre identité n'a pu être rapprochée avec aucune personne figurant sur les registres légaux"
+- ✅ **Aller sur INSEE-SIRENE** (public, sans login, gratuit) :
+  - **Fiche entreprise complète** : https://annuaire-entreprises.data.gouv.fr/entreprise/941122897 (code APE/NAF, adresse fiscale, date création, statut, lien Avis SIRENE)
+  - **Avis SIRENE PDF** : bouton "Télécharger avis SIRENE" sur la fiche ci-dessus (équivalent Kbis pour EI, accepté KYC EV cert Certum)
+  - **Recherche INSEE-SIRENE direct** : https://avis-situation-sirene.insee.fr/ (form SIREN/SIRET, génère PDF avis sans login)
+
+**Si KYC d'un service externe exige absolument "Kbis"** (alors que tu es EI) :
+- Répondre "Je suis EI micro-entrepreneur, le Kbis n'existe pas pour ce statut. Document équivalent = avis SIRENE INSEE (téléchargeable sur annuaire-entreprises.data.gouv.fr)"
+- Si KYC refuse l'avis SIRENE → bascule fournisseur (cas Certum EV qui accepte avis SIRENE = OK, vs SSL.com EV qui exige formulaire US-typé inadapté EI FR = exclu, cf DS-PROD-003 `memory/features/production-readiness.md`)
+
 **IDs Notion (pour MCP `notion-fetch`/`notion-update-page`/`notion-create-comment`)** :
 - Coordonnées & Accès : `521e6926-c821-48b9-ae39-4ba7b1fb5594`
 - EI Infos administratives : `36501e69-443c-81bd-8e4f-f27ca04bd891`
