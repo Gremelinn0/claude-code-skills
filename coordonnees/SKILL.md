@@ -22,6 +22,7 @@ type: user-skill
 | **Comptes Perso** (sous-page) | https://www.notion.so/34901e69443c81fd9e0bdebba3d8052b |
 | **APIs & Infrastructure** | https://www.notion.so/34901e69443c8102b953d3d2ffdecbe0 |
 | **Speak App** (sous-page coords) | https://www.notion.so/36601e69443c8056ad17d62259c5f11d |
+| **🔐 Codes de secours 2FA `florent.maisoncelle@speakapp.work`** | https://www.notion.so/36601e69443c81cdb334fbcea437b7d1 |
 | **Clients** | https://www.notion.so/1ad01e69443c80549cf8d98b5de924c1 |
 | **Appartements & Logement** | https://www.notion.so/19e01e69443c80bfbe12e69cea6b7afd |
 
