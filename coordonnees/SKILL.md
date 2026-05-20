@@ -58,6 +58,54 @@ type: user-skill
 - **Mots de passe** : RESTENT dans Notion privé UNIQUEMENT. **JAMAIS commités dans un repo git public** (cf miroir local `memory/coordonnees.md` SpeakApp qui dit "AUCUN mot de passe ici").
 - **Si user demande un mot de passe** → l'envoyer chercher dans Notion (lien direct), ne JAMAIS le lui dire dans le chat (logs persistants).
 
+## 🔑 API keys & secrets — stockage Notion automatique (gravée 2026-05-20)
+
+**Verbatim Florent 2026-05-20** : *« A chaque fois que je te donne des clefs API, s'il te plaît, tu les stockes dans les coordonnées aussi. Je pense que c'est une règle globale : tu les stockes dans les bons endroits dans Notion, évidemment, parce qu'on a des fichiers pour chaque grand projet dans l'espace coordonnées. Voilà, tout est toujours centralisé là : toutes les coordonnées, les mots de passe, les machins, les API. »*
+
+**Règle absolue** : à chaque fois que Florent me donne une **clé API / token / secret / credential** dans le chat, je le stocke **IMMÉDIATEMENT et SANS DEMANDER** dans la page Notion appropriée (jamais en clair dans un repo Git, jamais uniquement dans `memory/`).
+
+### Workflow obligatoire
+
+1. **Détecter un secret** dans le message Florent :
+   - Patterns : `ntn_*` (Notion), `sk-*` (OpenAI/Anthropic/Dust), `ghp_*` / `github_pat_*` (GitHub), `xoxb-*` / `xoxp-*` (Slack), `AIza*` (Google), `AKIA*` / `ASIA*` (AWS), `pk_live_*` / `sk_live_*` (Stripe), `apify_api_*`, `re_*` (Resend), `xai-*` (xAI)
+   - Mots-clés : "token API", "clé API", "API key", "secret", "credential", "mot de passe", "MDP"
+2. **Identifier la page Notion appropriée** :
+
+   | Type de secret | Page Notion cible | ID |
+   |----------------|-------------------|-----|
+   | Token API service tiers (Cloudflare, Google Cloud, Notion API, Apify, OpenAI, Stripe...) | **APIs & Infrastructure** | `34901e69-443c-8102-b953-d3d2ffdecbe0` |
+   | MDP compte pro (Qonto, Stripe dashboard, Vercel, AWS console...) | **Comptes Pro** | `34901e69-443c-817f-94b6-cf8904de32ec` |
+   | MDP compte perso (Gmail, Proton, services consumer...) | **Comptes Perso** | `34901e69-443c-81fd-9e0b-debba3d8052b` |
+   | Identifiants admin EI (Infogreffe, INPI, Impôts Pro...) | **🏢 EI Infos administratives** | `36501e69-443c-81bd-8e4f-f27ca04bd891` |
+   | Credentials spécifiques SpeakApp produit (Supabase service role, OAuth client secrets app, etc.) | **Speak App** | `36601e69-443c-8056-ad17-d62259c5f11d` |
+   | Code 2FA / TOTP backup codes | **🔐 Codes de secours 2FA** | `36601e69-443c-81cd-b334-fbcea437b7d1` |
+
+3. **Stocker via `notion-update-page` `update_content`** :
+   - Insérer une ligne dans la table "Tokens & Secrets" appropriée avec colonnes `(Service, Clé, Valeur)`
+   - Mentionner la date d'ajout dans la cellule "Clé" : `API Token (ajouté YYYY-MM-DD)`
+   - Si scope/usage est important, l'ajouter aussi : `API Token (ajouté 2026-05-20) — scope full workspace, MCP Claude`
+
+4. **JAMAIS** :
+   - Stocker la valeur du secret dans un repo Git (même privé — on peut perdre le contrôle d'accès)
+   - Stocker dans `memory/` qui est commité dans le repo SpeakApp public
+   - Citer la valeur du secret dans le chat persistant (logs Claude conservés)
+   - Demander à Florent où le mettre — si la table de routing ci-dessus matche, AGIR ; sinon prendre la décision la plus safe (APIs & Infrastructure par défaut pour tokens, et reporter une ligne brève au user)
+
+5. **Si miroir local existe** pour le projet (ex `memory/coordonnees.md` SpeakApp) → mentionner uniquement *"Token `<service>` stocké dans Notion APIs & Infrastructure (ajouté YYYY-MM-DD)"* SANS la valeur. Lien de la page Notion en référence.
+
+### Confirmation après stockage
+
+Une fois le secret stocké dans Notion, confirmer à Florent en 1 ligne :
+> *"Token `<service>` stocké dans Notion **APIs & Infrastructure** (ligne ajoutée 2026-05-20). Pas committé en clair côté repo."*
+
+Pas plus, pas d'output verbeux, pas de répétition de la valeur.
+
+### Triggers automatiques (s'ajoutent à ceux ci-dessus)
+
+- "token API", "clé API", "API key", "API token"
+- "secret", "credential", "auth token", "bearer token"
+- Détection pattern : `ntn_`, `sk-`, `sk_live_`, `pk_live_`, `ghp_`, `github_pat_`, `xoxb-`, `xoxp-`, `AIza`, `AKIA`, `ASIA`, `apify_api_`, `re_`, `xai-`
+
 ## Miroirs locaux par projet
 
 | Projet | Miroir local | Mise à jour |
