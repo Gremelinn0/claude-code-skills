@@ -1,15 +1,17 @@
 {
   "started_at": "2026-05-20T01:00:00Z",
-  "last_updated": "2026-05-20T01:00:00Z",
+  "last_updated": "2026-05-20T05:50:01Z",
   "total_pages": 28,
-  "pages_done": 0,
-  "pages_pending": 28,
+  "pages_done": 1,
+  "pages_pending": 27,
   "pages": [
     {
       "id": "620e7db0-3ed4-4db6-b7cb-cb4bb71fbc66",
       "title": "Prospect Partner",
       "last_edited": "2026-05-04T22:54:00.000Z",
-      "status": "pending"
+      "status": "done",
+      "completed_at": "2026-05-20T05:50:01Z",
+      "note": "Make & n8n + Florent s already connected (5 total)"
     },
     {
       "id": "2dd01e69-443c-813b-af10-d1797445e7b9",
