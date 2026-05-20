@@ -1,9 +1,18 @@
 {
   "started_at": "2026-05-20T01:00:00Z",
-  "last_updated": "2026-05-20T05:50:01Z",
-  "total_pages": 28,
-  "pages_done": 1,
+  "last_updated": "2026-05-20T06:15:00Z",
+  "total_pages": 29,
+  "pages_done": 2,
   "pages_pending": 27,
+  "extras_processed": [
+    {
+      "id": "34601e69-443c-81a0-adcd-d4815160e165",
+      "title": "HUB Marketplace + Agences IA + No code automation — Hub central",
+      "note": "Workspace-level page, was missing from initial scan (Make & n8n had no access). Added Florent's + Make & n8n manually. 2 connections active.",
+      "completed_at": "2026-05-20T06:15:00Z",
+      "status": "done"
+    }
+  ],
   "pages": [
     {
       "id": "620e7db0-3ed4-4db6-b7cb-cb4bb71fbc66",
