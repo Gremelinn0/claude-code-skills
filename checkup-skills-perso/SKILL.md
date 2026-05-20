@@ -298,6 +298,53 @@ Tableau par dépôt × skill :
 2. **Roadmap entry** `<repo>/memory/roadmap/roadmap.md` section `[DRIVE]` si actions auto-pull effectuées
 3. **Pas de commit Git** dans `/checkup-skills-perso` lui-même (skill global, external repos) — les commits sont dans les repos audités si auto-pull a tiré des nouveaux commits
 
+### Phase 5 — Santé sync cross-PC `claude-home` (gravée 2026-05-20)
+
+**Quand exécuter** : à la fin de chaque audit Workflow C complet, ou en standalone via `/skill-checkup health-sync` quand Florent dit "santé sync skills cross-PC", "tu vois bien que les 2 PCs sont alignés ?".
+
+**Contexte** : `~/.claude/` est un repo Git `Gremelinn0/claude-home` (vérifier : `git -C ~/.claude remote -v`) avec auto-sync continu via 2 hooks bash (`~/.claude/hooks/auto_sync_repos.sh` push + `~/.claude/hooks/auto_pull_repos.sh` pull, déclenchés par events Claude Code via `~/.claude/settings.json`). Les PCs de Florent (`Portableflo` + `DESKTOP-UH5HSM9`) se synchronisent en continu. Vérifier la santé = s'assurer que les 2 PCs sont bien alignés et que rien n'a divergé silencieusement.
+
+**5 checks à faire** :
+
+1. **Unpushed commits** sur ce PC : `git -C ~/.claude log --oneline origin/main..HEAD`
+   - Doit être vide. Sinon → l'auto-sync push n'a pas encore tourné, attendre 2-5 min OU forcer `git -C ~/.claude push origin main`
+2. **Unpulled commits** depuis l'autre PC : `git -C ~/.claude log --oneline HEAD..origin/main`
+   - Doit être vide. Sinon → l'auto-sync pull n'a pas encore tourné, forcer `git -C ~/.claude pull origin main --rebase`
+3. **Untracked critiques** : `git -C ~/.claude status --porcelain | grep -E "^\?\?" | grep -vE "^\?\? (tasks|projects|sessions)/"`
+   - Doit être vide. Les `tasks/<uuid>/` et `projects/**` (gitignored) sont OK. Tout autre fichier untracked dans `skills/`, `hooks/`, `memory/`, `CLAUDE.md` racine = **drift potentiel**, à investiguer.
+4. **Activité auto-sync par PC** (analyse des derniers commits) :
+   ```bash
+   git -C ~/.claude log --oneline -50 | grep -E "auto-sync (Portableflo|DESKTOP-UH5HSM9)" | head -10
+   ```
+   - Identifier dernier timestamp par PC. Si un PC n'a pas push depuis >24h → PC potentiellement offline / hors-réseau, **flag à Florent** (pas auto-fix : problème côté PC distant, pas dans le repo).
+5. **Conflits résolus auto récents** : `ls -t ~/.claude/conflict-backups/ | head -10`
+   - 1-10 conflits/jour résolus auto = normal (deux PCs syncs simultanés, strategy "concat" sur les logs).
+   - >20 conflits/jour = race conditions excessives, signaler à Florent. Possible cause : un hook qui modifie un fichier sur les 2 PCs en boucle, ou un fichier non-déterministe inclus dans le repo.
+
+**Rapport synthétique** (format obligatoire pour Florent caveman OFF) :
+
+```
+| Check | Status | Détail |
+|-------|--------|--------|
+| Unpushed | ✅/🟡 | <N> commit non-pushé sur ce PC |
+| Unpulled | ✅/🟡 | <N> commit en retard sur origin/main |
+| Untracked critiques | ✅/🟠 | <N> (X tasks/ untracked = OK) |
+| Portableflo activité | ✅/🟡 | dernier sync <timestamp> (il y a <X> heures) |
+| DESKTOP-UH5HSM9 activité | ✅/🟡 | dernier sync <timestamp> (il y a <X> heures) |
+| Conflits auto (24h) | ✅/🟠 | <N> résolus auto, tous backups OK dans `conflict-backups/` |
+```
+
+**Auto-fix si autorisé par Florent** :
+- Cas "Unpushed" → `git -C ~/.claude push origin main` (zéro risque, juste pusher ce qui est déjà commité local)
+- Cas "Unpulled" → `git -C ~/.claude pull origin main --rebase` (auto-sync style, rebase rapide sans merge commit)
+- Cas "PC offline >24h" → **flag Florent, pas auto-fix** (problème pas dans le repo, problème PC distant)
+- Cas "Conflits excessifs" → flag Florent, suggérer audit des patterns auto-resolution
+
+**Anti-patterns Phase 5** :
+- ❌ Auto-pull sans checker `git -C ~/.claude branch --show-current` = `main` (pourrait casser une branche feature en cours)
+- ❌ Force push pour "réparer" divergence (perte de modifs côté autre PC)
+- ❌ Supprimer manuellement les `conflict-backups/` sans valider — ils servent de safety net pour rollback
+
 ### Trigger workflow C
 
 - **Manuel** : Florent dit `/skill-checkup workflow C`, "audit worktree", "check divergence skills", "skills à jour partout ?"
